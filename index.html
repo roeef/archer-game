@@ -1,0 +1,4118 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק הקשת: 30 סוגי מפלצות</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0d0f18;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(79, 140, 255, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #232b42;
+        }
+
+        canvas {
+            display: block;
+            background: #141824;
+            cursor: crosshair;
+        }
+
+        /* Top HUD */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(13, 15, 24, 0.9), rgba(13, 15, 24, 0));
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px #000;
+        }
+
+        .bar-container {
+            width: 180px;
+            height: 18px;
+            background: #1a1e2e;
+            border-radius: 9px;
+            border: 1px solid #3c496e;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.15s ease-out;
+        }
+
+        #hp-fill {
+            background: linear-gradient(90deg, #ff3344, #ff6677);
+            width: 100%;
+        }
+
+        #xp-fill {
+            background: linear-gradient(90deg, #38ef7d, #11998e);
+            width: 0%;
+        }
+
+        .bar-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 1px;
+            font-size: 11px;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* Overlay Screens */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 12, 20, 0.88);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #ffca28;
+            margin-bottom: 12px;
+            text-shadow: 0 0 15px rgba(255, 202, 40, 0.5);
+        }
+
+        p {
+            font-size: 18px;
+            color: #b0b8d0;
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2b6cb0, #4299e1);
+            color: white;
+            border: none;
+            padding: 12px 36px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.4);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #3182ce, #63b3ed);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.6);
+        }
+
+        .controls-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px 24px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 25px;
+            text-align: right;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* Upgrade Selection Modal */
+        #upgrade-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #141929;
+            border: 2px solid #3b82f6;
+            border-radius: 16px;
+            padding: 24px;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.95);
+            width: 860px;
+            max-width: 96%;
+        }
+
+        #upgrade-modal.hidden {
+            display: none;
+        }
+
+        .upgrade-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .upgrade-card {
+            background: #1e263d;
+            border: 2px solid #2d385b;
+            border-radius: 12px;
+            padding: 12px 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .upgrade-card:hover {
+            border-color: #60a5fa;
+            background: #253150;
+            transform: translateY(-4px);
+        }
+
+        .upgrade-card.locked {
+            opacity: 0.45;
+            filter: grayscale(0.85);
+            cursor: not-allowed;
+            border-color: #334155;
+            background: #111522;
+        }
+
+        .upgrade-card.locked:hover {
+            border-color: #334155;
+            background: #111522;
+            transform: none;
+        }
+
+        .upgrade-card.legendary {
+            border-color: #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+            background: linear-gradient(180deg, #1e263d, #272138);
+        }
+
+        .upgrade-card.legendary:hover {
+            border-color: #fbbf24;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.45);
+        }
+
+        .upgrade-card.legendary .upgrade-name {
+            color: #fbbf24;
+        }
+
+        .upgrade-badge {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .badge-basic { background: #334155; color: #cbd5e1; }
+        .badge-good { background: #1e3a8a; color: #93c5fd; }
+        .badge-advanced { background: #581c87; color: #e9d5ff; }
+        .badge-legendary { background: #78350f; color: #fde68a; border: 1px solid #f59e0b; }
+
+        .upgrade-lock-badge {
+            margin-top: 8px;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            font-weight: bold;
+        }
+
+        .upgrade-icon {
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            font-size: 15px;
+            color: #93c5fd;
+            margin-bottom: 4px;
+        }
+
+        .upgrade-desc {
+            font-size: 11.5px;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        /* Tier display in corner */
+        #monster-tracker {
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            font-size: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #334155;
+        }
+
+        /* Abilities HUD */
+        #abilities-hud {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        #abilities-hud.hidden {
+            display: none;
+        }
+
+        .ability-slot {
+            background: rgba(15, 23, 42, 0.88);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            min-width: 125px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .ability-slot:hover {
+            transform: translateY(-2px);
+            border-color: #64748b;
+        }
+
+        .ability-slot.ready {
+            border-color: #22c55e;
+            box-shadow: 0 0 14px rgba(34, 197, 94, 0.45);
+        }
+
+        .ability-key {
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-weight: bold;
+            font-size: 13px;
+            color: #f8fafc;
+        }
+
+        .ability-icon {
+            font-size: 24px;
+        }
+
+        .ability-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ability-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        .ability-timer {
+            font-size: 11px;
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .ability-timer.cooldown {
+            color: #f87171;
+        }
+
+        /* Wizard Evolution Modal Overlay & Container */
+        #wizard-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 10, 18, 0.72);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 12px;
+        }
+
+        #wizard-modal-overlay.hidden {
+            display: none !important;
+        }
+
+        #wizard-modal {
+            background: #0f172a;
+            border: 2px solid #f59e0b;
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 50px rgba(245, 158, 11, 0.45), 0 0 90px rgba(0, 0, 0, 0.95);
+            width: 880px;
+            max-width: 98%;
+            max-height: 96%;
+            overflow-y: auto;
+        }
+
+        .wizard-cards {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .wizard-card {
+            flex: 1;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 10px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .wizard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .wizard-card.fire {
+            border-color: #ef4444;
+        }
+
+        .wizard-card.fire:hover {
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.55);
+            background: linear-gradient(180deg, #1e293b, #3b1d1d);
+        }
+
+        .wizard-card.ice {
+            border-color: #38bdf8;
+        }
+
+        .wizard-card.ice:hover {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.55);
+            background: linear-gradient(180deg, #1e293b, #163347);
+        }
+
+        .wizard-card.plant {
+            border-color: #22c55e;
+        }
+
+        .wizard-card.plant:hover {
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.55);
+            background: linear-gradient(180deg, #1e293b, #143522);
+        }
+
+        .wizard-ability-box {
+            background: rgba(0,0,0,0.35);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 8px;
+            width: 100%;
+            text-align: right;
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .btn-wizard-select {
+            margin-top: 12px;
+            width: 100%;
+            padding: 9px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-wizard-fire {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+        }
+        .btn-wizard-fire:hover {
+            transform: scale(1.03);
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+
+        .btn-wizard-ice {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
+        }
+        .btn-wizard-ice:hover {
+            transform: scale(1.03);
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+        }
+
+        .btn-wizard-plant {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(22, 163, 74, 0.4);
+        }
+        .btn-wizard-plant:hover {
+            transform: scale(1.03);
+            background: linear-gradient(135deg, #4ade80, #16a34a);
+        }
+
+        /* App Wrapper */
+        #app-wrapper {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+
+        /* HUD Action Buttons */
+        .hud-action-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .hud-action-btn:hover {
+            background: #334155;
+            border-color: #64748b;
+            transform: scale(1.04);
+        }
+        .hud-action-btn.active {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-color: #d946ef;
+            box-shadow: 0 0 12px rgba(217, 70, 239, 0.5);
+        }
+
+        /* Wave Selection Card on Start Screen */
+        .wave-select-box {
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 660px;
+            box-sizing: border-box;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .wave-dropdown {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+            max-width: 340px;
+        }
+        .wave-dropdown option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .quick-stage-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .stage-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .stage-pill:hover {
+            background: #334155;
+            border-color: #60a5fa;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Difficulty Selector Styling */
+        .difficulty-container {
+            margin: 8px 0 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .diff-pill {
+            background: #1e293b;
+            border: 2px solid #334155;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .diff-pill:hover {
+            transform: translateY(-1px);
+            color: #fff;
+        }
+        .diff-pill.active[data-diff="easy"] {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #34d399;
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.45);
+        }
+        .diff-pill.active[data-diff="normal"] {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            color: #60a5fa;
+            box-shadow: 0 0 14px rgba(59, 130, 246, 0.45);
+        }
+        .diff-pill.active[data-diff="hard"] {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #f87171;
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
+        }
+
+        /* In-Game Wave Jump Modal */
+        #wave-jump-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #0f172a;
+            border: 2px solid #8b5cf6;
+            border-radius: 16px;
+            padding: 18px 24px;
+            z-index: 55;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 45px rgba(0, 0, 0, 0.95), 0 0 25px rgba(139, 92, 246, 0.35);
+            width: 580px;
+            max-width: 95%;
+        }
+        #wave-jump-modal.hidden {
+            display: none !important;
+        }
+
+        /* Chat Plays Panel (Twitch / Live Stream Style) */
+        #chat-panel {
+            width: 310px;
+            height: 640px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(139, 92, 246, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            box-sizing: border-box;
+            user-select: text;
+        }
+        #chat-panel.hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 1320px) {
+            #chat-panel {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 60;
+                box-shadow: -5px 0 35px rgba(0, 0, 0, 0.9);
+            }
+        }
+
+        .chat-header {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .chat-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+            animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .chat-btn-icon {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .chat-btn-icon:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .chat-stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        .chat-mode-badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid #22c55e;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .chat-mode-badge.paused {
+            background: rgba(148, 163, 184, 0.15);
+            color: #94a3b8;
+            border-color: #64748b;
+        }
+        .chat-ai-toggle-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 11.5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .chat-ai-toggle-btn.paused {
+            background: linear-gradient(135deg, #475569, #334155);
+        }
+        .chat-ai-toggle-btn:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
+        .chat-status-bar {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 5px 10px;
+            font-size: 11px;
+            color: #94a3b8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            scroll-behavior: smooth;
+        }
+        .chat-messages-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        .chat-messages-container::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .chat-msg {
+            display: flex;
+            flex-direction: column;
+            padding: 4px 6px;
+            border-radius: 6px;
+            background: rgba(30, 41, 59, 0.4);
+            animation: fadeInMsg 0.2s ease;
+        }
+        @keyframes fadeInMsg {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-msg.user {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+        .chat-msg.cmd {
+            background: rgba(139, 92, 246, 0.15);
+            border-left: 3px solid #8b5cf6;
+        }
+        .chat-author {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+        }
+        .chat-text {
+            color: #f1f5f9;
+            word-break: break-word;
+        }
+        .chat-cmd-highlight {
+            color: #facc15;
+            font-weight: bold;
+            background: rgba(250, 204, 21, 0.15);
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+
+        .chat-quick-cmds {
+            padding: 6px 8px;
+            background: #1e293b;
+            border-top: 1px solid #334155;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .quick-cmd-btn {
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        .quick-cmd-btn:hover {
+            background: #334155;
+            color: #fff;
+            border-color: #93c5fd;
+        }
+
+        .chat-input-area {
+            padding: 8px 10px;
+            background: #0f172a;
+            border-top: 1px solid #334155;
+            display: flex;
+            gap: 6px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+        }
+        .chat-input-area input:focus {
+            border-color: #8b5cf6;
+        }
+        .chat-input-area button {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+<div id="game-container">
+    <div id="hud">
+        <div class="hud-item">
+            <span>❤️ חיים:</span>
+            <div class="bar-container">
+                <div id="hp-fill" class="bar-fill"></div>
+                <div id="hp-text" class="bar-text">100 / 100</div>
+            </div>
+        </div>
+
+        <div class="hud-item">
+            <span>🌟 ניסיון (דרגה <span id="level-display">1</span>):</span>
+            <div class="bar-container">
+                <div id="xp-fill" class="bar-fill"></div>
+                <div id="xp-text" class="bar-text">0%</div>
+            </div>
+        </div>
+
+        <div class="hud-item">
+            <span>👾 גל נוכחי: <span id="wave-display" style="color: #f59e0b; font-size: 20px;">1 / 30</span></span>
+        </div>
+
+        <div class="hud-item">
+            <span>🎯 ניקוד: <span id="score-display" style="color: #38bdf8;">0</span></span>
+        </div>
+
+        <div class="hud-item">
+            <span id="diff-hud-badge" style="font-weight: bold; color: #60a5fa; background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; padding: 2px 8px; border-radius: 12px; font-size: 13px;">⚙️ רגיל</span>
+        </div>
+
+        <div class="hud-item" style="pointer-events: auto; display: flex; gap: 8px;">
+            <button id="toggle-chat-btn" class="hud-action-btn">💬 צ'אט משחק [כבוי]</button>
+            <button id="in-game-wave-btn" class="hud-action-btn">⏩ בחר גל</button>
+        </div>
+    </div>
+
+    <div id="monster-tracker">סוגי מפלצות שהתגלו: <span id="discovered-types">0</span> מתוך 30</div>
+
+    <canvas id="gameCanvas" width="960" height="640"></canvas>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="overlay">
+        <h1>🏹 משחק הקשת נגד 30 המפלצות</h1>
+        <p>אתה קשת מיומן במבוך מסוכן. עליך להביס 30 סוגים של מפלצות בדרגות שונות! שים לב: חלקן יורות עליך כדורים, וחלקן מהירות מאוד ורודפות כדי לפגוע בך במגע!</p>
+        
+        <div class="controls-info">
+            <strong>🎮 הוראות שליטה:</strong><br>
+            • <b>W, A, S, D</b> או <b>מקשי החיצים</b> — תנועה במרחב.<br>
+            • <b>עכבר</b> — כיוון החץ.<br>
+            • <b>קליק שמאלי</b> או מקש <b>Ctrl</b> — ירי חץ (אפשר להחזיק לחוץ לירי רציף).<br>
+            • <b>רווח</b> — השהיית המשחק (Pause) | <b>C</b> / <b>T</b> — הדלקת/כיבוי מצב צ'אט משחק.
+        </div>
+
+        <!-- Difficulty Selection -->
+        <div style="margin-top: 10px; text-align: center;">
+            <div style="font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 6px;">
+                ⚙️ בחר רמת קושי למשחק:
+            </div>
+            <div class="difficulty-container">
+                <button class="diff-pill" data-diff="easy" title="חצי מכמות המפלצות בכל גל">🌱 קל (חצי מפלצות)</button>
+                <button class="diff-pill active" data-diff="normal" title="כמות מפלצות רגילה">⚔️ רגיל</button>
+                <button class="diff-pill" data-diff="hard" title="כפול מפלצות בכל גל!">🔥 קשה (כפול מפלצות)</button>
+            </div>
+        </div>
+
+        <!-- Wave Selection Box on Start Screen -->
+        <div class="wave-select-box">
+            <div style="font-size: 14px; font-weight: bold; color: #f59e0b; margin-bottom: 6px;">
+                🚀 קפיצה ישירה לכל שלב (1 - 30):
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                <select id="stage-select-dropdown" class="wave-dropdown">
+                    <!-- Populated dynamically in JS -->
+                </select>
+                <button id="jump-stage-btn" class="btn" style="padding: 7px 18px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669);">קפוץ לשלב שנבחר!</button>
+            </div>
+            <div class="quick-stage-pills">
+                <button class="stage-pill" data-wave="1">גל 1 (התחלה)</button>
+                <button class="stage-pill" data-wave="5">גל 5 (מיני-בוס)</button>
+                <button class="stage-pill" data-wave="6">גל 6 (גובלין עזר)</button>
+                <button class="stage-pill" data-wave="7">גל 7 (עליית מקס חיים)</button>
+                <button class="stage-pill" data-wave="10">גל 10 (שדרוג מזל 🍀)</button>
+                <button class="stage-pill" data-wave="12">גל 12 (מכשף 🧙‍♂️)</button>
+                <button class="stage-pill" data-wave="15">גל 15 (שד להבות)</button>
+                <button class="stage-pill" data-wave="20">גל 20 (גנרל דרקוני)</button>
+                <button class="stage-pill" data-wave="25">גל 25 (ליץ' האלמוות)</button>
+                <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; justify-content: center; align-items: center;">
+            <button id="start-btn" class="btn">התחל משחק (גל 1)!</button>
+            <button id="start-chat-plays-btn" class="btn" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); font-size: 15px; padding: 10px 22px; box-shadow: 0 0 20px rgba(236, 72, 153, 0.45);">💬 התחל עם "צ'אט משחק" (AI)</button>
+        </div>
+    </div>
+
+    <!-- Upgrade Screen -->
+    <div id="upgrade-modal" class="hidden">
+        <h2 style="color: #60a5fa; margin-bottom: 5px;">🎉 עלית דרגה!</h2>
+        <p style="font-size: 14px; margin-bottom: 12px; color: #94a3b8;">בחר שדרוג עבור הקשת שלך:</p>
+        <div class="upgrade-cards" id="upgrade-options">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+
+    <!-- Abilities HUD -->
+    <div id="abilities-hud" class="hidden">
+        <div class="ability-slot" id="slot-strong" title="לחץ או הקש PgUp / Z / 1">
+            <span class="ability-key" style="font-size: 11px;">PgUp</span>
+            <span class="ability-icon" id="strong-icon">🔥</span>
+            <div class="ability-info">
+                <div class="ability-name" id="strong-name">יכולת חזקה</div>
+                <div class="ability-timer" id="strong-timer">מוכן!</div>
+            </div>
+        </div>
+        <div class="ability-slot" id="slot-weak" title="לחץ או הקש PgDn / X / 2">
+            <span class="ability-key" style="font-size: 11px;">PgDn</span>
+            <span class="ability-icon" id="weak-icon">☄️</span>
+            <div class="ability-info">
+                <div class="ability-name" id="weak-name">יכולת חלשה</div>
+                <div class="ability-timer" id="weak-timer">מוכן!</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wizard Evolution Modal Overlay (גל 12) -->
+    <div id="wizard-modal-overlay" class="hidden">
+        <div id="wizard-modal">
+            <h1 style="font-size: 28px; color: #f59e0b; margin-bottom: 4px;">🧙‍♂️ התפתחות מכשף - גל 12!</h1>
+            <p style="font-size: 14px; margin-bottom: 8px; color: #cbd5e1; max-width: 780px;">הגעת ל-100% בגל 12! בחר את נתיב הקסם שלך (לחץ על כרטיס או הקש <b>1</b>, <b>2</b>, או <b>3</b> במקלדת):</p>
+            <div class="wizard-cards">
+                <!-- Fire Wizard -->
+                <div class="wizard-card fire" id="card-wizard-fire">
+                    <div style="font-size: 38px; margin-bottom: 4px;">🔥</div>
+                    <h3 style="color: #f87171; font-size: 18px; margin-bottom: 4px;">מכשף אש [1]</h3>
+                    <div class="wizard-ability-box">
+                        <b style="color: #fca5a5;">💥 יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
+                        <b>"הדף אש"</b> — יוצר עיגול אש ענק מתרחב שמוריד כ-50% מחיים לכל המפלצות ומעיף אותן אחורה!
+                    </div>
+                    <div class="wizard-ability-box">
+                        <b style="color: #fdba74;">☄️ יכולת חלשה [PgDn / X] (8 שניות):</b><br>
+                        <b>"כדור אש מתביית"</b> — יורה כדור אש שעוקב אחרי אחת המפלצות, מחסל אותה במכה ונעלם!
+                    </div>
+                    <button class="btn-wizard-select btn-wizard-fire" id="btn-wizard-fire">בחר מכשף אש 🔥 [מקש 1]</button>
+                </div>
+
+                <!-- Ice Wizard -->
+                <div class="wizard-card ice" id="card-wizard-ice">
+                    <div style="font-size: 38px; margin-bottom: 4px;">❄️</div>
+                    <h3 style="color: #38bdf8; font-size: 18px; margin-bottom: 4px;">מכשף קרח [2]</h3>
+                    <div class="wizard-ability-box">
+                        <b style="color: #7dd3fc;">🛡️ יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
+                        <b>"חומה קפואה"</b> — יוצר חומה של גבישי קרח מסביבך למשך 5 שניות שמפלצות לא יכולות לעבור!
+                    </div>
+                    <div class="wizard-ability-box">
+                        <b style="color: #bae6fd;">🧊 יכולת חלשה [PgDn / X] (8 שניות):</b><br>
+                        <b>"הקפאה כפולה"</b> — מקפיא לחלוטין ל-3 שניות את 2 המפלצות שהכי קרובות אליך!
+                    </div>
+                    <button class="btn-wizard-select btn-wizard-ice" id="btn-wizard-ice">בחר מכשף קרח ❄️ [מקש 2]</button>
+                </div>
+
+                <!-- Plant Wizard -->
+                <div class="wizard-card plant" id="card-wizard-plant">
+                    <div style="font-size: 38px; margin-bottom: 4px;">🌿</div>
+                    <h3 style="color: #4ade80; font-size: 18px; margin-bottom: 4px;">מכשף צמחים [3]</h3>
+                    <div class="wizard-ability-box">
+                        <b style="color: #86efac;">💚 יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
+                        <b>"ריפוי טיבעי"</b> — מרפא מיידית 50 חיים לקשת שלך בכל הפעלה!
+                    </div>
+                    <div class="wizard-ability-box">
+                        <b style="color: #bbf7d0;">🌵 יכולת חלשה [PgDn / X] (8 שניות):</b><br>
+                        <b>"5 יחידות קוצים"</b> — שותל 5 מלכודות קוצים על הלוח; מפלצת שדורכת עליהן חוטפת 25% נזק והקוץ נעלם!
+                    </div>
+                    <button class="btn-wizard-select btn-wizard-plant" id="btn-wizard-plant">בחר מכשף צמחים 🌿 [מקש 3]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="overlay hidden">
+        <h1 style="color: #ef4444;">💀 המשחק נגמר!</h1>
+        <p>נפלת בקרב... אך הקשת תמיד מוכן למבחן הבא!</p>
+        <p style="font-size: 20px; color: #f59e0b;">הגעת לגל: <span id="final-wave">1</span> | ניקוד: <span id="final-score">0</span></p>
+        <button id="restart-btn" class="btn">נסה שוב</button>
+    </div>
+
+    <!-- Victory Screen -->
+    <div id="victory-screen" class="overlay hidden">
+        <h1 style="color: #10b981;">🏆 ניצחון מוחץ!</h1>
+        <p>הבסת את כל 30 סוגי המפלצות והצלת את הממלכה כולה! אתה אלוף הקשתים!</p>
+        <p style="font-size: 22px; color: #f59e0b;">ניקוד סופי: <span id="victory-score">0</span></p>
+        <button id="victory-restart-btn" class="btn">שחק שוב מהתחלה</button>
+    </div>
+
+    <!-- In-Game Wave Jump Modal -->
+    <div id="wave-jump-modal" class="hidden">
+        <h2 style="color: #c084fc; margin-bottom: 6px;">⏩ בחר שלב לקפיצה ישירה</h2>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; text-align: center;">בחר גל מ-1 עד 30. הציוד והשדרוגים שלך יותאמו אוטומטית לרמת הגל!</p>
+        <div style="display: flex; gap: 8px; justify-content: center; align-items: center; width: 100%; margin-bottom: 10px;">
+            <select id="in-game-wave-select" class="wave-dropdown" style="flex: 1;">
+                <!-- Populated dynamically -->
+            </select>
+            <button id="in-game-jump-confirm-btn" class="btn" style="padding: 7px 18px; font-size: 14px; background: linear-gradient(135deg, #8b5cf6, #6366f1);">קפוץ עכשיו!</button>
+        </div>
+        <div class="quick-stage-pills" style="margin-bottom: 14px;">
+            <button class="stage-pill" data-wave="1">גל 1</button>
+            <button class="stage-pill" data-wave="6">גל 6 (גובלין עזר)</button>
+            <button class="stage-pill" data-wave="10">גל 10 (שדרוג מזל 🍀)</button>
+            <button class="stage-pill" data-wave="12">גל 12 (מכשף 🧙‍♂️)</button>
+            <button class="stage-pill" data-wave="20">גל 20</button>
+            <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
+        </div>
+        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 13px; color: #94a3b8; font-weight: bold;">קושי:</span>
+            <button class="diff-pill" data-diff="easy">🌱 קל (חצי)</button>
+            <button class="diff-pill active" data-diff="normal">⚔️ רגיל</button>
+            <button class="diff-pill" data-diff="hard">🔥 קשה (כפול)</button>
+        </div>
+        <button id="in-game-jump-close-btn" class="btn" style="background: #334155; font-size: 13px; padding: 6px 20px;">סגור וחזור למשחק</button>
+    </div>
+</div> <!-- end game-container -->
+
+<!-- Chat Plays Panel (Twitch / Live Stream Style) -->
+<div id="chat-panel" class="hidden">
+    <div class="chat-header">
+        <div class="chat-title-row">
+            <div class="chat-title">
+                <span class="live-dot"></span>
+                <span>שידור חי: הצ'אט משחק</span>
+            </div>
+            <button id="chat-close-btn" class="chat-btn-icon" title="סגור צ'אט">✖</button>
+        </div>
+        <div class="chat-stats-row">
+            <span class="chat-viewers">👥 <span id="viewer-count">1,842</span> צופים</span>
+            <span class="chat-mode-badge" id="chat-mode-status">🤖 צ'אט AI פעיל</span>
+        </div>
+        <button id="chat-toggle-ai-btn" class="chat-ai-toggle-btn">
+            ⏸️ השהה שליטת צ'אט (עבור לשליטה ידנית)
+        </button>
+    </div>
+
+    <!-- Chat Command Activity Bar -->
+    <div class="chat-status-bar">
+        <span>🎯 פקודה אחרונה: </span>
+        <b id="last-chat-command" style="color: #facc15;">!לירות בקשת</b>
+    </div>
+
+    <!-- Messages Feed -->
+    <div id="chat-messages" class="chat-messages-container"></div>
+
+    <!-- Quick Chat Commands Toolbar -->
+    <div class="chat-quick-cmds">
+        <button class="quick-cmd-btn" data-cmd="!למעלה">⬆️ למעלה</button>
+        <button class="quick-cmd-btn" data-cmd="!למטה">⬇️ למטה</button>
+        <button class="quick-cmd-btn" data-cmd="!שמאלה">⬅️ שמאלה</button>
+        <button class="quick-cmd-btn" data-cmd="!ימינה">➡️ ימינה</button>
+        <button class="quick-cmd-btn" data-cmd="!לירות">🏹 ירה</button>
+        <button class="quick-cmd-btn" data-cmd="!Z">💥 [Z]</button>
+        <button class="quick-cmd-btn" data-cmd="!X">☄️ [X]</button>
+    </div>
+
+    <!-- User Chat Input -->
+    <form id="chat-form" class="chat-input-area" onsubmit="return false;">
+        <input type="text" id="chat-input" placeholder="כתוב פקודה (למשל: !לירות, !Z, ימינה)..." maxlength="60" autocomplete="off" />
+        <button type="submit" id="chat-send-btn">שלח</button>
+    </form>
+</div>
+</div> <!-- end app-wrapper -->
+
+<script>
+/* -------------------------------------------------------------
+   30 UNIQUE MONSTER SPECIES DEFINITIONS
+   Tier 1 to 30.
+   type: 'chaser' (fast, melee, contact damage)
+         'shooter' (ranged, shoots projectile balls)
+         'tank' (high hp, slower, shoots heavy balls)
+         'boss' (huge, high hp, multi-shot)
+------------------------------------------------------------- */
+const MONSTER_SPECIES = [
+    // Tiers 1-5 (Early game)
+    { id: 1, name: "סליים ירוק", type: "chaser", color: "#4ade80", radius: 15, speed: 2.1, hp: 35, touchDmg: 8, shootCd: 0 },
+    { id: 2, name: "עטלף מערות", type: "chaser", color: "#a855f7", radius: 13, speed: 2.7, hp: 28, touchDmg: 10, shootCd: 0 },
+    { id: 3, name: "גובלין יורה", type: "shooter", color: "#facc15", radius: 16, speed: 1.4, hp: 45, touchDmg: 0, bulletDmg: 8, bulletSpeed: 3.2, shootCd: 140 },
+    { id: 4, name: "זומבי רקוב", type: "chaser", color: "#84cc16", radius: 18, speed: 1.6, hp: 65, touchDmg: 12, shootCd: 0 },
+    { id: 5, name: "מכשף אש צעיר (מיני-בוס)", type: "shooter", color: "#f97316", radius: 20, speed: 1.1, hp: 80, touchDmg: 5, bulletDmg: 10, bulletSpeed: 3.4, shootCd: 110 },
+
+    // Tiers 6-10 (Developing threat)
+    { id: 6, name: "עקרב מדבר", type: "chaser", color: "#eab308", radius: 16, speed: 2.9, hp: 60, touchDmg: 14, shootCd: 0 },
+    { id: 7, name: "שלד קשת", type: "shooter", color: "#e2e8f0", radius: 17, speed: 1.5, hp: 70, touchDmg: 0, bulletDmg: 12, bulletSpeed: 4.0, shootCd: 120 },
+    { id: 8, name: "עכביש רעיל", type: "chaser", color: "#10b981", radius: 15, speed: 3.2, hp: 55, touchDmg: 15, shootCd: 0 },
+    { id: 9, name: "גולם אבן (טנק)", type: "tank", color: "#64748b", radius: 26, speed: 1.0, hp: 220, touchDmg: 18, bulletDmg: 10, bulletSpeed: 2.5, shootCd: 160 },
+    { id: 10, name: "רוח רפאים מהירה", type: "chaser", color: "#38bdf8", radius: 16, speed: 3.5, hp: 80, touchDmg: 16, shootCd: 0 },
+
+    // Tiers 11-15 (Mid game)
+    { id: 11, name: "אורק לוחם", type: "chaser", color: "#15803d", radius: 20, speed: 2.2, hp: 140, touchDmg: 18, shootCd: 0 },
+    { id: 12, name: "קוסם קרח", type: "shooter", color: "#67e8f9", radius: 18, speed: 1.4, hp: 85, touchDmg: 0, bulletDmg: 13, bulletSpeed: 4.0, shootCd: 100 },
+    { id: 13, name: "זאב צללים", type: "chaser", color: "#312e81", radius: 17, speed: 3.7, hp: 95, touchDmg: 20, shootCd: 0 },
+    { id: 14, name: "חרפושית קוצים", type: "tank", color: "#b45309", radius: 24, speed: 1.3, hp: 260, touchDmg: 22, bulletDmg: 14, bulletSpeed: 3.0, shootCd: 140 },
+    { id: 15, name: "שד להבות (בוס ביניים)", type: "boss", color: "#ef4444", radius: 28, speed: 1.4, hp: 450, touchDmg: 20, bulletDmg: 18, bulletSpeed: 3.8, shootCd: 85, multiShot: 3 },
+
+    // Tiers 16-20 (Dangerous monsters)
+    { id: 16, name: "נינג'ת צללים", type: "chaser", color: "#1e1b4b", radius: 15, speed: 4.1, hp: 120, touchDmg: 24, shootCd: 0 },
+    { id: 17, name: "סירנת ברקים", type: "shooter", color: "#c084fc", radius: 18, speed: 1.8, hp: 150, touchDmg: 0, bulletDmg: 20, bulletSpeed: 4.6, shootCd: 90 },
+    { id: 18, name: "מינוטאור זועם", type: "tank", color: "#78350f", radius: 27, speed: 1.8, hp: 400, touchDmg: 28, bulletDmg: 0, shootCd: 0 },
+    { id: 19, name: "מכשף ארסי", type: "shooter", color: "#22c55e", radius: 19, speed: 1.7, hp: 170, touchDmg: 0, bulletDmg: 22, bulletSpeed: 4.4, shootCd: 80 },
+    { id: 20, name: "גנרל שלדים (בוס דרקוני)", type: "boss", color: "#cbd5e1", radius: 30, speed: 1.5, hp: 650, touchDmg: 25, bulletDmg: 22, bulletSpeed: 4.0, shootCd: 75, multiShot: 4 },
+
+    // Tiers 21-25 (Nightmare tier)
+    { id: 21, name: "שד מהירות על-טבעי", type: "chaser", color: "#f43f5e", radius: 16, speed: 4.5, hp: 180, touchDmg: 28, shootCd: 0 },
+    { id: 22, name: "ארכי-מג חשמלי", type: "shooter", color: "#fde047", radius: 20, speed: 2.0, hp: 220, touchDmg: 0, bulletDmg: 26, bulletSpeed: 5.0, shootCd: 70 },
+    { id: 23, name: "ענק לבה (טנק בוער)", type: "tank", color: "#b91c1c", radius: 32, speed: 1.2, hp: 600, touchDmg: 32, bulletDmg: 20, bulletSpeed: 3.2, shootCd: 110 },
+    { id: 24, name: "מתנקש תהום", type: "chaser", color: "#0f172a", radius: 15, speed: 4.8, hp: 200, touchDmg: 32, shootCd: 0 },
+    { id: 25, name: "ליץ' האלמוות", type: "boss", color: "#9333ea", radius: 32, speed: 1.6, hp: 850, touchDmg: 25, bulletDmg: 26, bulletSpeed: 4.5, shootCd: 65, multiShot: 4 },
+
+    // Tiers 26-30 (Endgame Legendary Horrors)
+    { id: 26, name: "בז שדים טורף", type: "chaser", color: "#fb7185", radius: 16, speed: 5.2, hp: 240, touchDmg: 35, shootCd: 0 },
+    { id: 27, name: "תותחן אפל", type: "shooter", color: "#6366f1", radius: 22, speed: 2.1, hp: 300, touchDmg: 0, bulletDmg: 30, bulletSpeed: 5.4, shootCd: 60 },
+    { id: 28, name: "קולוסוס טיטאן", type: "tank", color: "#475569", radius: 36, speed: 1.4, hp: 1000, touchDmg: 40, bulletDmg: 25, bulletSpeed: 3.5, shootCd: 90 },
+    { id: 29, name: "הצל הזולל (מהירות מטורפת)", type: "chaser", color: "#020617", radius: 17, speed: 5.5, hp: 320, touchDmg: 40, shootCd: 0 },
+    { id: 30, name: "דרקון השאול - לורד האופל (בוס סופי)", type: "boss", color: "#dc2626", radius: 42, speed: 1.7, hp: 1600, touchDmg: 45, bulletDmg: 32, bulletSpeed: 4.8, shootCd: 50, multiShot: 6 }
+];
+
+/* -------------------------------------------------------------
+   SYNTHESIZED SOUND EFFECTS (Web Audio API - No external files)
+------------------------------------------------------------- */
+class SoundEffects {
+    constructor() {
+        this.ctx = null;
+    }
+
+    init() {
+        if (!this.ctx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    playShoot() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(450, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, this.ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
+    }
+
+    playHit() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(60, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.08);
+    }
+
+    playMonsterShoot() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(550, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+    }
+
+    playPlayerHurt() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(130, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.18);
+    }
+
+    playLevelUp() {
+        if (!this.ctx) return;
+        [261, 329, 392, 523].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.08);
+            gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.08 + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + idx * 0.08);
+            osc.stop(this.ctx.currentTime + idx * 0.08 + 0.2);
+        });
+    }
+
+    playFlame() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(240, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(65, this.ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.35);
+    }
+
+    playFrost() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(650, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1300, this.ctx.currentTime + 0.28);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.28);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.28);
+    }
+
+    playNature() {
+        if (!this.ctx) return;
+        [440, 554, 659].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.14, this.ctx.currentTime + idx * 0.07);
+            gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.07 + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + idx * 0.07);
+            osc.stop(this.ctx.currentTime + idx * 0.07 + 0.2);
+        });
+    }
+
+    playLaser() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(900, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.35);
+    }
+
+    playShatter() {
+        if (!this.ctx) return;
+        [880, 1320, 1760, 2640].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.12, this.ctx.currentTime + idx * 0.035);
+            gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.035 + 0.15);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + idx * 0.035);
+            osc.stop(this.ctx.currentTime + idx * 0.035 + 0.15);
+        });
+    }
+
+    playPoison() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(320, this.ctx.currentTime + 0.08);
+        osc.frequency.linearRampToValueAtTime(110, this.ctx.currentTime + 0.24);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.24);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.24);
+    }
+}
+
+const sfx = new SoundEffects();
+
+/* -------------------------------------------------------------
+   GAME STATE & ENGINE
+------------------------------------------------------------- */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const hpFill = document.getElementById('hp-fill');
+const hpText = document.getElementById('hp-text');
+const xpFill = document.getElementById('xp-fill');
+const xpText = document.getElementById('xp-text');
+const levelDisplay = document.getElementById('level-display');
+const waveDisplay = document.getElementById('wave-display');
+const scoreDisplay = document.getElementById('score-display');
+const discoveredTypesEl = document.getElementById('discovered-types');
+
+const startScreen = document.getElementById('start-screen');
+const gameOverScreen = document.getElementById('game-over-screen');
+const victoryScreen = document.getElementById('victory-screen');
+const upgradeModal = document.getElementById('upgrade-modal');
+const upgradeOptionsContainer = document.getElementById('upgrade-options');
+const wizardModal = document.getElementById('wizard-modal');
+const wizardModalOverlay = document.getElementById('wizard-modal-overlay');
+const abilitiesHud = document.getElementById('abilities-hud');
+
+// רכיבי מערכת צ'אט משחק ודילוג גלים
+const chatPanel = document.getElementById('chat-panel');
+const toggleChatBtn = document.getElementById('toggle-chat-btn');
+const chatCloseBtn = document.getElementById('chat-close-btn');
+const chatToggleAiBtn = document.getElementById('chat-toggle-ai-btn');
+const chatModeStatus = document.getElementById('chat-mode-status');
+const lastChatCommandEl = document.getElementById('last-chat-command');
+const chatMessagesContainer = document.getElementById('chat-messages');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const viewerCountEl = document.getElementById('viewer-count');
+
+const stageSelectDropdown = document.getElementById('stage-select-dropdown');
+const jumpStageBtn = document.getElementById('jump-stage-btn');
+const inGameWaveBtn = document.getElementById('in-game-wave-btn');
+const waveJumpModal = document.getElementById('wave-jump-modal');
+const inGameWaveSelect = document.getElementById('in-game-wave-select');
+const inGameJumpConfirmBtn = document.getElementById('in-game-jump-confirm-btn');
+const inGameJumpCloseBtn = document.getElementById('in-game-jump-close-btn');
+const startChatPlaysBtn = document.getElementById('start-chat-plays-btn');
+
+let chatPlaysActive = false; // האם בוט ה-AI של הצ'אט שולט בקשת
+let chatPlaysManualOverride = null; // פקודת תנועה זמנית מהצ'אט
+let chatPlaysOverrideTimer = 0;
+let chatMessagesTimer = 0;
+let simulatedViewerCount = 1842;
+let autoPickTimer = null; // לבחירת שדרוג/מכשף ע\"י הצ'אט
+
+let pendingWaveNext = null;
+
+let keys = {};
+let mouse = { x: canvas.width / 2, y: canvas.height / 2, isDown: false };
+let isPaused = false;
+let gameState = 'start'; // 'start', 'playing', 'upgrade', 'wizard_select', 'gameover', 'victory'
+
+// Game Data
+let player = null;
+let arrows = [];
+let monsters = [];
+let monsterBullets = [];
+let helperMonsters = [];
+let helperBullets = [];
+let particles = [];
+let floatingTexts = [];
+let xpOrbs = [];
+let discoveredSpeciesIds = new Set();
+
+// Wizard Class & Abilities System (גל 12)
+let wizardClass = null; // null, 'fire', 'ice', 'plant'
+let wizardClassChosen = false;
+let strongCooldownTimer = 0;
+const STRONG_COOLDOWN_MAX = 20 * 60; // 20s = 1200 frames
+let weakCooldownTimer = 0;
+const WEAK_COOLDOWN_MAX = 8 * 60;    // 8s = 480 frames
+
+let iceWallTimer = 0;          // 5s ice barrier
+let thornTraps = [];           // ThornTrap array
+let fireShockwaves = [];       // FireShockwave array
+let homingFireballs = [];      // HomingFireball array
+
+let currentWave = 1;
+const MAX_WAVES = 30;
+let waveKillsNeeded = 0;
+let waveKillsCurrent = 0;
+let score = 0;
+let frameCount = 0;
+
+/* רמת קושי של המשחק (קל = חצי מפלצות, רגיל = רגיל, קשה = כפול מפלצות) */
+let gameDifficulty = 'normal'; // 'easy', 'normal', 'hard'
+const DIFFICULTY_SETTINGS = {
+    easy: {
+        id: 'easy',
+        name: 'קל',
+        badge: '🌱 קל (חצי)',
+        color: '#34d399',
+        border: '#10b981',
+        bg: 'rgba(16, 185, 129, 0.15)',
+        multiplier: 0.5,
+        spawnRateFactor: 1.35 // מפלצות יוצאות לאט יותר ומרווחות יותר
+    },
+    normal: {
+        id: 'normal',
+        name: 'רגיל',
+        badge: '⚔️ רגיל',
+        color: '#60a5fa',
+        border: '#3b82f6',
+        bg: 'rgba(59, 130, 246, 0.15)',
+        multiplier: 1.0,
+        spawnRateFactor: 1.0
+    },
+    hard: {
+        id: 'hard',
+        name: 'קשה',
+        badge: '🔥 קשה (כפול!)',
+        color: '#f87171',
+        border: '#ef4444',
+        bg: 'rgba(239, 68, 68, 0.15)',
+        multiplier: 2.0,
+        spawnRateFactor: 0.65 // מפלצות יוצאות מהר יותר ואינטנסיבי יותר
+    }
+};
+
+function setDifficulty(diff) {
+    if (!DIFFICULTY_SETTINGS[diff]) return;
+    gameDifficulty = diff;
+    const conf = DIFFICULTY_SETTINGS[diff];
+
+    // עדכון כפתורי הבחירה במסך הפתיחה ובמודל הדילוג
+    document.querySelectorAll('.diff-pill').forEach(btn => {
+        if (btn.dataset.diff === diff) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // עדכון תגית ה-HUD
+    const hudBadge = document.getElementById('diff-hud-badge');
+    if (hudBadge) {
+        hudBadge.innerText = `⚙️ ${conf.name}`;
+        hudBadge.style.color = conf.color;
+        hudBadge.style.borderColor = conf.border;
+        hudBadge.style.background = conf.bg;
+    }
+}
+
+/* Player Upgrades */
+let upgrades = {
+    fireDelay: 18,       // frames between arrow shots
+    arrowSpeed: 8,
+    arrowDamage: 25,
+    multiShot: 1,        // number of arrows fired
+    piercing: 1,         // can pierce N enemies
+    moveSpeed: 3.2,
+    maxHp: 100,
+    hp: 100,
+    xp: 0,
+    level: 1,
+    xpToNext: 80,
+    luck: 0              // שדרוג מזל (סיכוי של שליש להפיל עוד עיגול ניקוד)
+};
+
+/* -------------------------------------------------------------
+   CLASSES
+------------------------------------------------------------- */
+class Player {
+    constructor() {
+        this.x = canvas.width / 2;
+        this.y = canvas.height / 2;
+        this.radius = 18;
+        this.angle = 0;
+        this.invulnerableTimer = 0;
+        this.shootTimer = 0;
+    }
+
+    update() {
+        // Movement
+        let dx = 0;
+        let dy = 0;
+        if (keys['w'] || keys['W'] || keys['ArrowUp']) dy -= 1;
+        if (keys['s'] || keys['S'] || keys['ArrowDown']) dy += 1;
+        if (keys['a'] || keys['A'] || keys['ArrowLeft']) dx -= 1;
+        if (keys['d'] || keys['D'] || keys['ArrowRight']) dx += 1;
+
+        if (dx !== 0 && dy !== 0) {
+            dx *= 0.7071;
+            dy *= 0.7071;
+        }
+
+        this.x += dx * upgrades.moveSpeed;
+        this.y += dy * upgrades.moveSpeed;
+
+        // Boundaries
+        this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
+        this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+
+        // Aim angle towards mouse
+        this.angle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
+
+        // Shooting (mouse left click or Ctrl key)
+        if (this.shootTimer > 0) this.shootTimer--;
+        const isShooting = (mouse.isDown || keys['Control'] || keys['ControlLeft'] || keys['ControlRight']) && !chatPlaysActive;
+        if (isShooting && this.shootTimer <= 0) {
+            this.shoot();
+            this.shootTimer = upgrades.fireDelay;
+        }
+
+        // Invulnerability
+        if (this.invulnerableTimer > 0) this.invulnerableTimer--;
+    }
+
+    shoot() {
+        sfx.playShoot();
+        const baseAngle = this.angle;
+        const count = upgrades.multiShot;
+        const spread = 0.16; // radians
+
+        for (let i = 0; i < count; i++) {
+            const offset = (i - (count - 1) / 2) * spread;
+            const arrowAngle = baseAngle + offset;
+            arrows.push(new Arrow(
+                this.x + Math.cos(arrowAngle) * 20,
+                this.y + Math.sin(arrowAngle) * 20,
+                arrowAngle,
+                upgrades.arrowSpeed,
+                upgrades.arrowDamage,
+                upgrades.piercing
+            ));
+        }
+    }
+
+    takeDamage(amount) {
+        if (this.invulnerableTimer > 0) return;
+        upgrades.hp -= amount;
+        this.invulnerableTimer = 35; // frames of blinking invulnerability
+        sfx.playPlayerHurt();
+        addFloatingText(this.x, this.y - 20, `-${amount}`, "#ef4444");
+
+        // Screen Shake effect
+        screenShake = 6;
+
+        if (upgrades.hp <= 0) {
+            upgrades.hp = 0;
+            triggerGameOver();
+        }
+        updateHUD();
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Blinking if invulnerable
+        if (this.invulnerableTimer > 0 && Math.floor(this.invulnerableTimer / 4) % 2 === 0) {
+            ctx.globalAlpha = 0.35;
+        }
+
+        // צבעי גלימה והילה לפי מחלקת המכשף או מצב קשה
+        let bodyColor = '#2563eb';
+        let strokeColor = '#60a5fa';
+        let hatColor = '#1e3a8a';
+        let bowColor = '#d97706';
+        let wizardLabel = '';
+
+        if (wizardClass === 'fire') {
+            bodyColor = '#dc2626';
+            strokeColor = '#f87171';
+            hatColor = '#7f1d1d';
+            bowColor = '#f59e0b';
+            wizardLabel = '🔥 מכשף אש';
+        } else if (wizardClass === 'ice') {
+            bodyColor = '#0284c7';
+            strokeColor = '#38bdf8';
+            hatColor = '#0c4a6e';
+            bowColor = '#7dd3fc';
+            wizardLabel = '❄️ מכשף קרח';
+        } else if (wizardClass === 'plant') {
+            bodyColor = '#16a34a';
+            strokeColor = '#4ade80';
+            hatColor = '#14532d';
+            bowColor = '#84cc16';
+            wizardLabel = '🌿 מכשף צמחים';
+        }
+
+        // תג מכשף מעל השחקן
+        if (wizardLabel) {
+            ctx.save();
+            ctx.fillStyle = strokeColor;
+            ctx.font = 'bold 11px Tahoma';
+            ctx.textAlign = 'center';
+            ctx.fillText(wizardLabel, 0, -this.radius - 12);
+            ctx.restore();
+        }
+
+        ctx.rotate(this.angle);
+
+        // Archer / Wizard Body (Cloak & Body)
+        ctx.fillStyle = bodyColor;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Hat / Hood / Quiver
+        ctx.fillStyle = hatColor;
+        ctx.beginPath();
+        ctx.arc(-6, 0, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hands & Bow / Magic Focus
+        ctx.strokeStyle = bowColor;
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.arc(14, 0, 15, -Math.PI / 3, Math.PI / 3);
+        ctx.stroke();
+
+        // Bowstring
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(14 + 15 * Math.cos(-Math.PI / 3), 15 * Math.sin(-Math.PI / 3));
+        ctx.lineTo(8, 0); // drawn string
+        ctx.lineTo(14 + 15 * Math.cos(Math.PI / 3), 15 * Math.sin(Math.PI / 3));
+        ctx.stroke();
+
+        // Arrow nocked in bow
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(8, 0);
+        ctx.lineTo(26, 0);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+}
+
+class Arrow {
+    constructor(x, y, angle, speed, damage, pierce) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = speed;
+        this.damage = damage;
+        this.pierce = pierce;
+        this.hitTargets = new Set();
+        this.alive = true;
+    }
+
+    update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+
+        // Particle trail
+        if (Math.random() < 0.4) {
+            particles.push(new Particle(this.x, this.y, '#fef08a', 2, 0.4, 10));
+        }
+
+        // Out of bounds
+        if (this.x < -30 || this.x > canvas.width + 30 || this.y < -30 || this.y > canvas.height + 30) {
+            this.alive = false;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+
+        // Arrow shaft
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(12, 0);
+        ctx.stroke();
+
+        // Arrowhead
+        ctx.fillStyle = '#f1f5f9';
+        ctx.beginPath();
+        ctx.moveTo(15, 0);
+        ctx.lineTo(8, -4);
+        ctx.lineTo(10, 0);
+        ctx.lineTo(8, 4);
+        ctx.closePath();
+        ctx.fill();
+
+        // Feathers (fletching)
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(-14, -3);
+        ctx.lineTo(-12, 0);
+        ctx.lineTo(-14, 3);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+class HelperMonster {
+    constructor() {
+        this.x = player ? player.x - 45 : canvas.width / 2;
+        this.y = player ? player.y - 45 : canvas.height / 2;
+        this.radius = 16;       // בדיוק רדיוס של גובלין דרגה 3
+        this.color = '#facc15'; // צהוב של גובלין
+        this.speed = 1.4;       // בול מהירות של גובלין דרגה 3 (1.4)!
+        this.maxHp = 70;
+        this.hp = 70;
+        this.shootCd = 35;      // קצב ירי
+        this.shootTimer = 0;
+        this.damage = 35;
+        this.level = 1;
+        this.targetEnemy = null;
+        this.alive = true;
+    }
+
+    update() {
+        // חיפוש המפלצת העוינת הקרובה ביותר אל הגובלין העוזר
+        let nearestEnemy = null;
+        let minDist = Infinity;
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const dist = Math.hypot(m.x - this.x, m.y - this.y);
+            if (dist < minDist) {
+                minDist = dist;
+                nearestEnemy = m;
+            }
+        }
+        this.targetEnemy = nearestEnemy;
+
+        if (nearestEnemy) {
+            // הגובלין מסתובב ונע בחופשיות לעבר המפלצת במהירות של גובלין (1.4)!
+            const dx = nearestEnemy.x - this.x;
+            const dy = nearestEnemy.y - this.y;
+            const enemyDist = Math.hypot(dx, dy);
+
+            // שומר מרחק ירי טקטי מהמפלצת (~130px)
+            if (enemyDist > 140) {
+                this.x += (dx / enemyDist) * this.speed;
+                this.y += (dy / enemyDist) * this.speed;
+            } else if (enemyDist < 85) {
+                this.x -= (dx / enemyDist) * (this.speed * 0.8);
+                this.y -= (dy / enemyDist) * (this.speed * 0.8);
+            }
+
+            // ירי קליעים ירוקים על המפלצת
+            this.shootTimer++;
+            if (this.shootTimer >= this.shootCd) {
+                this.shootTimer = 0;
+                this.shootAt(nearestEnemy);
+            }
+        } else if (player) {
+            // אם אין מפלצות על הלוח: משוטט חופשי בסביבת הקשת במהירות 1.4
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const pDist = Math.hypot(dx, dy);
+            if (pDist > 110) {
+                this.x += (dx / pDist) * this.speed;
+                this.y += (dy / pDist) * this.speed;
+            }
+        }
+
+        // גבולות המסך
+        this.x = Math.max(20, Math.min(canvas.width - 20, this.x));
+        this.y = Math.max(20, Math.min(canvas.height - 20, this.y));
+    }
+
+    shootAt(target) {
+        sfx.playShoot();
+        const angle = Math.atan2(target.y - this.y, target.x - this.x);
+        helperBullets.push(new HelperBullet(this.x, this.y, angle, 8.5, this.damage));
+    }
+
+    takeDamage(amount) {
+        if (!this.alive) return;
+        this.hp -= amount;
+        sfx.playHit();
+        addFloatingText(this.x, this.y - 15, `עוזר: -${amount}`, "#ef4444");
+        for (let i = 0; i < 4; i++) {
+            particles.push(new Particle(this.x, this.y, '#facc15', 3, 1.5, 12));
+        }
+        if (this.hp <= 0) {
+            this.alive = false;
+            addFloatingText(this.x, this.y - 25, "הגובלין לעזרה הובס! 💀", "#facc15");
+        }
+    }
+
+    draw() {
+        // אין קו שמחבר אל הקשת! הגובלין מסתובב חופשי לגמרי!
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // עיגול צהוב מסביבו (לפי בקשת המשתמש!)
+        ctx.strokeStyle = '#facc15';
+        ctx.shadowColor = '#eab308';
+        ctx.shadowBlur = 12;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius + 6, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // גוף גובלין צהוב (בדיוק כמו מפלצת גובלין)
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff33';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // עיניים רגילות של גובלין
+        const eyeOffset = this.radius * 0.35;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(-eyeOffset, -eyeOffset * 0.4, 3, 0, Math.PI * 2);
+        ctx.arc(eyeOffset, -eyeOffset * 0.4, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(-eyeOffset, -eyeOffset * 0.4, 1.5, 0, Math.PI * 2);
+        ctx.arc(eyeOffset, -eyeOffset * 0.4, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ללא חיוך! (הוסר לפי בקשת המשתמש)
+
+        // מד חיים מעל הראש של הגובלין העוזר
+        const barW = 28;
+        const barH = 4;
+        const hpPct = Math.max(0, this.hp / this.maxHp);
+        ctx.fillStyle = 'rgba(0,0,0,0.65)';
+        ctx.fillRect(-barW / 2, -this.radius - 12, barW, barH);
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(-barW / 2, -this.radius - 12, barW * hpPct, barH);
+
+        // תג שם מעל הראש
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 9px Tahoma';
+        ctx.textAlign = 'center';
+        ctx.fillText('גובלין לעזרה', 0, -this.radius - 16);
+
+        ctx.restore();
+    }
+}
+
+class HelperBullet {
+    constructor(x, y, angle, speed, damage) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = speed;
+        this.damage = damage;
+        this.radius = 6.5;
+        this.alive = true;
+    }
+
+    update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+
+        // שובל ניצוצות ירוק
+        if (Math.random() < 0.5) {
+            particles.push(new Particle(this.x, this.y, '#4ade80', 3, 0.4, 14));
+        }
+
+        // פגיעה במפלצות עוינות בלבד (לעולם לא פוגע בקשת!)
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const dist = Math.hypot(m.x - this.x, m.y - this.y);
+            if (dist < m.radius + this.radius) {
+                m.takeDamage(this.damage);
+                addFloatingText(m.x, m.y - 14, `עוזר: -${this.damage}`, "#4ade80");
+                this.alive = false;
+                break;
+            }
+        }
+
+        // גבולות מסך
+        if (this.x < -30 || this.x > canvas.width + 30 || this.y < -30 || this.y > canvas.height + 30) {
+            this.alive = false;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.fillStyle = '#22c55e';
+        ctx.shadowColor = '#4ade80';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+// יכולת חזקה [Z]: הדף אש מתרחב (מכשף אש)
+class FireShockwave {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 15;
+        this.maxRadius = 300;
+        this.speed = 7.5;
+        this.hitMonsters = new Set();
+        this.alive = true;
+    }
+
+    update() {
+        this.radius += this.speed;
+        if (this.radius >= this.maxRadius) {
+            this.alive = false;
+        }
+
+        // ניצוצות אש לאורך העיגול
+        for (let i = 0; i < 4; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const px = this.x + Math.cos(angle) * this.radius;
+            const py = this.y + Math.sin(angle) * this.radius;
+            particles.push(new Particle(px, py, '#f97316', 3.5, 0.6, 14));
+        }
+
+        // פגיעה במפלצות: מוריד כ-50% מחיים מקסימליים ומעיף אחורה
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive || this.hitMonsters.has(m)) continue;
+            const dist = Math.hypot(m.x - this.x, m.y - this.y);
+            if (dist < this.radius + m.radius && dist > this.radius - m.radius - 25) {
+                this.hitMonsters.add(m);
+                const dmg = Math.max(35, Math.floor(m.maxHp * 0.5));
+                m.takeDamage(dmg);
+                addFloatingText(m.x, m.y - 15, `הדף אש: -${dmg}! 🔥`, "#f97316");
+
+                // העפה אחורה
+                const kx = (m.x - this.x) / (dist || 1);
+                const ky = (m.y - this.y) / (dist || 1);
+                m.x += kx * 75;
+                m.y += ky * 75;
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.strokeStyle = '#ef4444';
+        ctx.shadowColor = '#f97316';
+        ctx.shadowBlur = 18;
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+// יכולת חלשה [X]: כדור אש מתביית (מכשף אש)
+class HomingFireball {
+    constructor(x, y, target) {
+        this.x = x;
+        this.y = y;
+        this.target = target;
+        this.speed = 9.5;
+        this.radius = 11;
+        this.alive = true;
+    }
+
+    update() {
+        if (!this.target || !this.target.alive) {
+            let minDist = Infinity;
+            for (let j = 0; j < monsters.length; j++) {
+                const m = monsters[j];
+                if (!m.alive) continue;
+                const d = Math.hypot(m.x - this.x, m.y - this.y);
+                if (d < minDist) {
+                    minDist = d;
+                    this.target = m;
+                }
+            }
+        }
+
+        if (this.target) {
+            const dx = this.target.x - this.x;
+            const dy = this.target.y - this.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist > 0) {
+                this.x += (dx / dist) * this.speed;
+                this.y += (dy / dist) * this.speed;
+            }
+
+            if (dist < this.target.radius + this.radius + 8) {
+                // מחסל את המפלצת במכה אחת מיידית - נזק קטלני מובטח!
+                const dmg = Math.max(99999, Math.ceil(this.target.hp * 2));
+                this.target.takeDamage(dmg);
+                addFloatingText(this.target.x, this.target.y - 20, "חיסול כדור אש! 💥", "#ef4444");
+
+                for (let i = 0; i < 22; i++) {
+                    particles.push(new Particle(this.x, this.y, '#f97316', 4, 3.5, 25));
+                }
+                this.alive = false;
+            }
+        } else {
+            this.alive = false;
+        }
+
+        particles.push(new Particle(this.x, this.y, '#f59e0b', 3, 0.4, 15));
+    }
+
+    draw() {
+        ctx.save();
+        ctx.fillStyle = '#ef4444';
+        ctx.shadowColor = '#f97316';
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+// יכולת חלשה [X]: מלכודת קוצים (מכשף צמחים)
+class ThornTrap {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 16;
+        this.alive = true;
+    }
+
+    update() {
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const dist = Math.hypot(m.x - this.x, m.y - this.y);
+            if (dist < m.radius + this.radius) {
+                // מוריד רבע מחיים מקסימליים (25%)
+                const dmg = Math.max(25, Math.floor(m.maxHp * 0.25));
+                m.takeDamage(dmg);
+                addFloatingText(m.x, m.y - 15, `קוצים: -${dmg}! 🌵`, "#22c55e");
+
+                for (let i = 0; i < 12; i++) {
+                    particles.push(new Particle(this.x, this.y, '#15803d', 3, 2, 18));
+                }
+                this.alive = false;
+                break;
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.fillStyle = '#15803d';
+        ctx.strokeStyle = '#4ade80';
+        ctx.lineWidth = 2;
+
+        for (let i = 0; i < 5; i++) {
+            const angle = (i * Math.PI * 2) / 5;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Math.cos(angle - 0.2) * 5, Math.sin(angle - 0.2) * 5);
+            ctx.lineTo(Math.cos(angle) * this.radius, Math.sin(angle) * this.radius);
+            ctx.lineTo(Math.cos(angle + 0.2) * 5, Math.sin(angle + 0.2) * 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        ctx.fillStyle = '#84cc16';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+/* -------------------------------------------------------------
+   LUCK SYSTEM HELPERS
+   רמה 1: 1/3 סיכוי ל-2 עיגולים (2/3 ל-1)
+   רמה 2: 2/3 סיכוי ל-2 עיגולים (1/3 ל-1)
+   רמה 3: 100% שייצאו 2 עיגולים
+   רמה 4: 1/3 סיכוי ל-3 עיגולים (2/3 ל-2)
+   רמה 5: 2/3 סיכוי ל-3 עיגולים (1/3 ל-2)
+   רמה 6: 100% שייצאו 3 עיגולים
+   וכו'...
+------------------------------------------------------------- */
+function getLuckDropCount(luckLevel) {
+    if (!luckLevel || luckLevel <= 0) return 1;
+    const baseOrbs = 1 + Math.floor(luckLevel / 3);
+    const rem = luckLevel % 3;
+    if (rem === 0) {
+        return baseOrbs;
+    } else if (rem === 1) {
+        return Math.random() < (1 / 3) ? (baseOrbs + 1) : baseOrbs;
+    } else { // rem === 2
+        return Math.random() < (2 / 3) ? (baseOrbs + 1) : baseOrbs;
+    }
+}
+
+function getLuckChanceText(level) {
+    if (level <= 0) return 'אין מזל (עיגול ניקוד 1 מובטח)';
+    const base = 1 + Math.floor(level / 3);
+    const rem = level % 3;
+    if (rem === 0) return `100% שייצאו ${base} עיגולי ניקוד`;
+    if (rem === 1) return `שליש (33.3%) סיכוי ל-${base + 1} עיגולים, שני שליש (66.7%) ל-${base}`;
+    if (rem === 2) return `שני שליש (66.7%) סיכוי ל-${base + 1} עיגולים, שליש (33.3%) ל-${base}`;
+}
+
+class Monster {
+    constructor(species) {
+        this.species = species;
+        this.hp = species.hp;
+        this.maxHp = species.hp;
+        this.radius = species.radius;
+        this.speed = species.speed;
+        this.color = species.color;
+        this.type = species.type;
+        this.touchDmg = species.touchDmg || 0;
+        this.shootCd = species.shootCd || 0;
+        this.shootTimer = Math.floor(Math.random() * (this.shootCd || 60));
+        this.frozenTimer = 0; // זמן הקפאה של מכשף קרח
+        this.alive = true;
+
+        // Spawn on random edge
+        if (Math.random() < 0.5) {
+            this.x = Math.random() < 0.5 ? -30 : canvas.width + 30;
+            this.y = Math.random() * canvas.height;
+        } else {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() < 0.5 ? -30 : canvas.height + 30;
+        }
+
+        discoveredSpeciesIds.add(species.id);
+        discoveredTypesEl.innerText = discoveredSpeciesIds.size;
+    }
+
+    update() {
+        if (!this.alive || !player) return;
+
+        // מנגנון הקפאה (מכשף קרח) - לא זז ולא יורה
+        if (this.frozenTimer > 0) {
+            this.frozenTimer--;
+            if (Math.random() < 0.25) {
+                particles.push(new Particle(this.x, this.y, '#38bdf8', 2.5, 0.4, 15));
+            }
+            return;
+        }
+
+        // חסימת מעבר ע"י חומה קפואה (מכשף קרח)
+        if (iceWallTimer > 0) {
+            const wallDist = player.radius + 65;
+            const distToPlayer = Math.hypot(this.x - player.x, this.y - player.y);
+            if (distToPlayer < wallDist) {
+                const pushX = (this.x - player.x) / (distToPlayer || 1);
+                const pushY = (this.y - player.y) / (distToPlayer || 1);
+                this.x = player.x + pushX * wallDist;
+                this.y = player.y + pushY * wallDist;
+            }
+        }
+
+        // קביעת מטרה עבור המפלצת: השחקן או מפלצות העזרה - מי שיותר קרוב אליה!
+        let target = player;
+        let targetDist = Math.hypot(player.x - this.x, player.y - this.y);
+
+        for (let j = 0; j < helperMonsters.length; j++) {
+            const h = helperMonsters[j];
+            if (!h.alive) continue;
+            const distToH = Math.hypot(h.x - this.x, h.y - this.y);
+            if (distToH < targetDist) {
+                target = h;
+                targetDist = distToH;
+            }
+        }
+
+        const dx = target.x - this.x;
+        const dy = target.y - this.y;
+        const dist = Math.max(1, targetDist);
+
+        // Movement AI based on behavior type
+        if (this.type === 'chaser') {
+            // Rush directly towards target fast!
+            this.x += (dx / dist) * this.speed;
+            this.y += (dy / dist) * this.speed;
+
+            // Touch Damage check
+            if (dist < this.radius + target.radius) {
+                target.takeDamage(this.touchDmg);
+            }
+        } else if (this.type === 'shooter') {
+            // Keep medium distance from target
+            const idealDist = 220;
+            if (dist > idealDist + 20) {
+                this.x += (dx / dist) * this.speed;
+                this.y += (dy / dist) * this.speed;
+            } else if (dist < idealDist - 40) {
+                this.x -= (dx / dist) * (this.speed * 0.5);
+                this.y -= (dy / dist) * (this.speed * 0.5);
+            }
+
+            // Shoot bullets at target
+            this.shootTimer++;
+            if (this.shootTimer >= this.shootCd) {
+                this.shootTimer = 0;
+                this.shootAtTarget(target);
+            }
+
+            // Touch Damage (if any)
+            if (this.touchDmg > 0 && dist < this.radius + target.radius) {
+                target.takeDamage(this.touchDmg);
+            }
+        } else if (this.type === 'tank' || this.type === 'boss') {
+            // Slow relentless march towards target
+            this.x += (dx / dist) * this.speed;
+            this.y += (dy / dist) * this.speed;
+
+            if (this.shootCd > 0) {
+                this.shootTimer++;
+                if (this.shootTimer >= this.shootCd) {
+                    this.shootTimer = 0;
+                    this.shootAtTarget(target);
+                }
+            }
+
+            // High contact damage
+            if (dist < this.radius + target.radius) {
+                target.takeDamage(this.touchDmg);
+            }
+        }
+    }
+
+    shootAtTarget(target) {
+
+        sfx.playMonsterShoot();
+        const angle = Math.atan2(target.y - this.y, target.x - this.x);
+        const count = this.species.multiShot || 1;
+        const spread = 0.22;
+
+        for (let i = 0; i < count; i++) {
+            const offset = (i - (count - 1) / 2) * spread;
+            monsterBullets.push(new MonsterBullet(
+                this.x,
+                this.y,
+                angle + offset,
+                this.species.bulletSpeed || 3.5,
+                this.species.bulletDmg || 10,
+                this.color
+            ));
+        }
+    }
+
+    takeDamage(amount) {
+        if (!this.alive) return;
+        this.hp -= amount;
+        sfx.playHit();
+        addFloatingText(this.x, this.y - 15, `-${amount}`, "#ffffff");
+
+        // Spawn blood/sparks particles
+        for (let i = 0; i < 4; i++) {
+            particles.push(new Particle(this.x, this.y, this.color, 3, 1.8, 15));
+        }
+
+        if (this.hp <= 0) {
+            this.alive = false;
+            this.onDeath();
+        }
+    }
+
+    onDeath() {
+        score += this.species.id * 50;
+        waveKillsCurrent++;
+        scoreDisplay.innerText = score;
+
+        // Big death particle explosion
+        for (let i = 0; i < 14; i++) {
+            particles.push(new Particle(this.x, this.y, this.color, 4, 2.5, 25));
+        }
+
+        // Drop XP / Score Orbs
+        const baseValue = 10 + this.species.id * 3;
+        const dropCount = getLuckDropCount(upgrades.luck || 0);
+
+        if (dropCount > 1) {
+            score += this.species.id * 20 * (dropCount - 1);
+            scoreDisplay.innerText = score;
+
+            // סידור עיגולי הניקוד במרחק ברור זה מזה כדי שלא יהיו זה על גבי זה
+            if (dropCount === 2) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 18;
+                const ox = Math.cos(angle) * dist;
+                const oy = Math.sin(angle) * dist;
+
+                const x1 = Math.max(20, Math.min(canvas.width - 20, this.x - ox));
+                const y1 = Math.max(20, Math.min(canvas.height - 20, this.y - oy));
+                const x2 = Math.max(20, Math.min(canvas.width - 20, this.x + ox));
+                const y2 = Math.max(20, Math.min(canvas.height - 20, this.y + oy));
+
+                xpOrbs.push(new XpOrb(x1, y1, baseValue, true));
+                xpOrbs.push(new XpOrb(x2, y2, baseValue, true));
+            } else {
+                // 3 עיגולים ומעלה: פריסה מעגלית מרווחת וברורה
+                const ringRadius = 18 + (dropCount - 2) * 4;
+                const startAngle = Math.random() * Math.PI * 2;
+                for (let i = 0; i < dropCount; i++) {
+                    const a = startAngle + (i * 2 * Math.PI) / dropCount;
+                    const ox = Math.cos(a) * ringRadius;
+                    const oy = Math.sin(a) * ringRadius;
+                    const clampedX = Math.max(20, Math.min(canvas.width - 20, this.x + ox));
+                    const clampedY = Math.max(20, Math.min(canvas.height - 20, this.y + oy));
+                    xpOrbs.push(new XpOrb(clampedX, clampedY, baseValue, true));
+                }
+            }
+
+            // אפקט חלקיקים זהובים של מזל והודעה מעל המפלצת
+            for (let i = 0; i < 4 + dropCount * 2; i++) {
+                particles.push(new Particle(this.x, this.y, '#facc15', 3, 2, 20));
+            }
+            addFloatingText(this.x, this.y - 25, `מזל! ${dropCount} עיגולי ניקוד! 🍀`, "#facc15");
+        } else {
+            xpOrbs.push(new XpOrb(this.x, this.y, baseValue, false));
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Monster Body
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff33';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Monster Details / Eyes / Spikes
+        ctx.fillStyle = '#ffffff';
+        const eyeOffset = this.radius * 0.35;
+        ctx.beginPath();
+        ctx.arc(-eyeOffset, -eyeOffset * 0.4, 3, 0, Math.PI * 2);
+        ctx.arc(eyeOffset, -eyeOffset * 0.4, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(-eyeOffset, -eyeOffset * 0.4, 1.5, 0, Math.PI * 2);
+        ctx.arc(eyeOffset, -eyeOffset * 0.4, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // If chaser, draw aggressive horns/spikes!
+        if (this.type === 'chaser') {
+            ctx.fillStyle = '#ff4444';
+            ctx.beginPath();
+            ctx.moveTo(-this.radius * 0.8, -this.radius * 0.6);
+            ctx.lineTo(-this.radius * 1.3, -this.radius * 1.2);
+            ctx.lineTo(-this.radius * 0.3, -this.radius * 0.8);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(this.radius * 0.8, -this.radius * 0.6);
+            ctx.lineTo(this.radius * 1.3, -this.radius * 1.2);
+            ctx.lineTo(this.radius * 0.3, -this.radius * 0.8);
+            ctx.fill();
+        }
+
+        // Floating Health Bar & Level Badge
+        const barW = this.radius * 2.2;
+        const barH = 5;
+        const hpPct = Math.max(0, this.hp / this.maxHp);
+        
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(-barW / 2, -this.radius - 14, barW, barH);
+        
+        ctx.fillStyle = this.type === 'boss' ? '#f59e0b' : '#ef4444';
+        ctx.fillRect(-barW / 2, -this.radius - 14, barW * hpPct, barH);
+
+        // Monster Name & Tier tag
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '10px Tahoma';
+        ctx.textAlign = 'center';
+        ctx.fillText(`רמה ${this.species.id} ${this.species.name}`, 0, -this.radius - 18);
+
+        // אפקט הקפאה (מכשף קרח)
+        if (this.frozenTimer > 0) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.fillRect(-this.radius - 4, -this.radius - 4, (this.radius + 4) * 2, (this.radius + 4) * 2);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(-this.radius - 4, -this.radius - 4, (this.radius + 4) * 2, (this.radius + 4) * 2);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px Tahoma';
+            ctx.fillText('❄️ קפוא!', 0, -this.radius - 22);
+        }
+
+        ctx.restore();
+    }
+}
+
+class MonsterBullet {
+    constructor(x, y, angle, speed, damage, color) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = speed;
+        this.damage = damage;
+        this.color = color;
+        this.radius = 6;
+        this.alive = true;
+    }
+
+    update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+
+        // Particle trail
+        if (Math.random() < 0.3) {
+            particles.push(new Particle(this.x, this.y, this.color, 2, 0.3, 10));
+        }
+
+        // חסימת כדורי אויב ע\"י חומה קפואה
+        if (iceWallTimer > 0 && player) {
+            const wallDist = player.radius + 65;
+            const distToPlayer = Math.hypot(player.x - this.x, player.y - this.y);
+            if (distToPlayer < wallDist) {
+                this.alive = false;
+                particles.push(new Particle(this.x, this.y, '#38bdf8', 3, 1.5, 12));
+                return;
+            }
+        }
+
+        // Check collision with player
+        if (player) {
+            const dist = Math.hypot(player.x - this.x, player.y - this.y);
+            if (dist < player.radius + this.radius) {
+                player.takeDamage(this.damage);
+                this.alive = false;
+            }
+        }
+
+        // Check collision with helper monsters (מפלצת לעזרה)
+        if (this.alive) {
+            for (let i = 0; i < helperMonsters.length; i++) {
+                const h = helperMonsters[i];
+                if (!h.alive) continue;
+                const distH = Math.hypot(h.x - this.x, h.y - this.y);
+                if (distH < h.radius + this.radius) {
+                    h.takeDamage(this.damage);
+                    this.alive = false;
+                    break;
+                }
+            }
+        }
+
+        // Bounds
+        if (this.x < -30 || this.x > canvas.width + 30 || this.y < -30 || this.y > canvas.height + 30) {
+            this.alive = false;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+class XpOrb {
+    constructor(x, y, value, isLucky = false) {
+        this.x = x;
+        this.y = y;
+        this.value = value;
+        this.radius = 5.5;
+        this.alive = true;
+        this.isLucky = isLucky;
+        this.pulse = Math.random() * Math.PI * 2;
+    }
+
+    update() {
+        if (!player) return;
+        this.pulse += 0.08;
+        const dx = player.x - this.x;
+        const dy = player.y - this.y;
+        const dist = Math.hypot(dx, dy);
+
+        // Magnet attraction when close
+        if (dist < 140) {
+            this.x += (dx / dist) * 6.5;
+            this.y += (dy / dist) * 6.5;
+        }
+
+        if (dist < player.radius + this.radius) {
+            gainXP(this.value);
+            score += Math.round(this.value * 2);
+            scoreDisplay.innerText = score;
+            this.alive = false;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        const glow = 6 + Math.sin(this.pulse) * 3;
+        const r = this.radius + Math.sin(this.pulse) * 0.7;
+
+        ctx.fillStyle = this.isLucky ? '#34d399' : '#10b981';
+        ctx.shadowColor = this.isLucky ? '#6ee7b7' : '#10b981';
+        ctx.shadowBlur = glow;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ליבה פנימית בהירה וברורה כך שכל עיגול ניקוד נראה חד, זוהר ומופרד
+        ctx.fillStyle = '#f0fdf4';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+class Particle {
+    constructor(x, y, color, size, speed, life) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.size = size;
+        this.life = life;
+        this.maxLife = life;
+        const a = Math.random() * Math.PI * 2;
+        const s = Math.random() * speed;
+        this.vx = Math.cos(a) * s;
+        this.vy = Math.sin(a) * s;
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life--;
+    }
+
+    draw() {
+        ctx.save();
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = Math.max(0, this.life / this.maxLife);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+class FloatingText {
+    constructor(x, y, text, color) {
+        this.x = x;
+        this.y = y;
+        this.text = text;
+        this.color = color;
+        this.life = 35;
+    }
+
+    update() {
+        this.y -= 0.8;
+        this.life--;
+    }
+
+    draw() {
+        ctx.save();
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = Math.max(0, this.life / 35);
+        ctx.font = 'bold 14px Tahoma';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.text, this.x, this.y);
+        ctx.restore();
+    }
+}
+
+function addFloatingText(x, y, text, color) {
+    floatingTexts.push(new FloatingText(x, y, text, color));
+}
+
+let screenShake = 0;
+
+/* -------------------------------------------------------------
+   WAVE SYSTEM (30 Waves / Monster Species)
+------------------------------------------------------------- */
+let waveSpawnTimer = 0;
+let waveSpawnCount = 0;
+
+function startWave(waveNum) {
+    currentWave = waveNum;
+    waveKillsCurrent = 0;
+    waveSpawnCount = 0;
+    waveSpawnTimer = 0;
+
+    // Kills needed to complete this wave (מותאם לרמת הקושי: קל = חצי, רגיל = רגיל, קשה = כפול)
+    const baseKills = 6 + waveNum * 2;
+    const diffConf = DIFFICULTY_SETTINGS[gameDifficulty] || DIFFICULTY_SETTINGS.normal;
+    waveKillsNeeded = Math.max(3, Math.round(baseKills * diffConf.multiplier));
+    waveDisplay.innerText = `${currentWave} / ${MAX_WAVES} (${diffConf.name}: ${waveKillsNeeded} מפלצות)`;
+
+    const currentSpecies = MONSTER_SPECIES[currentWave - 1];
+    addFloatingText(canvas.width / 2, canvas.height / 2 - 50, `גל ${currentWave}: מפלצת רמה ${currentSpecies.id} - ${currentSpecies.name}! [${diffConf.name} - ${waveKillsNeeded} מפלצות]`, "#f59e0b");
+
+    // פתיחה והצעת שדרוגים מיוחדים בגל 6, 7, 12, ו-15
+    if (waveNum === 6) {
+        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 גל 6: נפתח שדרוג מפלצת לעזרה (גובלין דרגה 3)!", "#facc15");
+        sfx.playLevelUp();
+        setTimeout(() => triggerUpgradeChoice(), 400);
+    } else if (waveNum === 7) {
+        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 גל 7: נפתח שדרוג עליית חיים למקס!", "#ec4899");
+        sfx.playLevelUp();
+        setTimeout(() => triggerUpgradeChoice(), 400);
+    } else if (waveNum === 10) {
+        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 גל 10: נפתח שדרוג מזל (סיכוי לעיגולי ניקוד כפולים)!", "#10b981");
+        sfx.playLevelUp();
+        setTimeout(() => triggerUpgradeChoice(), 400);
+    } else if (waveNum === 12 && !wizardClassChosen) {
+        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🔮 גל 12: הגע ל-100% כדי להפוך למכשף!", "#a855f7");
+    }
+
+    if (wizardClass) updateAbilitiesHUD();
+}
+
+function handleWaveSpawning() {
+    waveSpawnTimer++;
+
+    // קצב יציאת המפלצות מותאם לרמת הגל ולרמת הקושי
+    const diffConf = DIFFICULTY_SETTINGS[gameDifficulty] || DIFFICULTY_SETTINGS.normal;
+    const baseSpawnRate = Math.max(35, 110 - currentWave * 2);
+    const spawnRate = Math.max(20, Math.round(baseSpawnRate * diffConf.spawnRateFactor));
+
+    if (waveSpawnTimer >= spawnRate && waveSpawnCount < waveKillsNeeded) {
+        waveSpawnTimer = 0;
+        waveSpawnCount++;
+
+        // Determine species to spawn:
+        // Mostly current wave species, with occasional previous species
+        let speciesIndex = currentWave - 1;
+        if (Math.random() < 0.25 && currentWave > 1) {
+            speciesIndex = Math.floor(Math.random() * currentWave);
+        }
+        monsters.push(new Monster(MONSTER_SPECIES[speciesIndex]));
+    }
+
+    // Check wave completion
+    if (waveKillsCurrent >= waveKillsNeeded) {
+        // אם סיימת 100% מגל 12 בפעם הראשונה -> מחכים לבחירת מכשף לפני מעבר לגל 13!
+        if (currentWave === 12 && !wizardClassChosen) {
+            pendingWaveNext = 13;
+            triggerWizardSelection();
+            return;
+        }
+        if (currentWave < MAX_WAVES) {
+            startWave(currentWave + 1);
+        } else {
+            triggerVictory();
+        }
+    }
+}
+
+/* -------------------------------------------------------------
+   XP & UPGRADE SYSTEM
+------------------------------------------------------------- */
+function gainXP(amount) {
+    upgrades.xp += amount;
+    if (upgrades.xp >= upgrades.xpToNext) {
+        upgrades.xp -= upgrades.xpToNext;
+        upgrades.level++;
+        upgrades.xpToNext = Math.floor(upgrades.xpToNext * 1.35);
+        levelDisplay.innerText = upgrades.level;
+        sfx.playLevelUp();
+
+        // אם הגעת ל-100% בגל 12 בפעם הראשונה -> נפתחת בחירת מכשף במקום שדרוגים!
+        if (currentWave === 12 && !wizardClassChosen) {
+            triggerWizardSelection();
+        } else {
+            triggerUpgradeChoice();
+        }
+    }
+    updateHUD();
+}
+
+const UPGRADE_POOL = [
+    // 1. הדבר הכי בסיסי / גרוע (נפתח ראשון ברמה 2)
+    { 
+        id: 'movespeed', 
+        name: 'מגפי קלות', 
+        unlockLevel: 2,
+        tierName: 'דרגה 1 (בסיסי)',
+        badgeClass: 'badge-basic',
+        getDesc: () => `תוספת קטנה למהירות תנועה +15% (כרגע: ${upgrades.moveSpeed.toFixed(1)})`, 
+        icon: '👟', 
+        apply: () => upgrades.moveSpeed += 0.5 
+    },
+    // 2. קצת יותר טוב (נפתח ברמה 3)
+    { 
+        id: 'speed', 
+        name: 'קשת מהירה', 
+        unlockLevel: 3,
+        tierName: 'דרגה 2 (טוב)',
+        badgeClass: 'badge-good',
+        getDesc: () => `מגביר מעט את קצב הירי ב-15%`, 
+        icon: '⚡', 
+        apply: () => upgrades.fireDelay = Math.max(5, Math.round(upgrades.fireDelay * 0.85)) 
+    },
+    // 3. טוב עוד יותר (נפתח ברמה 4)
+    { 
+        id: 'damage', 
+        name: 'חיצים חדים', 
+        unlockLevel: 4,
+        tierName: 'דרגה 3 (מתקדם)',
+        badgeClass: 'badge-advanced',
+        getDesc: () => `מעלה את נזק החצים ב-25% (כרגע: ${upgrades.arrowDamage})`, 
+        icon: '🗡️', 
+        apply: () => upgrades.arrowDamage = Math.round(upgrades.arrowDamage * 1.25) 
+    },
+    // 4. מתקדם מאוד (נפתח ברמה 5)
+    { 
+        id: 'pierce', 
+        name: 'חץ חודר', 
+        unlockLevel: 5,
+        tierName: 'דרגה 4 (חזק)',
+        badgeClass: 'badge-advanced',
+        getDesc: () => `חצים חודרים מפלצת נוספת בשורה (כרגע: ${upgrades.piercing})`, 
+        icon: '🎯', 
+        apply: () => upgrades.piercing++ 
+    },
+    // 5. חיים ובריאות (שדרוג על - נפתח ברמה 6)
+    { 
+        id: 'heal_and_health', 
+        name: 'חיים ובריאות', 
+        unlockLevel: 6,
+        isLegendary: true,
+        tierName: '⭐ שדרוג על',
+        badgeClass: 'badge-legendary',
+        getDesc: () => `מרפא 60 חיים ומעלה את מקסימום החיים ב-35 (חיים: ${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, 
+        icon: '❤️', 
+        apply: () => {
+            upgrades.maxHp += 35;
+            upgrades.hp = Math.min(upgrades.maxHp, upgrades.hp + 60);
+            addFloatingText(player.x, player.y - 30, "+35 מקס חיים וריפוי! ❤️", "#ef4444");
+        }
+    },
+    // 6. הרחבת חצים (שדרוג על - נפתח ברמה 6)
+    { 
+        id: 'multishot', 
+        name: 'הרחבת חצים', 
+        unlockLevel: 6,
+        isLegendary: true,
+        tierName: '⭐ שדרוג על',
+        badgeClass: 'badge-legendary',
+        getDesc: () => `יורה חץ נוסף במקביל בכל ירייה! (כרגע: ${upgrades.multiShot} חצים)`, 
+        icon: '🏹', 
+        apply: () => upgrades.multiShot++ 
+    },
+    // 7. מפלצת לעזרה (נפתח בגל 6!)
+    { 
+        id: 'helper_monster', 
+        name: 'מפלצת לעזרה', 
+        unlockWave: 6,
+        isLegendary: true,
+        tierName: '⭐ נפתח בגל 6!',
+        badgeClass: 'badge-legendary',
+        getDesc: () => helperMonsters.length === 0 ? 
+            'מזמן גובלין יורה (דרגה 3 מגל 3) שמצטרף כבן ברית, מסתובב חופשי ונלחם עבורך בכל המפלצות!' : 
+            `מחזק ומרפא את הגובלין העוזר! +30 מקס חיים, נזק +15 וקצב ירי מוגבר (רמה ${helperMonsters[0].level + 1})`, 
+        icon: '👺', 
+        apply: () => {
+            if (helperMonsters.length === 0) {
+                helperMonsters.push(new HelperMonster());
+                addFloatingText(player.x, player.y - 35, "גובלין בן ברית הצטרף לצידך! 💛", "#facc15");
+            } else {
+                helperMonsters[0].level++;
+                helperMonsters[0].damage += 15;
+                helperMonsters[0].maxHp += 30;
+                helperMonsters[0].hp = helperMonsters[0].maxHp;
+                helperMonsters[0].shootCd = Math.max(16, helperMonsters[0].shootCd - 6);
+                addFloatingText(player.x, player.y - 35, `גובלין עזר שודרג ורופא במלואו (רמה ${helperMonsters[0].level})! ⚡`, "#4ade80");
+            }
+        }
+    },
+    // 8. עליית חיים למקס (נפתח בגל 7!)
+    { 
+        id: 'max_hp_boost', 
+        name: 'עליית חיים למקס', 
+        unlockWave: 7,
+        isLegendary: true,
+        tierName: '⭐ נפתח בגל 7!',
+        badgeClass: 'badge-legendary',
+        getDesc: () => `מרפא את כל החיים שלך עד למקסימום המלא (ממלא ל-${upgrades.maxHp}/${upgrades.maxHp} חיים!) ללא שינוי המקס`, 
+        icon: '💖', 
+        apply: () => {
+            upgrades.hp = upgrades.maxHp;
+            addFloatingText(player.x, player.y - 30, "חיים מלאים עד למקס! 💖", "#10b981");
+        }
+    },
+    // 9. מזל (נפתח בגל 10!)
+    { 
+        id: 'luck', 
+        name: 'מזל 🍀', 
+        unlockWave: 10,
+        isLegendary: true,
+        tierName: '⭐ נפתח בגל 10!',
+        badgeClass: 'badge-legendary',
+        getDesc: () => {
+            const curLvl = upgrades.luck || 0;
+            const nextLvl = curLvl + 1;
+            const nextText = getLuckChanceText(nextLvl);
+            if (curLvl === 0) {
+                return `<b>רמה 1:</b> ${nextText} מכל מפלצת שתובס!`;
+            } else {
+                const curText = getLuckChanceText(curLvl);
+                return `כרגע רמה ${curLvl} (${curText}).<br><b>שדרוג לרמה ${nextLvl}:</b> ${nextText}!`;
+            }
+        },
+        icon: '🍀', 
+        apply: () => {
+            upgrades.luck = (upgrades.luck || 0) + 1;
+            const chanceText = getLuckChanceText(upgrades.luck);
+            addFloatingText(player.x, player.y - 30, `מזל רמה ${upgrades.luck}! 🍀 (${chanceText})`, "#facc15");
+        }
+    },
+    ];
+
+function triggerUpgradeChoice() {
+    gameState = 'upgrade';
+    upgradeModal.classList.remove('hidden');
+    upgradeOptionsContainer.innerHTML = '';
+
+    // מציג את השדרוגים: מסנן שדרוגי מחלקה שאינם תואמים למכשף הנוכחי
+    UPGRADE_POOL.forEach(upg => {
+        if (upg.requiredClass && wizardClass && upg.requiredClass !== wizardClass) return;
+        const isLocked = upg.unlockWave ? (currentWave < upg.unlockWave) : (upgrades.level < upg.unlockLevel);
+        const lockText = upg.unlockWave ? `🔒 נפתח בגל ${upg.unlockWave}` : `🔒 נפתח בדרגה ${upg.unlockLevel}`;
+
+        const card = document.createElement('div');
+        card.className = `upgrade-card ${isLocked ? 'locked' : ''} ${upg.isLegendary ? 'legendary' : ''}`;
+        card.innerHTML = `
+            <span class="upgrade-badge ${upg.badgeClass}">${upg.tierName}</span>
+            <div class="upgrade-icon">${upg.icon}</div>
+            <div class="upgrade-name">${upg.name}</div>
+            <div class="upgrade-desc">${upg.getDesc()}</div>
+            ${isLocked ? 
+                `<div class="upgrade-lock-badge">${lockText}</div>` : 
+                `<div style="font-size: 11px; color: #4ade80; margin-top: 6px; font-weight: bold;">✓ לחץ לבחירה!</div>`
+            }
+        `;
+        card.onclick = () => {
+            if (isLocked) {
+                sfx.playHit();
+                return;
+            }
+            upg.apply();
+            upgradeModal.classList.add('hidden');
+            gameState = 'playing';
+            updateHUD();
+        };
+        upgradeOptionsContainer.appendChild(card);
+    });
+
+    // אם מצב צ'אט משחק פעיל - הצ'אט בוחר שדרוג זמין תוך שנייה אחת!
+    if (chatPlaysActive) {
+        setTimeout(() => {
+            if (gameState !== 'upgrade') return;
+            const available = UPGRADE_POOL.filter(upg => upg.unlockWave ? (currentWave >= upg.unlockWave) : (upgrades.level >= upg.unlockLevel));
+            if (available.length > 0) {
+                const chosen = available[Math.floor(Math.random() * available.length)];
+                chosen.apply();
+                addChatMessage('צ\'אט [הצבעה]', `🗳️ הצ'אט הצביע ובחר בשדרוג: ${chosen.name}!`, '#facc15', '🗳️', false, true);
+                upgradeModal.classList.add('hidden');
+                gameState = 'playing';
+                updateHUD();
+            }
+        }, 1100);
+    }
+}
+
+function triggerWizardSelection() {
+    if (wizardClassChosen) return;
+    gameState = 'wizard_select';
+    upgradeModal.classList.add('hidden');
+    wizardModalOverlay.classList.remove('hidden');
+
+    // Attach click listeners to cards and buttons
+    const fireCard = document.getElementById('card-wizard-fire');
+    const fireBtn = document.getElementById('btn-wizard-fire');
+    if (fireCard) fireCard.onclick = () => selectWizardClass('fire');
+    if (fireBtn) fireBtn.onclick = (e) => { e.stopPropagation(); selectWizardClass('fire'); };
+
+    const iceCard = document.getElementById('card-wizard-ice');
+    const iceBtn = document.getElementById('btn-wizard-ice');
+    if (iceCard) iceCard.onclick = () => selectWizardClass('ice');
+    if (iceBtn) iceBtn.onclick = (e) => { e.stopPropagation(); selectWizardClass('ice'); };
+
+    const plantCard = document.getElementById('card-wizard-plant');
+    const plantBtn = document.getElementById('btn-wizard-plant');
+    if (plantCard) plantCard.onclick = () => selectWizardClass('plant');
+    if (plantBtn) plantBtn.onclick = (e) => { e.stopPropagation(); selectWizardClass('plant'); };
+
+    // אם מצב צ'אט משחק פעיל - הצ'אט בוחר מחלקת מכשף אוטומטית בהצבעה!
+    if (chatPlaysActive) {
+        setTimeout(() => {
+            if (gameState !== 'wizard_select' || wizardClassChosen) return;
+            const choices = ['fire', 'ice', 'plant'];
+            const chosen = choices[Math.floor(Math.random() * choices.length)];
+            const names = { fire: 'מכשף אש 🔥', ice: 'מכשף קרח ❄️', plant: 'מכשף צמחים 🌿' };
+            addChatMessage('צ\'אט [הצבעה]', `🔮 הצ'אט הצביע ובחר בהתפתחות: ${names[chosen]}!`, '#c084fc', '🗳️', false, true);
+            selectWizardClass(chosen);
+        }, 1200);
+    }
+}
+
+function selectWizardClass(type) {
+    if (wizardClassChosen) return;
+    wizardClass = type;
+    wizardClassChosen = true;
+    wizardModalOverlay.classList.add('hidden');
+    abilitiesHud.classList.remove('hidden');
+
+    if (type === 'fire') {
+        if (player) addFloatingText(player.x, player.y - 45, "הפכת למכשף אש עוצמתי! 🔥", "#ef4444");
+    } else if (type === 'ice') {
+        if (player) addFloatingText(player.x, player.y - 45, "הפכת למכשף קרח עוצמתי! ❄️", "#38bdf8");
+    } else if (type === 'plant') {
+        if (player) addFloatingText(player.x, player.y - 45, "הפכת למכשף צמחים עוצמתי! 🌿", "#22c55e");
+    }
+
+    sfx.playLevelUp();
+    gameState = 'playing';
+    updateAbilitiesHUD();
+
+    // אם המעבר לגל הבא המתין לבחירת המכשף
+    if (pendingWaveNext) {
+        const nextW = pendingWaveNext;
+        pendingWaveNext = null;
+        startWave(nextW);
+    }
+}
+
+function activateAbility(slotNum) {
+    if (!wizardClass || gameState !== 'playing') return;
+    if (slotNum === 1) activateStrongAbility();
+    else if (slotNum === 2) activateWeakAbility();
+}
+
+function activateStrongAbility() {
+    if (strongCooldownTimer > 0 || !wizardClass || gameState !== 'playing') return;
+
+    if (wizardClass === 'fire') {
+        sfx.playFlame();
+        fireShockwaves.push(new FireShockwave(player.x, player.y));
+        addFloatingText(player.x, player.y - 35, "הדף אש! 🔥", "#f97316");
+    } else if (wizardClass === 'ice') {
+        sfx.playFrost();
+        iceWallTimer = 300; // 5 שניות = 300 פריימים
+        addFloatingText(player.x, player.y - 35, "חומה קפואה ל-5 שניות! 🛡️❄️", "#38bdf8");
+    } else if (wizardClass === 'plant') {
+        sfx.playNature();
+        upgrades.hp = Math.min(upgrades.maxHp, upgrades.hp + 50);
+        addFloatingText(player.x, player.y - 35, "+50 חיים! ריפוי טיבעי 🌿", "#22c55e");
+        updateHUD();
+        for (let i = 0; i < 18; i++) {
+            particles.push(new Particle(player.x, player.y, '#4ade80', 3, 2.5, 22));
+        }
+    }
+
+    strongCooldownTimer = STRONG_COOLDOWN_MAX;
+    updateAbilitiesHUD();
+}
+
+function activateWeakAbility() {
+    if (weakCooldownTimer > 0 || !wizardClass || gameState !== 'playing') return;
+
+    if (wizardClass === 'fire') {
+        sfx.playFlame();
+        let target = null;
+        let minDist = Infinity;
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const d = Math.hypot(m.x - player.x, m.y - player.y);
+            if (d < minDist) { minDist = d; target = m; }
+        }
+        if (target) {
+            homingFireballs.push(new HomingFireball(player.x, player.y, target));
+            addFloatingText(player.x, player.y - 25, "כדור אש עוקב! ☄️", "#ef4444");
+        } else {
+            addFloatingText(player.x, player.y - 25, "אין מפלצות כרגע!", "#cbd5e1");
+            return;
+        }
+    } else if (wizardClass === 'ice') {
+        sfx.playFrost();
+        const livingMonsters = monsters.filter(m => m.alive);
+        livingMonsters.sort((a, b) => Math.hypot(a.x - player.x, a.y - player.y) - Math.hypot(b.x - player.x, b.y - player.y));
+        const targets = livingMonsters.slice(0, 2);
+        if (targets.length > 0) {
+            targets.forEach(m => {
+                m.frozenTimer = 180; // 3 שניות
+                addFloatingText(m.x, m.y - 15, "קפוא ל-3 שניות! 🧊", "#38bdf8");
+            });
+            addFloatingText(player.x, player.y - 25, "הקפאה כפולה! ❄️", "#38bdf8");
+        } else {
+            addFloatingText(player.x, player.y - 25, "אין מפלצות להקפיא!", "#cbd5e1");
+            return;
+        }
+    } else if (wizardClass === 'plant') {
+        sfx.playNature();
+        for (let i = 0; i < 5; i++) {
+            const angle = (i * Math.PI * 2) / 5 + (Math.random() - 0.5) * 0.4;
+            const dist = 70 + Math.random() * 95;
+            const tx = Math.max(40, Math.min(canvas.width - 40, player.x + Math.cos(angle) * dist));
+            const ty = Math.max(40, Math.min(canvas.height - 40, player.y + Math.sin(angle) * dist));
+            thornTraps.push(new ThornTrap(tx, ty));
+        }
+        addFloatingText(player.x, player.y - 25, "5 יחידות קוצים הוצבו! 🌵", "#22c55e");
+    }
+
+    weakCooldownTimer = WEAK_COOLDOWN_MAX;
+    updateAbilitiesHUD();
+}
+
+function updateAbilitiesHUD() {
+    if (!wizardClass) return;
+
+    const slotStrong = document.getElementById('slot-strong');
+    const strongTimerEl = document.getElementById('strong-timer');
+    const strongNameEl = document.getElementById('strong-name');
+    const strongIconEl = document.getElementById('strong-icon');
+
+    const slotWeak = document.getElementById('slot-weak');
+    const weakTimerEl = document.getElementById('weak-timer');
+    const weakNameEl = document.getElementById('weak-name');
+    const weakIconEl = document.getElementById('weak-icon');
+
+    if (wizardClass === 'fire') {
+        strongNameEl.innerText = 'הדף אש [PgUp]';
+        strongIconEl.innerText = '💥';
+        weakNameEl.innerText = 'כדור אש [PgDn]';
+        weakIconEl.innerText = '☄️';
+    } else if (wizardClass === 'ice') {
+        strongNameEl.innerText = 'חומה קפואה [PgUp]';
+        strongIconEl.innerText = '🛡️';
+        weakNameEl.innerText = 'הקפאה כפולה [PgDn]';
+        weakIconEl.innerText = '🧊';
+    } else if (wizardClass === 'plant') {
+        strongNameEl.innerText = 'ריפוי טיבעי [PgUp]';
+        strongIconEl.innerText = '💚';
+        weakNameEl.innerText = '5 יחידות קוצים [PgDn]';
+        weakIconEl.innerText = '🌵';
+    }
+
+    if (strongCooldownTimer <= 0) {
+        slotStrong.classList.add('ready');
+        strongTimerEl.innerText = 'מוכן! [PgUp]';
+        strongTimerEl.classList.remove('cooldown');
+    } else {
+        slotStrong.classList.remove('ready');
+        strongTimerEl.innerText = `${Math.ceil(strongCooldownTimer / 60)} שניות`;
+        strongTimerEl.classList.add('cooldown');
+    }
+
+    if (weakCooldownTimer <= 0) {
+        slotWeak.classList.add('ready');
+        weakTimerEl.innerText = 'מוכן! [PgDn]';
+        weakTimerEl.classList.remove('cooldown');
+    } else {
+        slotWeak.classList.remove('ready');
+        weakTimerEl.innerText = `${Math.ceil(weakCooldownTimer / 60)} שניות`;
+        weakTimerEl.classList.add('cooldown');
+    }
+}
+
+function updateHUD() {
+    const hpPct = Math.max(0, (upgrades.hp / upgrades.maxHp) * 100);
+    hpFill.style.width = `${hpPct}%`;
+    hpText.innerText = `${Math.ceil(upgrades.hp)} / ${upgrades.maxHp}`;
+
+    const xpPct = Math.min(100, (upgrades.xp / upgrades.xpToNext) * 100);
+    xpFill.style.width = `${xpPct}%`;
+    xpText.innerText = `${Math.floor(xpPct)}%`;
+}
+
+function triggerGameOver() {
+    gameState = 'gameover';
+    document.getElementById('final-wave').innerText = currentWave;
+    document.getElementById('final-score').innerText = score;
+    gameOverScreen.classList.remove('hidden');
+}
+
+function triggerVictory() {
+    gameState = 'victory';
+    document.getElementById('victory-score').innerText = score;
+    victoryScreen.classList.remove('hidden');
+}
+
+function resetGame() {
+    upgrades = {
+        fireDelay: 18,
+        arrowSpeed: 8,
+        arrowDamage: 25,
+        multiShot: 1,
+        piercing: 1,
+        moveSpeed: 3.2,
+        maxHp: 100,
+        hp: 100,
+        xp: 0,
+        level: 1,
+        xpToNext: 80,
+        luck: 0
+    };
+    score = 0;
+    scoreDisplay.innerText = 0;
+    levelDisplay.innerText = 1;
+    discoveredSpeciesIds.clear();
+
+    arrows = [];
+    monsters = [];
+    monsterBullets = [];
+    helperMonsters = [];
+    helperBullets = [];
+    particles = [];
+    floatingTexts = [];
+    xpOrbs = [];
+
+    // איפוס מחלקת מכשף ויכולות
+    pendingWaveNext = null;
+    wizardClass = null;
+    wizardClassChosen = false;
+    strongCooldownTimer = 0;
+    weakCooldownTimer = 0;
+    iceWallTimer = 0;
+    thornTraps = [];
+    fireShockwaves = [];
+    homingFireballs = [];
+
+    if (abilitiesHud) abilitiesHud.classList.add('hidden');
+    if (wizardModalOverlay) wizardModalOverlay.classList.add('hidden');
+
+    player = new Player();
+    gameOverScreen.classList.add('hidden');
+    victoryScreen.classList.add('hidden');
+    upgradeModal.classList.add('hidden');
+    startScreen.classList.add('hidden');
+
+    updateHUD();
+    startWave(1);
+    gameState = 'playing';
+}
+
+/* -------------------------------------------------------------
+   WAVE SELECTOR & JUMP SYSTEM
+------------------------------------------------------------- */
+function populateWaveDropdowns() {
+    const dropdowns = [stageSelectDropdown, inGameWaveSelect];
+    dropdowns.forEach(dd => {
+        if (!dd) return;
+        dd.innerHTML = '';
+        MONSTER_SPECIES.forEach(sp => {
+            const opt = document.createElement('option');
+            opt.value = sp.id;
+            let note = '';
+            if (sp.id === 5) note = ' 🔥 (מיני-בוס)';
+            else if (sp.id === 6) note = ' 👺 (נפתח גובלין עזר)';
+            else if (sp.id === 7) note = ' 💖 (עליית מקס חיים)';
+            else if (sp.id === 10) note = ' 🍀 (נפתח שדרוג מזל)';
+            else if (sp.id === 12) note = ' 🧙‍♂️ (בחירת מכשף!)';
+            else if (sp.id === 15) note = ' 👹 (בוס להבות)';
+            else if (sp.id === 20) note = ' 🐉 (בוס דרקוני)';
+            else if (sp.id === 25) note = ' 💀 (ליץ\' האלמוות)';
+            else if (sp.id === 30) note = ' 👑 (בוס סופי!)';
+            opt.innerText = `גל ${sp.id}: ${sp.name}${note}`;
+            dd.appendChild(opt);
+        });
+    });
+}
+
+function jumpToWave(waveNum, activateChat = false) {
+    waveNum = Math.max(1, Math.min(MAX_WAVES, parseInt(waveNum) || 1));
+    sfx.init();
+    startScreen.classList.add('hidden');
+    gameOverScreen.classList.add('hidden');
+    victoryScreen.classList.add('hidden');
+    if (waveJumpModal) waveJumpModal.classList.add('hidden');
+    
+    resetGame();
+    
+    // התאמת שדרוגים וכוח לקשת לפי רמת הגל הנבחר:
+    upgrades.level = waveNum;
+    upgrades.arrowDamage = 25 + Math.floor((waveNum - 1) * 7.5);
+    upgrades.multiShot = waveNum >= 18 ? 3 : (waveNum >= 8 ? 2 : 1);
+    upgrades.piercing = waveNum >= 14 ? 3 : (waveNum >= 5 ? 2 : 1);
+    upgrades.fireDelay = Math.max(8, 18 - Math.floor(waveNum * 0.35));
+    upgrades.maxHp = 100 + (waveNum - 1) * 15;
+    upgrades.hp = upgrades.maxHp;
+    upgrades.moveSpeed = 3.2 + Math.min(1.5, (waveNum - 1) * 0.08);
+
+    // אם הגל הוא 6 ומעלה, מצרף אוטומטית את גובלין העזר!
+    if (waveNum >= 6 && helperMonsters.length === 0) {
+        helperMonsters.push(new HelperMonster());
+        helperMonsters[0].level = Math.max(1, Math.floor(waveNum / 3));
+        helperMonsters[0].damage += (helperMonsters[0].level - 1) * 12;
+        helperMonsters[0].maxHp += (helperMonsters[0].level - 1) * 20;
+        helperMonsters[0].hp = helperMonsters[0].maxHp;
+    }
+
+    startWave(waveNum);
+    updateHUD();
+
+    if (activateChat) {
+        setChatPlaysMode(true, true);
+    }
+
+    // אם הגל הוא 12 ומעלה והשחקן טרם בחר מכשף, פותח את בחירת המכשף!
+    if (waveNum >= 12 && !wizardClassChosen) {
+        triggerWizardSelection();
+    } else {
+        gameState = 'playing';
+    }
+}
+
+/* -------------------------------------------------------------
+   CHAT PLAYS (TWITCH / LIVE CHAT PLAYS MODE)
+------------------------------------------------------------- */
+const CHAT_VIEWERS = [
+    { name: 'יוסי_הגיימר', color: '#38bdf8', badge: '🔥' },
+    { name: 'דנה_הקשתית', color: '#f43f5e', badge: '👑' },
+    { name: 'רועי_פרו', color: '#4ade80', badge: '⚡' },
+    { name: 'נועה_גיימינג', color: '#a855f7', badge: '⭐' },
+    { name: 'עידו_המלך', color: '#facc15', badge: '🏹' },
+    { name: 'מאיה_סטרים', color: '#fb923c', badge: '🎯' },
+    { name: 'איתי_קילר', color: '#ec4899', badge: '⚔️' },
+    { name: 'שירה_סנייפר', color: '#06b6d4', badge: '💥' },
+    { name: 'תומר_טנק', color: '#eab308', badge: '🛡️' },
+    { name: 'ליאור_בוט', color: '#a3e635', badge: '🤖' },
+    { name: 'ירין_צללים', color: '#c084fc', badge: '🔮' },
+    { name: 'עומר_האלוף', color: '#f87171', badge: '💎' }
+];
+
+function addChatMessage(author, text, color = '#38bdf8', badge = '', isUser = false, isCmd = false) {
+    if (!chatMessagesContainer) return;
+    const msgEl = document.createElement('div');
+    msgEl.className = `chat-msg ${isUser ? 'user' : ''} ${isCmd ? 'cmd' : ''}`;
+    
+    // סימון מילות פקודה בצהוב מודגש
+    const formattedText = text.replace(/(!\S+|למעלה|למטה|שמאלה|ימינה|לירות|הדף|חומה|ריפוי|קוצים|כדור אש)/gi, '<span class="chat-cmd-highlight">$1</span>');
+
+    msgEl.innerHTML = `
+        <div class="chat-author" style="color: ${color}">
+            ${badge ? `<span>${badge}</span>` : ''}
+            <span>${author}:</span>
+        </div>
+        <div class="chat-text">${formattedText}</div>
+    `;
+    chatMessagesContainer.appendChild(msgEl);
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+    while (chatMessagesContainer.children.length > 50) {
+        chatMessagesContainer.removeChild(chatMessagesContainer.firstChild);
+    }
+}
+
+function setChatPlaysMode(active, showPanel = true) {
+    chatPlaysActive = active;
+    if (showPanel && chatPanel) {
+        chatPanel.classList.remove('hidden');
+    }
+    if (toggleChatBtn) {
+        if (chatPlaysActive) {
+            toggleChatBtn.classList.add('active');
+            toggleChatBtn.innerText = '💬 צ\'אט משחק [פעיל!]';
+        } else {
+            toggleChatBtn.classList.remove('active');
+            toggleChatBtn.innerText = '💬 צ\'אט משחק [כבוי]';
+        }
+    }
+    if (chatModeStatus) {
+        if (chatPlaysActive) {
+            chatModeStatus.innerText = '🤖 צ\'אט AI פעיל';
+            chatModeStatus.classList.remove('paused');
+        } else {
+            chatModeStatus.innerText = '👤 שליטה ידנית';
+            chatModeStatus.classList.add('paused');
+        }
+    }
+    if (chatToggleAiBtn) {
+        if (chatPlaysActive) {
+            chatToggleAiBtn.innerText = '⏸️ השהה שליטת צ\'אט (שליטה ידנית)';
+            chatToggleAiBtn.classList.remove('paused');
+        } else {
+            chatToggleAiBtn.innerText = '▶️ הפעל שליטת צ\'אט (AI משחק)';
+            chatToggleAiBtn.classList.add('paused');
+        }
+    }
+    if (player) {
+        addFloatingText(player.x, player.y - 45, chatPlaysActive ? '🤖 הצ\'אט שולט בקשת!' : '👤 חזרת לשליטה ידנית!', chatPlaysActive ? '#c084fc' : '#38bdf8');
+    }
+}
+
+function executeChatCommand(cmdText, isUser = false) {
+    if (lastChatCommandEl) {
+        lastChatCommandEl.innerText = cmdText;
+    }
+    const lower = cmdText.toLowerCase();
+
+    if (lower.includes('למעלה') || lower.includes('up') || lower.includes('w')) {
+        chatPlaysManualOverride = { dx: 0, dy: -1 };
+        chatPlaysOverrideTimer = 35;
+    } else if (lower.includes('למטה') || lower.includes('down') || lower.includes('s')) {
+        chatPlaysManualOverride = { dx: 0, dy: 1 };
+        chatPlaysOverrideTimer = 35;
+    } else if (lower.includes('שמאלה') || lower.includes('left') || lower.includes('a')) {
+        chatPlaysManualOverride = { dx: -1, dy: 0 };
+        chatPlaysOverrideTimer = 35;
+    } else if (lower.includes('ימינה') || lower.includes('right') || lower.includes('d')) {
+        chatPlaysManualOverride = { dx: 1, dy: 0 };
+        chatPlaysOverrideTimer = 35;
+    }
+
+    if (lower.includes('לירות') || lower.includes('shoot') || lower.includes('ירה') || lower.includes('fire')) {
+        if (player && player.shootTimer <= 0) {
+            player.shoot();
+            player.shootTimer = upgrades.fireDelay;
+        }
+    }
+
+    if (lower.includes('pgup') || lower.includes('pageup') || lower.includes('z') || lower.includes('ז') || lower.includes('1') || lower.includes('הדף') || lower.includes('חומה') || lower.includes('ריפוי') || lower.includes('חזקה')) {
+        activateAbility(1);
+    }
+
+    if (lower.includes('pgdn') || lower.includes('pagedown') || lower.includes('x') || lower.includes('ס') || lower.includes('2') || lower.includes('כדור אש') || lower.includes('הקפאה') || lower.includes('קוצים') || lower.includes('חלשה')) {
+        activateAbility(2);
+    }
+
+    if (isUser && player) {
+        addFloatingText(player.x, player.y - 30, `פקודת צ'אט בוצעה: ${cmdText}!`, "#facc15");
+    }
+}
+
+/* -------------------------------------------------------------
+   SIMULATED CHAT FEED GENERATOR
+------------------------------------------------------------- */
+let chatSimulatorTimer = 0;
+const CHAT_SIMULATED_COMMENTS = [
+    { text: '!לירות', isCmd: true },
+    { text: '!לירות', isCmd: true },
+    { text: '!למעלה', isCmd: true },
+    { text: '!למטה', isCmd: true },
+    { text: '!שמאלה', isCmd: true },
+    { text: '!ימינה', isCmd: true },
+    { text: '!Z', isCmd: true },
+    { text: '!X', isCmd: true },
+    { text: '!C', isCmd: true },
+    { text: 'יאללה לתקוף אותם! 🔥', isCmd: false },
+    { text: 'תפעיל לייזר אש דחוף! ⚡', isCmd: false },
+    { text: 'וואו איזה קליעה מטורפת!', isCmd: false },
+    { text: 'היסודנים ושומרי היער מפרקים אותם! 🌳', isCmd: false },
+    { text: 'שמרו מרחק מהבוס!', isCmd: false },
+    { text: 'פוגגגגגגג 💥', isCmd: false },
+    { text: 'תפעילו את יכולת C אולטימייט!', isCmd: false },
+    { text: 'הגל הזה שלנו קל!', isCmd: false },
+    { text: 'איזה דודג\' מטורף של ה-AI 🤖', isCmd: false },
+    { text: 'בואו נגיע לגל 30 סוף סוף!', isCmd: false }
+];
+
+function updateSimulatedChatFeed() {
+    if (!chatPanel || chatPanel.classList.contains('hidden')) return;
+    chatSimulatorTimer++;
+    // כל ~90 פריימים (בערך שנייה וחצי) צופה רנדומלי רושם תגובה או פקודה
+    if (chatSimulatorTimer >= 85) {
+        chatSimulatorTimer = 0;
+        const viewer = CHAT_VIEWERS[Math.floor(Math.random() * CHAT_VIEWERS.length)];
+        const item = CHAT_SIMULATED_COMMENTS[Math.floor(Math.random() * CHAT_SIMULATED_COMMENTS.length)];
+        addChatMessage(viewer.name, item.text, viewer.color, viewer.badge, false, item.isCmd);
+        if (item.isCmd && chatPlaysActive) {
+            executeChatCommand(item.text, false);
+        }
+    }
+}
+
+function updateChatPlaysAI() {
+    if (!chatPlaysActive || !player || gameState !== 'playing') return;
+
+    // 1. תנועה: התחמקות חכמה ממפלצות וכדורים + שמירת מרחק קרב
+    let moveX = 0;
+    let moveY = 0;
+
+    if (chatPlaysOverrideTimer > 0 && chatPlaysManualOverride) {
+        chatPlaysOverrideTimer--;
+        moveX = chatPlaysManualOverride.dx;
+        moveY = chatPlaysManualOverride.dy;
+    } else {
+        let dangerCount = 0;
+        let repelX = 0;
+        let repelY = 0;
+
+        // התרחקות ממפלצות קרובות
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const dist = Math.hypot(player.x - m.x, player.y - m.y);
+            if (dist < 210) {
+                dangerCount++;
+                const weight = (210 - dist) / 210;
+                repelX += ((player.x - m.x) / (dist || 1)) * weight * 1.8;
+                repelY += ((player.y - m.y) / (dist || 1)) * weight * 1.8;
+            }
+        }
+
+        // התחמקות מכדורי אויב
+        for (let j = 0; j < monsterBullets.length; j++) {
+            const b = monsterBullets[j];
+            if (!b.alive) continue;
+            const dist = Math.hypot(player.x - b.x, player.y - b.y);
+            if (dist < 130) {
+                const weight = (130 - dist) / 130;
+                repelX += ((player.x - b.x) / (dist || 1)) * weight * 2.2;
+                repelY += ((player.y - b.y) / (dist || 1)) * weight * 2.2;
+            }
+        }
+
+        // התרחקות מגבולות המסך
+        const margin = 100;
+        if (player.x < margin) repelX += (margin - player.x) / margin;
+        if (player.x > canvas.width - margin) repelX -= (player.x - (canvas.width - margin)) / margin;
+        if (player.y < margin) repelY += (margin - player.y) / margin;
+        if (player.y > canvas.height - margin) repelY -= (player.y - (canvas.height - margin)) / margin;
+
+        // מציאת המפלצת הקרובה ביותר לקרב
+        let nearest = null;
+        let minDist = Infinity;
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const d = Math.hypot(m.x - player.x, m.y - player.y);
+            if (d < minDist) {
+                minDist = d;
+                nearest = m;
+            }
+        }
+
+        if (nearest && dangerCount === 0) {
+            const idealDist = 200;
+            const dx = nearest.x - player.x;
+            const dy = nearest.y - player.y;
+            if (minDist > idealDist + 40) {
+                repelX += dx / minDist;
+                repelY += dy / minDist;
+            } else if (minDist < idealDist - 30) {
+                repelX -= dx / minDist;
+                repelY -= dy / minDist;
+            } else {
+                // תנועה מעגלית סביב האויב
+                repelX += -dy / minDist * 0.7;
+                repelY += dx / minDist * 0.7;
+            }
+        }
+
+        const len = Math.hypot(repelX, repelY);
+        if (len > 0.05) {
+            moveX = repelX / len;
+            moveY = repelY / len;
+        }
+    }
+
+    player.x += moveX * upgrades.moveSpeed;
+    player.y += moveY * upgrades.moveSpeed;
+    player.x = Math.max(player.radius, Math.min(canvas.width - player.radius, player.x));
+    player.y = Math.max(player.radius, Math.min(canvas.height - player.radius, player.y));
+
+    // 2. כיוון אוטומטי וירי חצים
+    let target = null;
+    let closestDist = Infinity;
+    for (let j = 0; j < monsters.length; j++) {
+        const m = monsters[j];
+        if (!m.alive) continue;
+        const d = Math.hypot(m.x - player.x, m.y - player.y);
+        if (d < closestDist) {
+            closestDist = d;
+            target = m;
+        }
+    }
+
+    if (target) {
+        player.angle = Math.atan2(target.y - player.y, target.x - player.x);
+        mouse.x = target.x;
+        mouse.y = target.y;
+
+        if (player.shootTimer <= 0) {
+            player.shoot();
+            player.shootTimer = upgrades.fireDelay;
+        }
+    }
+
+    // 3. הפעלת יכולות מכשף חכמות ע"י ה-AI
+    if (wizardClass) {
+        if (strongCooldownTimer <= 0) {
+            activateAbility(1);
+        }
+        if (weakCooldownTimer <= 0) {
+            activateAbility(2);
+        }
+    }
+}
+
+/* -------------------------------------------------------------
+   INPUT LISTENERS & BUTTON HOOKS
+------------------------------------------------------------- */
+window.addEventListener('keydown', e => {
+    keys[e.key] = true;
+    keys[e.code] = true;
+
+    // מקש Ctrl לירי חץ (קול + מניעת פעולות ברירת מחדל של הדפדפן)
+    if (e.key === 'Control' || e.code === 'ControlLeft' || e.code === 'ControlRight') {
+        sfx.init();
+        if (gameState === 'playing' && !isPaused && !chatPlaysActive) {
+            e.preventDefault();
+        }
+    }
+
+    if (e.code === 'Space' && gameState === 'playing') {
+        isPaused = !isPaused;
+    }
+
+    // הדלקת/כיבוי מצב צ'אט משחק באמצעות מקש T או כפתור ה-HUD (אם מתחת לגל 15, גם מקש C)
+    if ((e.key === 't' || e.key === 'T' || e.key === 'א' || e.key === 'c' || e.key === 'C' || e.key === 'ב') && !e.target.matches('input, textarea')) {
+        setChatPlaysMode(!chatPlaysActive, true);
+    }
+
+    // בחירת מכשף באמצעות מקשי המספרים 1, 2, 3 כאשר חלון ההתפתחות פתוח
+    if (gameState === 'wizard_select') {
+        if (e.key === '1') selectWizardClass('fire');
+        else if (e.key === '2') selectWizardClass('ice');
+        else if (e.key === '3') selectWizardClass('plant');
+    }
+
+    // הפעלת יכולות מכשף בלחיצה על PgUp (חזקה) ו-PgDn (חלשה) (וכן Z / 1, X / 2)
+    if (wizardClass && gameState === 'playing' && !isPaused && !chatPlaysActive) {
+        if (e.code === 'PageUp' || e.key === 'PageUp' || e.code === 'KeyZ' || e.key === 'z' || e.key === 'Z' || e.key === 'ז' || e.key === '1') {
+            e.preventDefault();
+            activateAbility(1);
+        } else if (e.code === 'PageDown' || e.key === 'PageDown' || e.code === 'KeyX' || e.key === 'x' || e.key === 'X' || e.key === 'ס' || e.key === '2') {
+            e.preventDefault();
+            activateAbility(2);
+        } 
+    }
+});
+
+window.addEventListener('keyup', e => {
+    keys[e.key] = false;
+    keys[e.code] = false;
+    if (e.key === 'Control' || e.code === 'ControlLeft' || e.code === 'ControlRight') {
+        keys['Control'] = false;
+        keys['ControlLeft'] = false;
+        keys['ControlRight'] = false;
+    }
+});
+
+window.addEventListener('blur', () => {
+    mouse.isDown = false;
+    for (let k in keys) keys[k] = false;
+});
+
+canvas.addEventListener('mousemove', e => {
+    if (chatPlaysActive) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+});
+
+canvas.addEventListener('mousedown', e => {
+    if (e.button === 0) mouse.isDown = true;
+    sfx.init();
+});
+
+window.addEventListener('mouseup', e => {
+    if (e.button === 0) mouse.isDown = false;
+});
+
+// בחירת רמת קושי (קל / רגיל / קשה)
+document.querySelectorAll('.diff-pill').forEach(btn => {
+    btn.onclick = () => {
+        setDifficulty(btn.dataset.diff);
+        sfx.init();
+        sfx.playHit();
+    };
+});
+
+// כפתורי מסך פתיחה ובחירת שלב
+document.getElementById('start-btn').onclick = () => {
+    jumpToWave(1);
+};
+
+if (startChatPlaysBtn) {
+    startChatPlaysBtn.onclick = () => {
+        jumpToWave(1, true);
+    };
+}
+
+if (jumpStageBtn && stageSelectDropdown) {
+    jumpStageBtn.onclick = () => {
+        jumpToWave(stageSelectDropdown.value);
+    };
+}
+
+// לחיצה על כל אחת מגלולות השלבים המהירים
+document.querySelectorAll('.stage-pill').forEach(btn => {
+    btn.onclick = () => {
+        jumpToWave(btn.dataset.wave);
+    };
+});
+
+// כפתורי שליטה בצ'אט
+if (toggleChatBtn) {
+    toggleChatBtn.onclick = () => {
+        if (chatPanel.classList.contains('hidden')) {
+            setChatPlaysMode(true, true);
+        } else {
+            setChatPlaysMode(!chatPlaysActive, true);
+        }
+    };
+}
+
+if (chatCloseBtn) {
+    chatCloseBtn.onclick = () => {
+        chatPanel.classList.add('hidden');
+    };
+}
+
+if (chatToggleAiBtn) {
+    chatToggleAiBtn.onclick = () => {
+        setChatPlaysMode(!chatPlaysActive, true);
+    };
+}
+
+// כפתורי פקודות מהירות בצ'אט
+document.querySelectorAll('.quick-cmd-btn').forEach(btn => {
+    btn.onclick = () => {
+        const cmd = btn.dataset.cmd;
+        addChatMessage('👑 אתה', cmd, '#f59e0b', '👑', true, true);
+        executeChatCommand(cmd, true);
+    };
+});
+
+// לחיצה על משבצות היכולות ב-HUD להפעלה ישירה
+const slotStrongEl = document.getElementById('slot-strong');
+const slotWeakEl = document.getElementById('slot-weak');
+if (slotStrongEl) slotStrongEl.onclick = () => activateAbility(1);
+if (slotWeakEl) slotWeakEl.onclick = () => activateAbility(2);
+
+// טופס שליחת פקודה עצמאית בצ'אט
+if (chatForm && chatInput) {
+    chatForm.onsubmit = (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text) return;
+        addChatMessage('👑 אתה', text, '#f59e0b', '👑', true, true);
+        executeChatCommand(text, true);
+        chatInput.value = '';
+    };
+}
+
+// מודל דילוג שלב תוך כדי משחק
+if (inGameWaveBtn && waveJumpModal) {
+    inGameWaveBtn.onclick = () => {
+        isPaused = true;
+        waveJumpModal.classList.remove('hidden');
+    };
+}
+
+if (inGameJumpCloseBtn && waveJumpModal) {
+    inGameJumpCloseBtn.onclick = () => {
+        waveJumpModal.classList.add('hidden');
+        isPaused = false;
+    };
+}
+
+if (inGameJumpConfirmBtn && inGameWaveSelect) {
+    inGameJumpConfirmBtn.onclick = () => {
+        jumpToWave(inGameWaveSelect.value, chatPlaysActive);
+    };
+}
+
+document.getElementById('restart-btn').onclick = () => {
+    resetGame();
+};
+
+document.getElementById('victory-restart-btn').onclick = () => {
+    resetGame();
+};
+
+/* -------------------------------------------------------------
+   MAIN GAME LOOP
+------------------------------------------------------------- */
+function gameLoop() {
+    requestAnimationFrame(gameLoop);
+
+    // עדכון הודעות צ'אט סימולטיביות ברקע
+    updateSimulatedChatFeed();
+
+    if (gameState !== 'playing' || isPaused) {
+        if (gameState === 'wizard_select' || gameState === 'upgrade') {
+            // מצייר את הרקע, הקשת והמפלצות כדי שהמסך לעולם לא יהיה שחור בזמן בחירה!
+            ctx.fillStyle = '#111420';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+            for (let j = 0; j < monsters.length; j++) monsters[j].draw();
+            for (let j = 0; j < helperMonsters.length; j++) helperMonsters[j].draw();
+            if (player) player.draw();
+        }
+        return;
+    }
+
+    // הפעלת בקר ה-AI של הצ'אט אם מצב צ'אט משחק פעיל
+    if (chatPlaysActive) {
+        updateChatPlaysAI();
+    }
+
+    frameCount++;
+
+    // Screen Shake effect
+    ctx.save();
+    if (screenShake > 0) {
+        const shakeX = (Math.random() - 0.5) * screenShake;
+        const shakeY = (Math.random() - 0.5) * screenShake;
+        ctx.translate(shakeX, shakeY);
+        screenShake *= 0.9;
+        if (screenShake < 0.2) screenShake = 0;
+    }
+
+    // Clear Canvas
+    ctx.fillStyle = '#111420';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Floor Grid
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+
+    // Cooldown management
+    if (wizardClass) {
+        if (strongCooldownTimer > 0) strongCooldownTimer--;
+        if (weakCooldownTimer > 0) weakCooldownTimer--;
+        if (iceWallTimer > 0) iceWallTimer--;
+
+        updateAbilitiesHUD();
+    }
+
+    // 1. Spawning
+    handleWaveSpawning();
+
+    // 1.5. Update & Draw Thorn Traps (מכשף צמחים)
+    for (let i = thornTraps.length - 1; i >= 0; i--) {
+        const tt = thornTraps[i];
+        tt.update();
+        tt.draw();
+        if (!tt.alive) thornTraps.splice(i, 1);
+    }
+
+    // 2. Update & Draw XP Orbs
+    for (let i = xpOrbs.length - 1; i >= 0; i--) {
+        const orb = xpOrbs[i];
+        orb.update();
+        orb.draw();
+        if (!orb.alive) xpOrbs.splice(i, 1);
+    }
+
+    // 3. Update & Draw Arrows
+    for (let i = arrows.length - 1; i >= 0; i--) {
+        const arr = arrows[i];
+        arr.update();
+        arr.draw();
+
+        // Check arrow collisions with monsters
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!arr.hitTargets.has(m)) {
+                const dist = Math.hypot(m.x - arr.x, m.y - arr.y);
+                if (dist < m.radius + 6) {
+                    arr.hitTargets.add(m);
+                    m.takeDamage(arr.damage);
+                    arr.pierce--;
+                    if (arr.pierce <= 0) {
+                        arr.alive = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!arr.alive) arrows.splice(i, 1);
+    }
+
+    // 3.5. Update & Draw Helper Bullets
+    for (let i = helperBullets.length - 1; i >= 0; i--) {
+        const hb = helperBullets[i];
+        hb.update();
+        hb.draw();
+        if (!hb.alive) helperBullets.splice(i, 1);
+    }
+
+    // 3.6. Update & Draw Helper Monsters (גובלין דרגה 3)
+    for (let i = helperMonsters.length - 1; i >= 0; i--) {
+        const hm = helperMonsters[i];
+        hm.update();
+        hm.draw();
+        if (!hm.alive) {
+            helperMonsters.splice(i, 1);
+        }
+    }
+
+    // 3.7. Update & Draw Fire Shockwaves (מכשף אש)
+    for (let i = fireShockwaves.length - 1; i >= 0; i--) {
+        const sw = fireShockwaves[i];
+        sw.update();
+        sw.draw();
+        if (!sw.alive) fireShockwaves.splice(i, 1);
+    }
+
+    // 3.8. Update & Draw Homing Fireballs (מכשף אש)
+    for (let i = homingFireballs.length - 1; i >= 0; i--) {
+        const fb = homingFireballs[i];
+        fb.update();
+        fb.draw();
+        if (!fb.alive) homingFireballs.splice(i, 1);
+    }
+
+    // 4. Update & Draw Monsters
+    for (let i = monsters.length - 1; i >= 0; i--) {
+        const m = monsters[i];
+        m.update();
+        m.draw();
+        if (!m.alive) monsters.splice(i, 1);
+    }
+
+    // 5. Update & Draw Monster Bullets
+    for (let i = monsterBullets.length - 1; i >= 0; i--) {
+        const b = monsterBullets[i];
+        b.update();
+        b.draw();
+        if (!b.alive) monsterBullets.splice(i, 1);
+    }
+
+    // 6. Update & Draw Player
+    if (player) {
+        player.update();
+        player.draw();
+    }
+
+    // 6.5. Draw Ice Wall Barrier (מכשף קרח)
+    if (iceWallTimer > 0 && player) {
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 18;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, player.radius + 65, 0, Math.PI * 2);
+        ctx.stroke();
+
+        const rot = frameCount * 0.04;
+        for (let i = 0; i < 8; i++) {
+            const a = rot + (i * Math.PI * 2) / 8;
+            const cx = Math.cos(a) * (player.radius + 65);
+            const cy = Math.sin(a) * (player.radius + 65);
+            ctx.fillStyle = '#bae6fd';
+            ctx.fillRect(cx - 5, cy - 5, 10, 10);
+            ctx.strokeStyle = '#0284c7';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(cx - 5, cy - 5, 10, 10);
+        }
+        ctx.restore();
+    }
+
+    // 7. Update & Draw Particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.life <= 0) particles.splice(i, 1);
+    }
+
+    // 8. Update & Draw Floating Texts
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        ft.update();
+        ft.draw();
+        if (ft.life <= 0) floatingTexts.splice(i, 1);
+    }
+
+    // 9. הצגת תג מצב צ'אט משחק על הקנבס
+    if (chatPlaysActive) {
+        ctx.save();
+        ctx.font = 'bold 13px Assistant, sans-serif';
+        const txt = '🤖 הצ\'אט משחק (AI פעיל)';
+        const tw = ctx.measureText(txt).width;
+        const bx = canvas.width / 2 - (tw + 26) / 2;
+        const by = 12;
+        ctx.fillStyle = 'rgba(126, 34, 206, 0.65)';
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(bx, by, tw + 26, 26, 13);
+        } else {
+            ctx.rect(bx, by, tw + 26, 26);
+        }
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(txt, canvas.width / 2, by + 13);
+        ctx.restore();
+    }
+
+    ctx.restore();
+}
+
+// אתחול רשימות השלבים בתיבות הבחירה
+populateWaveDropdowns();
+
+// Start loop
+gameLoop();
+</script>
+</body>
+</html>
