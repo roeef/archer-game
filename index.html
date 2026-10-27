@@ -1059,7 +1059,7 @@
                     <h3 style="color: #f87171; font-size: 18px; margin-bottom: 4px;">מכשף אש [1]</h3>
                     <div class="wizard-ability-box">
                         <b style="color: #fca5a5;">💥 יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
-                        <b>"הדף אש"</b> — יוצר עיגול אש ענק מתרחב שמוריד כ-50% מחיים לכל המפלצות ומעיף אותן אחורה!
+                        <b>"הדף אש"</b> — יוצר עיגול אש ענק מתרחב שמחסל והורג מיידית כל מפלצת שנוגעת בו!
                     </div>
                     <div class="wizard-ability-box">
                         <b style="color: #fdba74;">☄️ יכולת חלשה [PgDn / X] (8 שניות):</b><br>
@@ -1089,7 +1089,7 @@
                     <h3 style="color: #4ade80; font-size: 18px; margin-bottom: 4px;">מכשף צמחים [3]</h3>
                     <div class="wizard-ability-box">
                         <b style="color: #86efac;">💚 יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
-                        <b>"ריפוי טיבעי"</b> — מרפא מיידית 50 חיים לקשת שלך בכל הפעלה!
+                        <b>"ריפוי טיבעי"</b> — מרפא מיידית 80 חיים לקשת שלך בכל הפעלה!
                     </div>
                     <div class="wizard-ability-box">
                         <b style="color: #bbf7d0;">🌵 יכולת חלשה [PgDn / X] (8 שניות):</b><br>
@@ -2071,22 +2071,22 @@ class FireShockwave {
             particles.push(new Particle(px, py, '#f97316', 3.5, 0.6, 14));
         }
 
-        // פגיעה במפלצות: מוריד כ-50% מחיים מקסימליים ומעיף אחורה
+        // פגיעה במפלצות: מחסל כל מפלצת שנוגעת בגל ההדף במכה אחת מיידית!
         for (let j = 0; j < monsters.length; j++) {
             const m = monsters[j];
             if (!m.alive || this.hitMonsters.has(m)) continue;
             const dist = Math.hypot(m.x - this.x, m.y - this.y);
-            if (dist < this.radius + m.radius && dist > this.radius - m.radius - 25) {
+            if (dist < this.radius + m.radius && dist > this.radius - m.radius - 30) {
                 this.hitMonsters.add(m);
-                const dmg = Math.max(35, Math.floor(m.maxHp * 0.5));
-                m.takeDamage(dmg);
-                addFloatingText(m.x, m.y - 15, `הדף אש: -${dmg}! 🔥`, "#f97316");
+                // חיסול מיידי של כל מפלצת שנוגעת בגל ההדף
+                const lethalDmg = Math.max(99999, Math.ceil(m.hp * 2));
+                m.takeDamage(lethalDmg);
+                addFloatingText(m.x, m.y - 15, `חיסול הדף אש! 💥🔥`, "#ef4444");
 
-                // העפה אחורה
-                const kx = (m.x - this.x) / (dist || 1);
-                const ky = (m.y - this.y) / (dist || 1);
-                m.x += kx * 75;
-                m.y += ky * 75;
+                // חלקיקי פיצוץ אש
+                for (let k = 0; k < 12; k++) {
+                    particles.push(new Particle(m.x, m.y, '#f97316', 3.5, 2.5, 18));
+                }
             }
         }
     }
@@ -3117,7 +3117,7 @@ function activateAbility(slotNum) {
 }
 
 function activateStrongAbility() {
-    if (strongCooldownTimer > 0 || !wizardClass || gameState !== 'playing') return;
+    if (strongCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player) return;
 
     if (wizardClass === 'fire') {
         sfx.playFlame();
@@ -3129,11 +3129,11 @@ function activateStrongAbility() {
         addFloatingText(player.x, player.y - 35, "חומה קפואה ל-5 שניות! 🛡️❄️", "#38bdf8");
     } else if (wizardClass === 'plant') {
         sfx.playNature();
-        upgrades.hp = Math.min(upgrades.maxHp, upgrades.hp + 50);
-        addFloatingText(player.x, player.y - 35, "+50 חיים! ריפוי טיבעי 🌿", "#22c55e");
+        upgrades.hp = Math.min(upgrades.maxHp, upgrades.hp + 80);
+        addFloatingText(player.x, player.y - 35, "+80 חיים! ריפוי טיבעי 🌿", "#22c55e");
         updateHUD();
-        for (let i = 0; i < 18; i++) {
-            particles.push(new Particle(player.x, player.y, '#4ade80', 3, 2.5, 22));
+        for (let i = 0; i < 22; i++) {
+            particles.push(new Particle(player.x, player.y, '#4ade80', 3.5, 2.8, 25));
         }
     }
 
@@ -3142,7 +3142,7 @@ function activateStrongAbility() {
 }
 
 function activateWeakAbility() {
-    if (weakCooldownTimer > 0 || !wizardClass || gameState !== 'playing') return;
+    if (weakCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player) return;
 
     if (wizardClass === 'fire') {
         sfx.playFlame();
