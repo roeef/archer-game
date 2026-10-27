@@ -2260,12 +2260,12 @@ function getLuckDropCount(luckLevel) {
 }
 
 function getLuckChanceText(level) {
-    if (level <= 0) return 'אין מזל (עיגול ניקוד 1 מובטח)';
+    if (level <= 0) return 'ללא מזל (עיגול ניקוד 1 מובטח)';
     const base = 1 + Math.floor(level / 3);
     const rem = level % 3;
-    if (rem === 0) return `100% שייצאו ${base} עיגולי ניקוד`;
-    if (rem === 1) return `שליש (33.3%) סיכוי ל-${base + 1} עיגולים, שני שליש (66.7%) ל-${base}`;
-    if (rem === 2) return `שני שליש (66.7%) סיכוי ל-${base + 1} עיגולים, שליש (33.3%) ל-${base}`;
+    if (rem === 0) return `100% (שלם!) שייצאו ${base} עיגולי ניקוד`;
+    if (rem === 1) return `שליש (1/3) סיכוי ל-${base + 1} עיגולים, שני שליש (2/3) ל-${base}`;
+    if (rem === 2) return `שני שליש (2/3) סיכוי ל-${base + 1} עיגולים, שליש (1/3) ל-${base}`;
 }
 
 class Monster {
