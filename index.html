@@ -1002,7 +1002,7 @@
                 <button class="stage-pill" data-wave="1">גל 1 (התחלה)</button>
                 <button class="stage-pill" data-wave="5">גל 5 (מיני-בוס)</button>
                 <button class="stage-pill" data-wave="6">גל 6 (גובלין עזר)</button>
-                <button class="stage-pill" data-wave="7">גל 7 (עליית מקס חיים)</button>
+                <button class="stage-pill" data-wave="8">גל 8 (עליית מקס חיים)</button>
                 <button class="stage-pill" data-wave="10">גל 10 (שדרוג מזל 🍀)</button>
                 <button class="stage-pill" data-wave="12">גל 12 (מכשף 🧙‍♂️)</button>
                 <button class="stage-pill" data-wave="15">גל 15 (שד להבות)</button>
@@ -1130,6 +1130,7 @@
         <div class="quick-stage-pills" style="margin-bottom: 14px;">
             <button class="stage-pill" data-wave="1">גל 1</button>
             <button class="stage-pill" data-wave="6">גל 6 (גובלין עזר)</button>
+            <button class="stage-pill" data-wave="8">גל 8 (עליית מקס חיים)</button>
             <button class="stage-pill" data-wave="10">גל 10 (שדרוג מזל 🍀)</button>
             <button class="stage-pill" data-wave="12">גל 12 (מכשף 🧙‍♂️)</button>
             <button class="stage-pill" data-wave="20">גל 20</button>
@@ -2774,17 +2775,17 @@ function startWave(waveNum) {
     const currentSpecies = MONSTER_SPECIES[currentWave - 1];
     addFloatingText(canvas.width / 2, canvas.height / 2 - 50, `גל ${currentWave}: מפלצת רמה ${currentSpecies.id} - ${currentSpecies.name}! [${diffConf.name} - ${waveKillsNeeded} מפלצות]`, "#f59e0b");
 
-    // פתיחה והצעת שדרוגים מיוחדים בגל 6, 7, 12, ו-15
+    // פתיחה והצעת שדרוגים מיוחדים בגל 6, 8, 10, ו-12
     if (waveNum === 6) {
         addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 גל 6: נפתח שדרוג מפלצת לעזרה (גובלין דרגה 3)!", "#facc15");
         sfx.playLevelUp();
         setTimeout(() => triggerUpgradeChoice(), 400);
-    } else if (waveNum === 7) {
-        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 גל 7: נפתח שדרוג עליית חיים למקס!", "#ec4899");
+    } else if (waveNum === 8) {
+        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 גל 8: נפתח שדרוג עליית חיים למקס!", "#ec4899");
         sfx.playLevelUp();
         setTimeout(() => triggerUpgradeChoice(), 400);
     } else if (waveNum === 10) {
-        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 גל 10: נפתח שדרוג מזל (סיכוי לעיגולי ניקוד כפולים)!", "#10b981");
+        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 גל 10: נפתח שדרוג מזל!", "#10b981");
         sfx.playLevelUp();
         setTimeout(() => triggerUpgradeChoice(), 400);
     } else if (waveNum === 12 && !wizardClassChosen) {
@@ -2842,6 +2843,15 @@ function gainXP(amount) {
         upgrades.xpToNext = Math.floor(upgrades.xpToNext * 1.35);
         levelDisplay.innerText = upgrades.level;
         sfx.playLevelUp();
+
+        // הודעות חגיגיות בעלייה לדרגה 6, 8, ו-10
+        if (upgrades.level === 6) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 6: נפתח שדרוג מפלצת לעזרה (גובלין דרגה 3)!", "#facc15");
+        } else if (upgrades.level === 8) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 עלית לדרגה 8: נפתח שדרוג עליית חיים למקס!", "#ec4899");
+        } else if (upgrades.level === 10) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 עלית לדרגה 10: נפתח שדרוג מזל!", "#10b981");
+        }
 
         // אם הגעת ל-100% בגל 12 בפעם הראשונה -> נפתחת בחירת מכשף במקום שדרוגים!
         if (currentWave === 12 && !wizardClassChosen) {
@@ -2926,13 +2936,13 @@ const UPGRADE_POOL = [
         icon: '🏹', 
         apply: () => upgrades.multiShot++ 
     },
-    // 7. מפלצת לעזרה (נפתח בגל 6!)
+    // 7. מפלצת לעזרה (נפתח בדרגה 6!)
     { 
         id: 'helper_monster', 
         name: 'מפלצת לעזרה', 
-        unlockWave: 6,
+        unlockLevel: 6,
         isLegendary: true,
-        tierName: '⭐ נפתח בגל 6!',
+        tierName: '⭐ נפתח בדרגה 6!',
         badgeClass: 'badge-legendary',
         getDesc: () => helperMonsters.length === 0 ? 
             'מזמן גובלין יורה (דרגה 3 מגל 3) שמצטרף כבן ברית, מסתובב חופשי ונלחם עבורך בכל המפלצות!' : 
@@ -2952,13 +2962,13 @@ const UPGRADE_POOL = [
             }
         }
     },
-    // 8. עליית חיים למקס (נפתח בגל 7!)
+    // 8. עליית חיים למקס (נפתח בדרגה 8!)
     { 
         id: 'max_hp_boost', 
         name: 'עליית חיים למקס', 
-        unlockWave: 7,
+        unlockLevel: 8,
         isLegendary: true,
-        tierName: '⭐ נפתח בגל 7!',
+        tierName: '⭐ נפתח בדרגה 8!',
         badgeClass: 'badge-legendary',
         getDesc: () => `מרפא את כל החיים שלך עד למקסימום המלא (ממלא ל-${upgrades.maxHp}/${upgrades.maxHp} חיים!) ללא שינוי המקס`, 
         icon: '💖', 
@@ -2967,13 +2977,13 @@ const UPGRADE_POOL = [
             addFloatingText(player.x, player.y - 30, "חיים מלאים עד למקס! 💖", "#10b981");
         }
     },
-    // 9. מזל (נפתח בגל 10!)
+    // 9. מזל (נפתח בדרגה 10!)
     { 
         id: 'luck', 
         name: 'מזל 🍀', 
-        unlockWave: 10,
+        unlockLevel: 10,
         isLegendary: true,
-        tierName: '⭐ נפתח בגל 10!',
+        tierName: '⭐ נפתח בדרגה 10!',
         badgeClass: 'badge-legendary',
         getDesc: () => {
             const curLvl = upgrades.luck || 0;
@@ -3334,7 +3344,7 @@ function populateWaveDropdowns() {
             let note = '';
             if (sp.id === 5) note = ' 🔥 (מיני-בוס)';
             else if (sp.id === 6) note = ' 👺 (נפתח גובלין עזר)';
-            else if (sp.id === 7) note = ' 💖 (עליית מקס חיים)';
+            else if (sp.id === 8) note = ' 💖 (עליית מקס חיים)';
             else if (sp.id === 10) note = ' 🍀 (נפתח שדרוג מזל)';
             else if (sp.id === 12) note = ' 🧙‍♂️ (בחירת מכשף!)';
             else if (sp.id === 15) note = ' 👹 (בוס להבות)';
