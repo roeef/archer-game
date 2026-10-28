@@ -650,6 +650,58 @@
             box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
         }
 
+        /* Faint Mode Selector Styling */
+        .faint-container {
+            margin: 8px 0 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .faint-pill {
+            background: #1e293b;
+            border: 2px solid #334155;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .faint-pill:hover {
+            transform: translateY(-1px);
+            color: #fff;
+        }
+        .faint-pill.active[data-faints="0"] {
+            background: rgba(148, 163, 184, 0.15);
+            border-color: #64748b;
+            color: #cbd5e1;
+            box-shadow: 0 0 10px rgba(100, 116, 139, 0.3);
+        }
+        .faint-pill.active[data-faints="2"] {
+            background: rgba(192, 132, 252, 0.2);
+            border-color: #a855f7;
+            color: #c084fc;
+            box-shadow: 0 0 14px rgba(168, 85, 247, 0.45);
+        }
+        .faint-pill.active[data-faints="3"] {
+            background: rgba(236, 72, 153, 0.2);
+            border-color: #ec4899;
+            color: #f472b6;
+            box-shadow: 0 0 14px rgba(236, 72, 153, 0.45);
+        }
+        .faint-pill.active[data-faints="4"] {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #f59e0b;
+            color: #fbbf24;
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.45);
+        }
+
         /* In-Game Wave Jump Modal */
         #wave-jump-modal {
             position: absolute;
@@ -952,6 +1004,10 @@
             <span id="diff-hud-badge" style="font-weight: bold; color: #60a5fa; background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; padding: 2px 8px; border-radius: 12px; font-size: 13px;">⚙️ רגיל</span>
         </div>
 
+        <div class="hud-item" id="faint-hud-container" style="display: none;">
+            <span id="faint-hud-badge" style="font-weight: bold; color: #c084fc; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; padding: 2px 8px; border-radius: 12px; font-size: 13px;">💫 התעלפויות: <span id="faint-count-display">2 / 2</span></span>
+        </div>
+
         <div class="hud-item" style="pointer-events: auto; display: flex; gap: 8px;">
             <button id="toggle-chat-btn" class="hud-action-btn">💬 צ'אט משחק [כבוי]</button>
             <button id="in-game-wave-btn" class="hud-action-btn">⏩ בחר גל</button>
@@ -984,6 +1040,19 @@
                 <button class="diff-pill" data-diff="easy" title="חצי מכמות המפלצות בכל גל">🌱 קל (חצי מפלצות)</button>
                 <button class="diff-pill active" data-diff="normal" title="כמות מפלצות רגילה">⚔️ רגיל</button>
                 <button class="diff-pill" data-diff="hard" title="כפול מפלצות בכל גל!">🔥 קשה (כפול מפלצות)</button>
+            </div>
+        </div>
+
+        <!-- Faint Mode Selection -->
+        <div style="margin-top: 10px; text-align: center;">
+            <div style="font-size: 14px; font-weight: bold; color: #c084fc; margin-bottom: 6px;">
+                💫 מצב התעלפות (הזדמנויות נוספות במקום מוות):
+            </div>
+            <div class="faint-container">
+                <button class="faint-pill" data-faints="0" title="ללא התעלפות — מוות מידי">❌ כבוי</button>
+                <button class="faint-pill active" data-faints="2" title="2 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 2 התעלפויות</button>
+                <button class="faint-pill" data-faints="3" title="3 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 3 התעלפויות</button>
+                <button class="faint-pill" data-faints="4" title="4 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 4 התעלפויות</button>
             </div>
         </div>
 
@@ -1136,11 +1205,18 @@
             <button class="stage-pill" data-wave="20">גל 20</button>
             <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
         </div>
-        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+        <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
             <span style="font-size: 13px; color: #94a3b8; font-weight: bold;">קושי:</span>
             <button class="diff-pill" data-diff="easy">🌱 קל (חצי)</button>
             <button class="diff-pill active" data-diff="normal">⚔️ רגיל</button>
             <button class="diff-pill" data-diff="hard">🔥 קשה (כפול)</button>
+        </div>
+        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 13px; color: #c084fc; font-weight: bold;">התעלפות:</span>
+            <button class="faint-pill" data-faints="0">❌ כבוי</button>
+            <button class="faint-pill active" data-faints="2">💫 2</button>
+            <button class="faint-pill" data-faints="3">💫 3</button>
+            <button class="faint-pill" data-faints="4">💫 4</button>
         </div>
         <button id="in-game-jump-close-btn" class="btn" style="background: #334155; font-size: 13px; padding: 6px 20px;">סגור וחזור למשחק</button>
     </div>
@@ -1322,6 +1398,22 @@ class SoundEffects {
         gain.connect(this.ctx.destination);
         osc.start();
         osc.stop(this.ctx.currentTime + 0.18);
+    }
+
+    playFaint() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(620, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.38);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.38);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(now + 0.38);
     }
 
     playLevelUp() {
@@ -1584,6 +1676,28 @@ function setDifficulty(diff) {
     }
 }
 
+/* מצב התעלפות (הזדמנויות נוספות במקום מוות: כבוי = 0, 2, 3, או 4 התעלפויות) */
+let maxFaints = 2; // ברירת מחדל: 2 התעלפויות (אפשרויות: 0, 2, 3, 4)
+let currentFaints = 2;
+
+function setFaintMode(count) {
+    count = parseInt(count, 10);
+    if (isNaN(count)) count = 0;
+    maxFaints = count;
+    currentFaints = count;
+
+    // עדכון כפתורי הבחירה במסך הפתיחה ובחלון הדילוג
+    document.querySelectorAll('.faint-pill').forEach(btn => {
+        if (parseInt(btn.dataset.faints, 10) === count) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateHUD();
+}
+
 /* Player Upgrades */
 let upgrades = {
     fireDelay: 18,       // frames between arrow shots
@@ -1611,9 +1725,20 @@ class Player {
         this.angle = 0;
         this.invulnerableTimer = 0;
         this.shootTimer = 0;
+        this.faintTimer = 0; // זמן התעלפות בפריימים (60 פריימים = 1 שנייה)
     }
 
     update() {
+        // אם השחקן מעולף - הוא משותק לשנייה אחת בדיוק ולא יכול לזוז או לירות
+        if (this.faintTimer > 0) {
+            this.faintTimer--;
+            if (this.faintTimer === 0) {
+                addFloatingText(this.x, this.y - 30, "✨ התאוששת מההתעלפות!", "#38bdf8");
+            }
+            if (this.invulnerableTimer > 0) this.invulnerableTimer--;
+            return;
+        }
+
         // Movement
         let dx = 0;
         let dy = 0;
@@ -1670,7 +1795,7 @@ class Player {
     }
 
     takeDamage(amount) {
-        if (this.invulnerableTimer > 0) return;
+        if (this.invulnerableTimer > 0 || this.faintTimer > 0) return;
         upgrades.hp -= amount;
         this.invulnerableTimer = 35; // frames of blinking invulnerability
         sfx.playPlayerHurt();
@@ -1681,8 +1806,43 @@ class Player {
 
         if (upgrades.hp <= 0) {
             upgrades.hp = 0;
-            triggerGameOver();
+            if (maxFaints > 0 && currentFaints > 0) {
+                this.triggerFaint();
+            } else {
+                triggerGameOver();
+            }
         }
+        updateHUD();
+    }
+
+    triggerFaint() {
+        currentFaints--;
+        this.faintTimer = 60; // משותק לשנייה אחת בדיוק (60 פריימים ב-60 FPS)
+        this.invulnerableTimer = 90; // 1.5 שניות חסינות להגנה (שנייה בזמן מעולף + חצי שנייה התאוששות)
+        upgrades.hp = upgrades.maxHp; // החזרת חיים מלאים
+
+        // הדיפת מפלצות קרובות כדי שלא יישארו צמודות לשחקן כשהוא מתאושש
+        monsters.forEach(m => {
+            const dx = m.x - this.x;
+            const dy = m.y - this.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 180 && dist > 0) {
+                const pushDist = (180 - dist) + 50;
+                m.x += (dx / dist) * pushDist;
+                m.y += (dy / dist) * pushDist;
+                m.x = Math.max(m.radius, Math.min(canvas.width - m.radius, m.x));
+                m.y = Math.max(m.radius, Math.min(canvas.height - m.radius, m.y));
+            }
+        });
+
+        // יצירת חלקיקי התעלפות
+        for (let i = 0; i < 24; i++) {
+            particles.push(new Particle(this.x, this.y, '#c084fc', 3.5, 2.5, 30));
+        }
+
+        screenShake = 12;
+        sfx.playFaint();
+        addFloatingText(this.x, this.y - 45, `💫 התעלפת! (נותרו ${currentFaints} התעלפויות)`, "#c084fc");
         updateHUD();
     }
 
@@ -1729,6 +1889,27 @@ class Player {
             ctx.font = 'bold 11px Tahoma';
             ctx.textAlign = 'center';
             ctx.fillText(wizardLabel, 0, -this.radius - 12);
+            ctx.restore();
+        }
+
+        // אפקט התעלפות מעל ראש השחקן (כוכבים מסתובבים וטקסט מעולף)
+        if (this.faintTimer > 0) {
+            ctx.save();
+            const starOrbitAngle = (60 - this.faintTimer) * 0.22;
+            const starRadius = 24;
+            for (let s = 0; s < 3; s++) {
+                const a = starOrbitAngle + (s * (Math.PI * 2 / 3));
+                const sx = Math.cos(a) * starRadius;
+                const sy = Math.sin(a) * (starRadius * 0.45) - this.radius - 22;
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('💫', sx, sy);
+            }
+            ctx.fillStyle = '#f472b6';
+            ctx.font = 'bold 12px Tahoma';
+            ctx.textAlign = 'center';
+            ctx.fillText('מעולף! 💤', 0, -this.radius - 38);
             ctx.restore();
         }
 
@@ -3121,7 +3302,7 @@ function activateAbility(slotNum) {
 }
 
 function activateStrongAbility() {
-    if (strongCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player) return;
+    if (strongCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player || player.faintTimer > 0) return;
 
     if (wizardClass === 'fire') {
         sfx.playFlame();
@@ -3146,7 +3327,7 @@ function activateStrongAbility() {
 }
 
 function activateWeakAbility() {
-    if (weakCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player) return;
+    if (weakCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player || player.faintTimer > 0) return;
 
     if (wizardClass === 'fire') {
         sfx.playFlame();
@@ -3255,6 +3436,18 @@ function updateHUD() {
     const xpPct = Math.min(100, (upgrades.xp / upgrades.xpToNext) * 100);
     xpFill.style.width = `${xpPct}%`;
     xpText.innerText = `${Math.floor(xpPct)}%`;
+
+    const faintContainer = document.getElementById('faint-hud-container');
+    const faintDisplay = document.getElementById('faint-count-display');
+    if (faintContainer && faintDisplay) {
+        if (maxFaints > 0) {
+            faintContainer.style.display = 'inline-flex';
+            faintDisplay.innerText = `${currentFaints} / ${maxFaints}`;
+            faintDisplay.style.color = currentFaints > 0 ? '#c084fc' : '#ef4444';
+        } else {
+            faintContainer.style.display = 'none';
+        }
+    }
 }
 
 function triggerGameOver() {
@@ -3314,6 +3507,7 @@ function resetGame() {
     if (wizardModalOverlay) wizardModalOverlay.classList.add('hidden');
 
     player = new Player();
+    currentFaints = maxFaints;
     gameOverScreen.classList.add('hidden');
     victoryScreen.classList.add('hidden');
     upgradeModal.classList.add('hidden');
@@ -3762,6 +3956,15 @@ document.querySelectorAll('.diff-pill').forEach(btn => {
     };
 });
 
+// בחירת מצב התעלפות (כבוי / 2 / 3 / 4 התעלפויות)
+document.querySelectorAll('.faint-pill').forEach(btn => {
+    btn.onclick = () => {
+        setFaintMode(btn.dataset.faints);
+        sfx.init();
+        sfx.playHit();
+    };
+});
+
 // כפתורי מסך פתיחה ובחירת שלב
 document.getElementById('start-btn').onclick = () => {
     jumpToWave(1);
@@ -4112,8 +4315,10 @@ function gameLoop() {
     ctx.restore();
 }
 
-// אתחול רשימות השלבים בתיבות הבחירה
+// אתחול רשימות השלבים בתיבות הבחירה והגדרות ברירת מחדל
 populateWaveDropdowns();
+setDifficulty('normal');
+setFaintMode(2);
 
 // Start loop
 gameLoop();
