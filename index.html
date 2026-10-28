@@ -677,7 +677,8 @@
             transform: translateY(-1px);
             color: #fff;
         }
-        .faint-pill.active[data-faints="0"] {
+        .faint-pill.active[data-faints="0"],
+        .faint-pill.active[data-faints="1"] {
             background: rgba(59, 130, 246, 0.22);
             border-color: #3b82f6;
             color: #60a5fa;
@@ -1049,7 +1050,7 @@
                 🎮 בחר מצב משחק:
             </div>
             <div class="faint-container">
-                <button class="faint-pill active" data-faints="0" title="מצב רגיל — ללא התעלפות (הפסד כאשר החיים נגמרים)">⚔️ מצב רגיל</button>
+                <button class="faint-pill active" data-faints="1" title="מצב רגיל — התעלפות אחת לפני פסילה (משותק לשנייה וקם לתחייה)">⚔️ מצב רגיל (התעלפות אחת)</button>
                 <button class="faint-pill" data-faints="2" title="2 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 2 התעלפויות</button>
                 <button class="faint-pill" data-faints="3" title="3 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 3 התעלפויות</button>
                 <button class="faint-pill" data-faints="4" title="4 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 4 התעלפויות</button>
@@ -1213,7 +1214,7 @@
         </div>
         <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
             <span style="font-size: 13px; color: #c084fc; font-weight: bold;">מצב משחק:</span>
-            <button class="faint-pill active" data-faints="0">⚔️ מצב רגיל</button>
+            <button class="faint-pill active" data-faints="1">⚔️ מצב רגיל (התעלפות אחת)</button>
             <button class="faint-pill" data-faints="2">💫 2 התעלפויות</button>
             <button class="faint-pill" data-faints="3">💫 3 התעלפויות</button>
             <button class="faint-pill" data-faints="4">💫 4 התעלפויות</button>
@@ -1676,9 +1677,9 @@ function setDifficulty(diff) {
     }
 }
 
-/* מצב משחק: מצב רגיל (0) או מצב התעלפות (2, 3, 4 התעלפויות) */
-let maxFaints = 0; // ברירת מחדל: 0 = מצב רגיל (ללא התעלפות)
-let currentFaints = 0;
+/* מצב משחק: מצב רגיל (התעלפות אחת = 1) או מצב התעלפות מוגבר (2, 3, 4 התעלפויות) */
+let maxFaints = 1; // ברירת מחדל: 1 = מצב רגיל (התעלפות אחת)
+let currentFaints = 1;
 
 function setFaintMode(count) {
     count = parseInt(count, 10);
@@ -3441,16 +3442,21 @@ function updateHUD() {
     const faintBadge = document.getElementById('faint-hud-badge');
     if (faintContainer && faintBadge) {
         faintContainer.style.display = 'inline-flex';
-        if (maxFaints > 0) {
+        if (maxFaints === 1) {
+            faintBadge.style.color = currentFaints > 0 ? '#60a5fa' : '#ef4444';
+            faintBadge.style.borderColor = currentFaints > 0 ? '#3b82f6' : '#ef4444';
+            faintBadge.style.background = currentFaints > 0 ? 'rgba(59, 130, 246, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+            faintBadge.innerHTML = `⚔️ מצב רגיל (התעלפות אחת): <span id="faint-count-display">${currentFaints} / 1</span>`;
+        } else if (maxFaints > 1) {
             faintBadge.style.color = currentFaints > 0 ? '#c084fc' : '#ef4444';
             faintBadge.style.borderColor = currentFaints > 0 ? '#a855f7' : '#ef4444';
             faintBadge.style.background = currentFaints > 0 ? 'rgba(168, 85, 247, 0.15)' : 'rgba(239, 68, 68, 0.15)';
             faintBadge.innerHTML = `💫 התעלפויות: <span id="faint-count-display">${currentFaints} / ${maxFaints}</span>`;
         } else {
-            faintBadge.style.color = '#60a5fa';
-            faintBadge.style.borderColor = '#3b82f6';
-            faintBadge.style.background = 'rgba(59, 130, 246, 0.15)';
-            faintBadge.innerHTML = `⚔️ מצב רגיל`;
+            faintBadge.style.color = '#94a3b8';
+            faintBadge.style.borderColor = '#64748b';
+            faintBadge.style.background = 'rgba(100, 116, 139, 0.15)';
+            faintBadge.innerHTML = `⚔️ ללא התעלפות`;
         }
     }
 }
@@ -4323,7 +4329,7 @@ function gameLoop() {
 // אתחול רשימות השלבים בתיבות הבחירה והגדרות ברירת מחדל
 populateWaveDropdowns();
 setDifficulty('normal');
-setFaintMode(0);
+setFaintMode(1);
 
 // Start loop
 gameLoop();
