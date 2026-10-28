@@ -1047,11 +1047,11 @@
         </div>
     </div>
 
-    <!-- Wizard Evolution Modal Overlay (גל 12) -->
+    <!-- Wizard Evolution Modal Overlay (דרגה 12) -->
     <div id="wizard-modal-overlay" class="hidden">
         <div id="wizard-modal">
-            <h1 style="font-size: 28px; color: #f59e0b; margin-bottom: 4px;">🧙‍♂️ התפתחות מכשף - גל 12!</h1>
-            <p style="font-size: 14px; margin-bottom: 8px; color: #cbd5e1; max-width: 780px;">הגעת ל-100% בגל 12! בחר את נתיב הקסם שלך (לחץ על כרטיס או הקש <b>1</b>, <b>2</b>, או <b>3</b> במקלדת):</p>
+            <h1 style="font-size: 28px; color: #f59e0b; margin-bottom: 4px;">🧙‍♂️ התפתחות מכשף - דרגה 12!</h1>
+            <p style="font-size: 14px; margin-bottom: 8px; color: #cbd5e1; max-width: 780px;">עלית לדרגה 12! בחר את נתיב הקסם שלך (לחץ על כרטיס או הקש <b>1</b>, <b>2</b>, או <b>3</b> במקלדת):</p>
             <div class="wizard-cards">
                 <!-- Fire Wizard -->
                 <div class="wizard-card fire" id="card-wizard-fire">
@@ -1505,7 +1505,7 @@ let floatingTexts = [];
 let xpOrbs = [];
 let discoveredSpeciesIds = new Set();
 
-// Wizard Class & Abilities System (גל 12)
+// Wizard Class & Abilities System (דרגה 12)
 let wizardClass = null; // null, 'fire', 'ice', 'plant'
 let wizardClassChosen = false;
 let strongCooldownTimer = 0;
@@ -2788,8 +2788,6 @@ function startWave(waveNum) {
         addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 גל 10: נפתח שדרוג מזל!", "#10b981");
         sfx.playLevelUp();
         setTimeout(() => triggerUpgradeChoice(), 400);
-    } else if (waveNum === 12 && !wizardClassChosen) {
-        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🔮 גל 12: הגע ל-100% כדי להפוך למכשף!", "#a855f7");
     }
 
     if (wizardClass) updateAbilitiesHUD();
@@ -2818,12 +2816,6 @@ function handleWaveSpawning() {
 
     // Check wave completion
     if (waveKillsCurrent >= waveKillsNeeded) {
-        // אם סיימת 100% מגל 12 בפעם הראשונה -> מחכים לבחירת מכשף לפני מעבר לגל 13!
-        if (currentWave === 12 && !wizardClassChosen) {
-            pendingWaveNext = 13;
-            triggerWizardSelection();
-            return;
-        }
         if (currentWave < MAX_WAVES) {
             startWave(currentWave + 1);
         } else {
@@ -2844,17 +2836,19 @@ function gainXP(amount) {
         levelDisplay.innerText = upgrades.level;
         sfx.playLevelUp();
 
-        // הודעות חגיגיות בעלייה לדרגה 6, 8, ו-10
+        // הודעות חגיגיות בעלייה לדרגה 6, 8, 10, ו-12
         if (upgrades.level === 6) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 6: נפתח שדרוג מפלצת לעזרה (גובלין דרגה 3)!", "#facc15");
         } else if (upgrades.level === 8) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 עלית לדרגה 8: נפתח שדרוג עליית חיים למקס!", "#ec4899");
         } else if (upgrades.level === 10) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 עלית לדרגה 10: נפתח שדרוג מזל!", "#10b981");
+        } else if (upgrades.level === 12 && !wizardClassChosen) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🧙‍♂️ עלית לדרגה 12: בחר את התפתחות המכשף שלך!", "#a855f7");
         }
 
-        // אם הגעת ל-100% בגל 12 בפעם הראשונה -> נפתחת בחירת מכשף במקום שדרוגים!
-        if (currentWave === 12 && !wizardClassChosen) {
+        // במקום גל 12 - הופכים למכשף בדרגה 12!
+        if (upgrades.level >= 12 && !wizardClassChosen) {
             triggerWizardSelection();
         } else {
             triggerUpgradeChoice();
@@ -3393,8 +3387,8 @@ function jumpToWave(waveNum, activateChat = false) {
         setChatPlaysMode(true, true);
     }
 
-    // אם הגל הוא 12 ומעלה והשחקן טרם בחר מכשף, פותח את בחירת המכשף!
-    if (waveNum >= 12 && !wizardClassChosen) {
+    // אם הדרגה היא 12 ומעלה והשחקן טרם בחר מכשף, פותח את בחירת המכשף!
+    if (upgrades.level >= 12 && !wizardClassChosen) {
         triggerWizardSelection();
     } else {
         gameState = 'playing';
