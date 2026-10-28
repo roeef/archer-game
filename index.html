@@ -1807,9 +1807,11 @@ class Player {
 
         if (upgrades.hp <= 0) {
             upgrades.hp = 0;
+            currentFaints--;
             if (maxFaints > 0 && currentFaints > 0) {
                 this.triggerFaint();
             } else {
+                currentFaints = 0;
                 triggerGameOver();
             }
         }
@@ -1817,7 +1819,6 @@ class Player {
     }
 
     triggerFaint() {
-        currentFaints--;
         this.faintTimer = 60; // משותק לשנייה אחת בדיוק (60 פריימים ב-60 FPS)
         this.invulnerableTimer = 90; // 1.5 שניות חסינות להגנה (שנייה בזמן מעולף + חצי שנייה התאוששות)
         upgrades.hp = upgrades.maxHp; // החזרת חיים מלאים
@@ -1843,7 +1844,8 @@ class Player {
 
         screenShake = 12;
         sfx.playFaint();
-        addFloatingText(this.x, this.y - 45, `💫 התעלפת! (נותרו ${currentFaints} התעלפויות)`, "#c084fc");
+        const remainText = currentFaints === 1 ? 'נותרה התעלפות אחרונה!' : `נותרו עוד ${currentFaints} התעלפויות`;
+        addFloatingText(this.x, this.y - 45, `💫 התעלפת! (${remainText})`, "#c084fc");
         updateHUD();
     }
 
