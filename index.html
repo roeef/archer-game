@@ -678,10 +678,10 @@
             color: #fff;
         }
         .faint-pill.active[data-faints="0"] {
-            background: rgba(148, 163, 184, 0.15);
-            border-color: #64748b;
-            color: #cbd5e1;
-            box-shadow: 0 0 10px rgba(100, 116, 139, 0.3);
+            background: rgba(59, 130, 246, 0.22);
+            border-color: #3b82f6;
+            color: #60a5fa;
+            box-shadow: 0 0 14px rgba(59, 130, 246, 0.45);
         }
         .faint-pill.active[data-faints="2"] {
             background: rgba(192, 132, 252, 0.2);
@@ -1043,14 +1043,14 @@
             </div>
         </div>
 
-        <!-- Faint Mode Selection -->
+        <!-- Game Mode Selection (Normal Mode / Faint Mode) -->
         <div style="margin-top: 10px; text-align: center;">
             <div style="font-size: 14px; font-weight: bold; color: #c084fc; margin-bottom: 6px;">
-                💫 מצב התעלפות (הזדמנויות נוספות במקום מוות):
+                🎮 בחר מצב משחק:
             </div>
             <div class="faint-container">
-                <button class="faint-pill" data-faints="0" title="ללא התעלפות — מוות מידי">❌ כבוי</button>
-                <button class="faint-pill active" data-faints="2" title="2 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 2 התעלפויות</button>
+                <button class="faint-pill active" data-faints="0" title="מצב רגיל — ללא התעלפות (הפסד כאשר החיים נגמרים)">⚔️ מצב רגיל</button>
+                <button class="faint-pill" data-faints="2" title="2 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 2 התעלפויות</button>
                 <button class="faint-pill" data-faints="3" title="3 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 3 התעלפויות</button>
                 <button class="faint-pill" data-faints="4" title="4 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 4 התעלפויות</button>
             </div>
@@ -1212,11 +1212,11 @@
             <button class="diff-pill" data-diff="hard">🔥 קשה (כפול)</button>
         </div>
         <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
-            <span style="font-size: 13px; color: #c084fc; font-weight: bold;">התעלפות:</span>
-            <button class="faint-pill" data-faints="0">❌ כבוי</button>
-            <button class="faint-pill active" data-faints="2">💫 2</button>
-            <button class="faint-pill" data-faints="3">💫 3</button>
-            <button class="faint-pill" data-faints="4">💫 4</button>
+            <span style="font-size: 13px; color: #c084fc; font-weight: bold;">מצב משחק:</span>
+            <button class="faint-pill active" data-faints="0">⚔️ מצב רגיל</button>
+            <button class="faint-pill" data-faints="2">💫 2 התעלפויות</button>
+            <button class="faint-pill" data-faints="3">💫 3 התעלפויות</button>
+            <button class="faint-pill" data-faints="4">💫 4 התעלפויות</button>
         </div>
         <button id="in-game-jump-close-btn" class="btn" style="background: #334155; font-size: 13px; padding: 6px 20px;">סגור וחזור למשחק</button>
     </div>
@@ -1676,9 +1676,9 @@ function setDifficulty(diff) {
     }
 }
 
-/* מצב התעלפות (הזדמנויות נוספות במקום מוות: כבוי = 0, 2, 3, או 4 התעלפויות) */
-let maxFaints = 2; // ברירת מחדל: 2 התעלפויות (אפשרויות: 0, 2, 3, 4)
-let currentFaints = 2;
+/* מצב משחק: מצב רגיל (0) או מצב התעלפות (2, 3, 4 התעלפויות) */
+let maxFaints = 0; // ברירת מחדל: 0 = מצב רגיל (ללא התעלפות)
+let currentFaints = 0;
 
 function setFaintMode(count) {
     count = parseInt(count, 10);
@@ -3438,14 +3438,19 @@ function updateHUD() {
     xpText.innerText = `${Math.floor(xpPct)}%`;
 
     const faintContainer = document.getElementById('faint-hud-container');
-    const faintDisplay = document.getElementById('faint-count-display');
-    if (faintContainer && faintDisplay) {
+    const faintBadge = document.getElementById('faint-hud-badge');
+    if (faintContainer && faintBadge) {
+        faintContainer.style.display = 'inline-flex';
         if (maxFaints > 0) {
-            faintContainer.style.display = 'inline-flex';
-            faintDisplay.innerText = `${currentFaints} / ${maxFaints}`;
-            faintDisplay.style.color = currentFaints > 0 ? '#c084fc' : '#ef4444';
+            faintBadge.style.color = currentFaints > 0 ? '#c084fc' : '#ef4444';
+            faintBadge.style.borderColor = currentFaints > 0 ? '#a855f7' : '#ef4444';
+            faintBadge.style.background = currentFaints > 0 ? 'rgba(168, 85, 247, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+            faintBadge.innerHTML = `💫 התעלפויות: <span id="faint-count-display">${currentFaints} / ${maxFaints}</span>`;
         } else {
-            faintContainer.style.display = 'none';
+            faintBadge.style.color = '#60a5fa';
+            faintBadge.style.borderColor = '#3b82f6';
+            faintBadge.style.background = 'rgba(59, 130, 246, 0.15)';
+            faintBadge.innerHTML = `⚔️ מצב רגיל`;
         }
     }
 }
@@ -4318,7 +4323,7 @@ function gameLoop() {
 // אתחול רשימות השלבים בתיבות הבחירה והגדרות ברירת מחדל
 populateWaveDropdowns();
 setDifficulty('normal');
-setFaintMode(2);
+setFaintMode(0);
 
 // Start loop
 gameLoop();
