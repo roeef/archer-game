@@ -1030,10 +1030,12 @@
         
         <div class="controls-info">
             <strong>🎮 הוראות שליטה:</strong><br>
-            • <b>W, A, S, D</b> או <b>מקשי החיצים</b> — תנועה במרחב.<br>
-            • <b>עכבר</b> — כיוון החץ.<br>
-            • <b>קליק שמאלי</b> או מקש <b>Ctrl</b> — ירי חץ (אפשר להחזיק לחוץ לירי רציף).<br>
-            • <b>רווח</b> — השהיית המשחק (Pause) | <b>C</b> / <b>T</b> — הדלקת/כיבוי מצב צ'אט משחק.
+            • <b>W, A, S, D</b> או <b>חיצים</b> — תנועה במרחב.<br>
+            • <b>עכבר</b> — כיוון החץ | <b>קליק שמאלי</b> או <b>Ctrl</b> — ירי חץ (אפשר להחזיק לחוץ לירי רציף).<br>
+            • <b>רווח</b> — השהיית המשחק (Pause) | <b>C</b> / <b>T</b> — צ'אט משחק.<br>
+            • <b>🧙‍♂️ יכולות מכשף (נפתחות בדרגה 12):</b><br>
+            &nbsp;&nbsp;💥 <b>יכולת חזקה</b>: מקש <b>W</b> (או <b>PgUp</b> / <b>Z</b> / <b>1</b>) — הפעלת היכולת החזקה (הדף אש / חומה קפואה / ריפוי טבעי).<br>
+            &nbsp;&nbsp;☄️ <b>יכולת חלשה</b>: מקש <b>R</b> (או <b>PgDn</b> / <b>X</b> / <b>2</b>) — הפעלת היכולת החלשה (כדור אש מתביית / הקפאה כפולה / מלכודות קוצים).
         </div>
 
         <!-- Difficulty Selection -->
@@ -1103,16 +1105,16 @@
 
     <!-- Abilities HUD -->
     <div id="abilities-hud" class="hidden">
-        <div class="ability-slot" id="slot-strong" title="לחץ או הקש PgUp / Z / 1">
-            <span class="ability-key" style="font-size: 11px;">PgUp</span>
+        <div class="ability-slot" id="slot-strong" title="לחץ או הקש W / PgUp / Z / 1">
+            <span class="ability-key" style="font-size: 11px;">W</span>
             <span class="ability-icon" id="strong-icon">🔥</span>
             <div class="ability-info">
                 <div class="ability-name" id="strong-name">יכולת חזקה</div>
                 <div class="ability-timer" id="strong-timer">מוכן!</div>
             </div>
         </div>
-        <div class="ability-slot" id="slot-weak" title="לחץ או הקש PgDn / X / 2">
-            <span class="ability-key" style="font-size: 11px;">PgDn</span>
+        <div class="ability-slot" id="slot-weak" title="לחץ או הקש R / PgDn / X / 2">
+            <span class="ability-key" style="font-size: 11px;">R</span>
             <span class="ability-icon" id="weak-icon">☄️</span>
             <div class="ability-info">
                 <div class="ability-name" id="weak-name">יכולת חלשה</div>
@@ -1132,11 +1134,11 @@
                     <div style="font-size: 38px; margin-bottom: 4px;">🔥</div>
                     <h3 style="color: #f87171; font-size: 18px; margin-bottom: 4px;">מכשף אש [1]</h3>
                     <div class="wizard-ability-box">
-                        <b style="color: #fca5a5;">💥 יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
+                        <b style="color: #fca5a5;">💥 יכולת חזקה [מקש W / PgUp / Z] (20 שניות):</b><br>
                         <b>"הדף אש"</b> — יוצר עיגול אש ענק מתרחב שמחסל והורג מיידית כל מפלצת שנוגעת בו!
                     </div>
                     <div class="wizard-ability-box">
-                        <b style="color: #fdba74;">☄️ יכולת חלשה [PgDn / X] (8 שניות):</b><br>
+                        <b style="color: #fdba74;">☄️ יכולת חלשה [מקש R / PgDn / X] (8 שניות):</b><br>
                         <b>"כדור אש מתביית"</b> — יורה כדור אש שעוקב אחרי אחת המפלצות, מחסל אותה במכה ונעלם!
                     </div>
                     <button class="btn-wizard-select btn-wizard-fire" id="btn-wizard-fire">בחר מכשף אש 🔥 [מקש 1]</button>
@@ -1147,11 +1149,11 @@
                     <div style="font-size: 38px; margin-bottom: 4px;">❄️</div>
                     <h3 style="color: #38bdf8; font-size: 18px; margin-bottom: 4px;">מכשף קרח [2]</h3>
                     <div class="wizard-ability-box">
-                        <b style="color: #7dd3fc;">🛡️ יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
+                        <b style="color: #7dd3fc;">🛡️ יכולת חזקה [מקש W / PgUp / Z] (20 שניות):</b><br>
                         <b>"חומה קפואה"</b> — יוצר חומה של גבישי קרח מסביבך למשך 5 שניות שמפלצות לא יכולות לעבור!
                     </div>
                     <div class="wizard-ability-box">
-                        <b style="color: #bae6fd;">🧊 יכולת חלשה [PgDn / X] (8 שניות):</b><br>
+                        <b style="color: #bae6fd;">🧊 יכולת חלשה [מקש R / PgDn / X] (8 שניות):</b><br>
                         <b>"הקפאה כפולה"</b> — מקפיא לחלוטין ל-3 שניות את 2 המפלצות שהכי קרובות אליך!
                     </div>
                     <button class="btn-wizard-select btn-wizard-ice" id="btn-wizard-ice">בחר מכשף קרח ❄️ [מקש 2]</button>
@@ -1162,11 +1164,11 @@
                     <div style="font-size: 38px; margin-bottom: 4px;">🌿</div>
                     <h3 style="color: #4ade80; font-size: 18px; margin-bottom: 4px;">מכשף צמחים [3]</h3>
                     <div class="wizard-ability-box">
-                        <b style="color: #86efac;">💚 יכולת חזקה [PgUp / Z] (20 שניות):</b><br>
+                        <b style="color: #86efac;">💚 יכולת חזקה [מקש W / PgUp / Z] (20 שניות):</b><br>
                         <b>"ריפוי טיבעי"</b> — מרפא מיידית 80 חיים לקשת שלך בכל הפעלה!
                     </div>
                     <div class="wizard-ability-box">
-                        <b style="color: #bbf7d0;">🌵 יכולת חלשה [PgDn / X] (8 שניות):</b><br>
+                        <b style="color: #bbf7d0;">🌵 יכולת חלשה [מקש R / PgDn / X] (8 שניות):</b><br>
                         <b>"5 יחידות קוצים"</b> — שותל 5 מלכודות קוצים על הלוח; מפלצת שדורכת עליהן חוטפת 25% נזק והקוץ נעלם!
                     </div>
                     <button class="btn-wizard-select btn-wizard-plant" id="btn-wizard-plant">בחר מכשף צמחים 🌿 [מקש 3]</button>
@@ -3545,25 +3547,25 @@ function updateAbilitiesHUD() {
     const weakIconEl = document.getElementById('weak-icon');
 
     if (wizardClass === 'fire') {
-        strongNameEl.innerText = 'הדף אש [PgUp]';
+        strongNameEl.innerText = 'הדף אש [W]';
         strongIconEl.innerText = '💥';
-        weakNameEl.innerText = 'כדור אש [PgDn]';
+        weakNameEl.innerText = 'כדור אש [R]';
         weakIconEl.innerText = '☄️';
     } else if (wizardClass === 'ice') {
-        strongNameEl.innerText = 'חומה קפואה [PgUp]';
+        strongNameEl.innerText = 'חומה קפואה [W]';
         strongIconEl.innerText = '🛡️';
-        weakNameEl.innerText = 'הקפאה כפולה [PgDn]';
+        weakNameEl.innerText = 'הקפאה כפולה [R]';
         weakIconEl.innerText = '🧊';
     } else if (wizardClass === 'plant') {
-        strongNameEl.innerText = 'ריפוי טיבעי [PgUp]';
+        strongNameEl.innerText = 'ריפוי טיבעי [W]';
         strongIconEl.innerText = '💚';
-        weakNameEl.innerText = '5 יחידות קוצים [PgDn]';
+        weakNameEl.innerText = '5 יחידות קוצים [R]';
         weakIconEl.innerText = '🌵';
     }
 
     if (strongCooldownTimer <= 0) {
         slotStrong.classList.add('ready');
-        strongTimerEl.innerText = 'מוכן! [PgUp]';
+        strongTimerEl.innerText = 'מוכן! [W]';
         strongTimerEl.classList.remove('cooldown');
     } else {
         slotStrong.classList.remove('ready');
@@ -3573,7 +3575,7 @@ function updateAbilitiesHUD() {
 
     if (weakCooldownTimer <= 0) {
         slotWeak.classList.add('ready');
-        weakTimerEl.innerText = 'מוכן! [PgDn]';
+        weakTimerEl.innerText = 'מוכן! [R]';
         weakTimerEl.classList.remove('cooldown');
     } else {
         slotWeak.classList.remove('ready');
@@ -3858,11 +3860,11 @@ function executeChatCommand(cmdText, isUser = false) {
         }
     }
 
-    if (lower.includes('pgup') || lower.includes('pageup') || lower.includes('z') || lower.includes('ז') || lower.includes('1') || lower.includes('הדף') || lower.includes('חומה') || lower.includes('ריפוי') || lower.includes('חזקה')) {
+    if (lower.includes('pgup') || lower.includes('pageup') || lower.includes('z') || lower.includes('ז') || lower.includes('1') || lower.includes('הדף') || lower.includes('חומה') || lower.includes('ריפוי') || lower.includes('חזקה') || lower === '!w' || lower === 'w') {
         activateAbility(1);
     }
 
-    if (lower.includes('pgdn') || lower.includes('pagedown') || lower.includes('x') || lower.includes('ס') || lower.includes('2') || lower.includes('כדור אש') || lower.includes('הקפאה') || lower.includes('קוצים') || lower.includes('חלשה')) {
+    if (lower.includes('pgdn') || lower.includes('pagedown') || lower.includes('x') || lower.includes('ס') || lower.includes('2') || lower.includes('כדור אש') || lower.includes('הקפאה') || lower.includes('קוצים') || lower.includes('חלשה') || lower === '!r' || lower === 'r') {
         activateAbility(2);
     }
 
@@ -4068,12 +4070,12 @@ window.addEventListener('keydown', e => {
         else if (e.key === '3') selectWizardClass('plant');
     }
 
-    // הפעלת יכולות מכשף בלחיצה על PgUp (חזקה) ו-PgDn (חלשה) (וכן Z / 1, X / 2)
+    // הפעלת יכולות מכשף בלחיצה על W / PgUp (חזקה) ו-R / PgDn (חלשה) (וכן Z / 1, X / 2)
     if (wizardClass && gameState === 'playing' && !isPaused && !chatPlaysActive) {
-        if (e.code === 'PageUp' || e.key === 'PageUp' || e.code === 'KeyZ' || e.key === 'z' || e.key === 'Z' || e.key === 'ז' || e.key === '1') {
+        if (e.code === 'KeyW' || e.key === 'w' || e.key === 'W' || e.key === '\'' || e.code === 'PageUp' || e.key === 'PageUp' || e.code === 'KeyZ' || e.key === 'z' || e.key === 'Z' || e.key === 'ז' || e.key === '1') {
             e.preventDefault();
             activateAbility(1);
-        } else if (e.code === 'PageDown' || e.key === 'PageDown' || e.code === 'KeyX' || e.key === 'x' || e.key === 'X' || e.key === 'ס' || e.key === '2') {
+        } else if (e.code === 'KeyR' || e.key === 'r' || e.key === 'R' || e.key === 'ר' || e.code === 'PageDown' || e.key === 'PageDown' || e.code === 'KeyX' || e.key === 'x' || e.key === 'X' || e.key === 'ס' || e.key === '2') {
             e.preventDefault();
             activateAbility(2);
         } 
