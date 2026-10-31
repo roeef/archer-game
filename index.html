@@ -1477,6 +1477,21 @@ class SoundEffects {
         });
     }
 
+    playExplosion() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(35, this.ctx.currentTime + 0.32);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.32);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.32);
+    }
+
     playLaser() {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
@@ -1795,12 +1810,17 @@ class Player {
         }
     }
 
-    takeDamage(amount) {
+    takeDamage(amount, source = null) {
         if (this.invulnerableTimer > 0 || this.faintTimer > 0) return;
         upgrades.hp -= amount;
         this.invulnerableTimer = 35; // frames of blinking invulnerability
         sfx.playPlayerHurt();
         addFloatingText(this.x, this.y - 20, `-${amount}`, "#ef4444");
+
+        // אם נרכש שדרוג פיצוץ (דרגה 15+): כל פעם שנוגעת בך מפלצת - מתרחש פיצוץ הגנה סביבך!
+        if (source && source instanceof Monster && (upgrades.explosiveCount || 0) > 0) {
+            triggerPlayerTouchExplosion(source);
+        }
 
         // Screen Shake effect
         screenShake = 6;
@@ -2530,7 +2550,7 @@ class Monster {
 
             // Touch Damage check
             if (dist < this.radius + target.radius) {
-                target.takeDamage(this.touchDmg);
+                target.takeDamage(this.touchDmg, this);
             }
         } else if (this.type === 'shooter') {
             // Keep medium distance from target
@@ -2552,7 +2572,7 @@ class Monster {
 
             // Touch Damage (if any)
             if (this.touchDmg > 0 && dist < this.radius + target.radius) {
-                target.takeDamage(this.touchDmg);
+                target.takeDamage(this.touchDmg, this);
             }
         } else if (this.type === 'tank' || this.type === 'boss') {
             // Slow relentless march towards target
@@ -2569,7 +2589,7 @@ class Monster {
 
             // High contact damage
             if (dist < this.radius + target.radius) {
-                target.takeDamage(this.touchDmg);
+                target.takeDamage(this.touchDmg, this);
             }
         }
     }
@@ -2937,6 +2957,120 @@ function addFloatingText(x, y, text, color) {
 }
 
 let screenShake = 0;
+let visualExplosions = [];
+
+class VisualExplosion {
+    constructor(x, y, radius, color = '#f97316') {
+        this.x = x;
+        this.y = y;
+        this.radius = 5;
+        this.maxRadius = radius;
+        this.color = color;
+        this.life = 18;
+        this.maxLife = 18;
+        this.alive = true;
+    }
+
+    update() {
+        this.life--;
+        this.radius += (this.maxRadius - this.radius) * 0.28;
+        if (this.life <= 0) {
+            this.alive = false;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        const progress = 1 - (this.life / this.maxLife);
+        ctx.globalAlpha = Math.max(0, 0.75 * (1 - progress));
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3 * (1 - progress);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * 0.75, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+// שדרוג דרגה 15: פיצוץ חץ במגע
+function triggerArrowExplosion(x, y, hitMonster) {
+    const explosionCount = upgrades.explosiveCount || 1;
+    // רדיוס ונזק גדלים עם כל קנייה של השדרוג
+    const blastRadius = 55 + explosionCount * 18;
+    const blastDamage = Math.round((upgrades.arrowDamage || 25) * (0.65 + explosionCount * 0.25));
+
+    visualExplosions.push(new VisualExplosion(x, y, blastRadius, '#f97316'));
+    sfx.playExplosion();
+    screenShake = Math.max(screenShake, 4 + explosionCount * 1.5);
+
+    for (let k = 0; k < 12 + explosionCount * 4; k++) {
+        const colors = ['#f97316', '#ef4444', '#facc15', '#ffffff'];
+        const c = colors[Math.floor(Math.random() * colors.length)];
+        particles.push(new Particle(x, y, c, 3.5, 3.2, 22));
+    }
+
+    // פגיעה בכל המפלצות ברדיוס הפיצוץ
+    let damagedCount = 0;
+    for (let j = 0; j < monsters.length; j++) {
+        const m = monsters[j];
+        if (!m.alive || m === hitMonster) continue;
+        const d = Math.hypot(m.x - x, m.y - y);
+        if (d < blastRadius + m.radius) {
+            m.takeDamage(blastDamage);
+            damagedCount++;
+            for (let p = 0; p < 4; p++) {
+                particles.push(new Particle(m.x, m.y, '#f97316', 2.5, 1.8, 14));
+            }
+        }
+    }
+
+    addFloatingText(x, y - 25, `💥 פיצוץ! -${blastDamage}`, "#f97316");
+}
+
+// שדרוג דרגה 15: פיצוץ הגנה סביב השחקן כאשר מפלצת נוגעת בו
+function triggerPlayerTouchExplosion(touchingMonster) {
+    if (!player) return;
+    const explosionCount = upgrades.explosiveCount || 1;
+    const blastRadius = 90 + explosionCount * 22;
+    const blastDamage = Math.round((upgrades.arrowDamage || 25) * (1.2 + explosionCount * 0.4));
+
+    visualExplosions.push(new VisualExplosion(player.x, player.y, blastRadius, '#ef4444'));
+    sfx.playExplosion();
+    screenShake = Math.max(screenShake, 8 + explosionCount * 2);
+
+    for (let k = 0; k < 18 + explosionCount * 6; k++) {
+        const colors = ['#ef4444', '#f97316', '#fbbf24', '#ffffff'];
+        const c = colors[Math.floor(Math.random() * colors.length)];
+        particles.push(new Particle(player.x, player.y, c, 4, 4, 25));
+    }
+
+    // פיצוץ והדף של המפלצת שנגעה ושל כל מפלצת סמוכה
+    for (let j = 0; j < monsters.length; j++) {
+        const m = monsters[j];
+        if (!m.alive) continue;
+        const d = Math.hypot(m.x - player.x, m.y - player.y);
+        if (d < blastRadius + m.radius) {
+            m.takeDamage(blastDamage);
+            // הדפת המפלצת אחורה מהשחקן
+            if (d > 0) {
+                const pushDist = (blastRadius + m.radius - d) + 40;
+                m.x += ((m.x - player.x) / d) * pushDist;
+                m.y += ((m.y - player.y) / d) * pushDist;
+                m.x = Math.max(m.radius, Math.min(canvas.width - m.radius, m.x));
+                m.y = Math.max(m.radius, Math.min(canvas.height - m.radius, m.y));
+            }
+        }
+    }
+
+    addFloatingText(player.x, player.y - 45, `💣 פיצוץ הגנה! -${blastDamage}💥`, "#ef4444");
+}
 
 /* -------------------------------------------------------------
    WAVE SYSTEM (30 Waves / Monster Species)
@@ -3014,6 +3148,8 @@ function gainXP(amount) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 עלית לדרגה 10: נפתח שדרוג מזל!", "#10b981");
         } else if (upgrades.level === 12 && !wizardClassChosen) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🧙‍♂️ עלית לדרגה 12: בחר את התפתחות המכשף שלך!", "#a855f7");
+        } else if (upgrades.level === 15) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💣 עלית לדרגה 15: נפתח שדרוג חצי נפץ ופיצוץ הגנה!", "#f97316");
         }
 
         // במקום גל 12 - הופכים למכשף בדרגה 12!
@@ -3166,7 +3302,28 @@ const UPGRADE_POOL = [
             addFloatingText(player.x, player.y - 30, `מזל רמה ${upgrades.luck}! 🍀 (${chanceText})`, "#facc15");
         }
     },
-    ];
+    // 10. חצי נפץ ופיצוץ הגנה (נפתח בדרגה 15!)
+    {
+        id: 'explosive_touch',
+        name: 'חצי נפץ ופיצוץ הגנה',
+        unlockLevel: 15,
+        isLegendary: true,
+        tierName: '⭐ נפתח בדרגה 15!',
+        badgeClass: 'badge-legendary',
+        getDesc: () => {
+            const curCount = upgrades.explosiveCount || 0;
+            const nextCount = curCount + 1;
+            return `<b>רמה ${nextCount}:</b> +פיצוץ 1 נוסף במגע חץ (רדיוס +18, נזק אזורי) ופיצוץ הדף סביבך על כל מפלצת שנוגעת בך! (כרגע: רמה ${curCount})`;
+        },
+        icon: '💣',
+        apply: () => {
+            upgrades.explosiveCount = (upgrades.explosiveCount || 0) + 1;
+            const px = player ? player.x : canvas.width / 2;
+            const py = player ? player.y : canvas.height / 2;
+            addFloatingText(px, py - 35, `💣 חצי נפץ ופיצוץ מגע שודרגו לרמה ${upgrades.explosiveCount}!`, "#f97316");
+        }
+    }
+];
 
 function triggerUpgradeChoice() {
     gameState = 'upgrade';
@@ -3474,7 +3631,8 @@ function resetGame() {
         xp: 0,
         level: 1,
         xpToNext: 80,
-        luck: 0
+        luck: 0,
+        explosiveCount: 0
     };
     score = 0;
     scoreDisplay.innerText = 0;
@@ -3489,6 +3647,7 @@ function resetGame() {
     particles = [];
     floatingTexts = [];
     xpOrbs = [];
+    visualExplosions = [];
 
     // איפוס מחלקת מכשף ויכולות
     pendingWaveNext = null;
@@ -4147,6 +4306,12 @@ function gameLoop() {
                 if (dist < m.radius + 6) {
                     arr.hitTargets.add(m);
                     m.takeDamage(arr.damage);
+
+                    // אם נרכש שדרוג חצי נפץ (דרגה 15+): פיצוץ אזורי במגע חץ
+                    if ((upgrades.explosiveCount || 0) > 0) {
+                        triggerArrowExplosion(arr.x, arr.y, m);
+                    }
+
                     arr.pierce--;
                     if (arr.pierce <= 0) {
                         arr.alive = false;
@@ -4239,6 +4404,14 @@ function gameLoop() {
             ctx.strokeRect(cx - 5, cy - 5, 10, 10);
         }
         ctx.restore();
+    }
+
+    // 6.8. Update & Draw Visual Explosions (פיצוצי מגע וחצי נפץ)
+    for (let i = visualExplosions.length - 1; i >= 0; i--) {
+        const ex = visualExplosions[i];
+        ex.update();
+        ex.draw();
+        if (!ex.alive) visualExplosions.splice(i, 1);
     }
 
     // 7. Update & Draw Particles
