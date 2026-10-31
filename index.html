@@ -1070,14 +1070,14 @@
             </div>
             <div class="quick-stage-pills">
                 <button class="stage-pill" data-wave="1">גל 1 (התחלה)</button>
-                <button class="stage-pill" data-wave="5">גל 5 (מיני-בוס)</button>
-                <button class="stage-pill" data-wave="6">גל 6 (גובלין עזר)</button>
-                <button class="stage-pill" data-wave="8">גל 8 (עליית מקס חיים)</button>
-                <button class="stage-pill" data-wave="10">גל 10 (שדרוג מזל 🍀)</button>
-                <button class="stage-pill" data-wave="12">גל 12 (מכשף 🧙‍♂️)</button>
-                <button class="stage-pill" data-wave="15">גל 15 (שד להבות)</button>
-                <button class="stage-pill" data-wave="20">גל 20 (גנרל דרקוני)</button>
-                <button class="stage-pill" data-wave="25">גל 25 (ליץ' האלמוות)</button>
+                <button class="stage-pill" data-wave="5">גל 5 (מיני-בוס 🔥)</button>
+                <button class="stage-pill" data-wave="6">גל 6 (עקרב מדבר)</button>
+                <button class="stage-pill" data-wave="8">גל 8 (עכביש רעיל)</button>
+                <button class="stage-pill" data-wave="10">גל 10 (רוח רפאים)</button>
+                <button class="stage-pill" data-wave="12">גל 12 (קוסם קרח)</button>
+                <button class="stage-pill" data-wave="15">גל 15 (שד להבות 👹)</button>
+                <button class="stage-pill" data-wave="20">גל 20 (גנרל דרקוני 🐉)</button>
+                <button class="stage-pill" data-wave="25">גל 25 (ליץ' האלמוות 💀)</button>
                 <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
             </div>
         </div>
@@ -1190,7 +1190,7 @@
     <!-- In-Game Wave Jump Modal -->
     <div id="wave-jump-modal" class="hidden">
         <h2 style="color: #c084fc; margin-bottom: 6px;">⏩ בחר שלב לקפיצה ישירה</h2>
-        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; text-align: center;">בחר גל מ-1 עד 30. הציוד והשדרוגים שלך יותאמו אוטומטית לרמת הגל!</p>
+        <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px; text-align: center;">בחר גל מ-1 עד 30 לקפיצה ישירה (מתחילים כקשת בסיסי ללא שדרוגים מוקדמים)!</p>
         <div style="display: flex; gap: 8px; justify-content: center; align-items: center; width: 100%; margin-bottom: 10px;">
             <select id="in-game-wave-select" class="wave-dropdown" style="flex: 1;">
                 <!-- Populated dynamically -->
@@ -1199,11 +1199,11 @@
         </div>
         <div class="quick-stage-pills" style="margin-bottom: 14px;">
             <button class="stage-pill" data-wave="1">גל 1</button>
-            <button class="stage-pill" data-wave="6">גל 6 (גובלין עזר)</button>
-            <button class="stage-pill" data-wave="8">גל 8 (עליית מקס חיים)</button>
-            <button class="stage-pill" data-wave="10">גל 10 (שדרוג מזל 🍀)</button>
-            <button class="stage-pill" data-wave="12">גל 12 (מכשף 🧙‍♂️)</button>
-            <button class="stage-pill" data-wave="20">גל 20</button>
+            <button class="stage-pill" data-wave="5">גל 5 (מיני-בוס 🔥)</button>
+            <button class="stage-pill" data-wave="10">גל 10 (רוח רפאים)</button>
+            <button class="stage-pill" data-wave="15">גל 15 (בוס להבות 👹)</button>
+            <button class="stage-pill" data-wave="20">גל 20 (בוס דרקוני 🐉)</button>
+            <button class="stage-pill" data-wave="25">גל 25 (ליץ' האלמוות 💀)</button>
             <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
         </div>
         <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
@@ -2959,21 +2959,6 @@ function startWave(waveNum) {
     const currentSpecies = MONSTER_SPECIES[currentWave - 1];
     addFloatingText(canvas.width / 2, canvas.height / 2 - 50, `גל ${currentWave}: מפלצת רמה ${currentSpecies.id} - ${currentSpecies.name}! [${diffConf.name} - ${waveKillsNeeded} מפלצות]`, "#f59e0b");
 
-    // פתיחה והצעת שדרוגים מיוחדים בגל 6, 8, 10, ו-12
-    if (waveNum === 6) {
-        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 גל 6: נפתח שדרוג מפלצת לעזרה (גובלין דרגה 3)!", "#facc15");
-        sfx.playLevelUp();
-        setTimeout(() => triggerUpgradeChoice(), 400);
-    } else if (waveNum === 8) {
-        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 גל 8: נפתח שדרוג עליית חיים למקס!", "#ec4899");
-        sfx.playLevelUp();
-        setTimeout(() => triggerUpgradeChoice(), 400);
-    } else if (waveNum === 10) {
-        addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🍀 גל 10: נפתח שדרוג מזל!", "#10b981");
-        sfx.playLevelUp();
-        setTimeout(() => triggerUpgradeChoice(), 400);
-    }
-
     if (wizardClass) updateAbilitiesHUD();
 }
 
@@ -3544,10 +3529,6 @@ function populateWaveDropdowns() {
             opt.value = sp.id;
             let note = '';
             if (sp.id === 5) note = ' 🔥 (מיני-בוס)';
-            else if (sp.id === 6) note = ' 👺 (נפתח גובלין עזר)';
-            else if (sp.id === 8) note = ' 💖 (עליית מקס חיים)';
-            else if (sp.id === 10) note = ' 🍀 (נפתח שדרוג מזל)';
-            else if (sp.id === 12) note = ' 🧙‍♂️ (בחירת מכשף!)';
             else if (sp.id === 15) note = ' 👹 (בוס להבות)';
             else if (sp.id === 20) note = ' 🐉 (בוס דרקוני)';
             else if (sp.id === 25) note = ' 💀 (ליץ\' האלמוות)';
@@ -3566,26 +3547,8 @@ function jumpToWave(waveNum, activateChat = false) {
     victoryScreen.classList.add('hidden');
     if (waveJumpModal) waveJumpModal.classList.add('hidden');
     
+    // איפוס מלא לקשת התחלתי בסיסי (אפשרות 1 - ללא שדרוגים מוקדמים)
     resetGame();
-    
-    // התאמת שדרוגים וכוח לקשת לפי רמת הגל הנבחר:
-    upgrades.level = waveNum;
-    upgrades.arrowDamage = 25 + Math.floor((waveNum - 1) * 7.5);
-    upgrades.multiShot = waveNum >= 18 ? 3 : (waveNum >= 8 ? 2 : 1);
-    upgrades.piercing = waveNum >= 14 ? 3 : (waveNum >= 5 ? 2 : 1);
-    upgrades.fireDelay = Math.max(8, 18 - Math.floor(waveNum * 0.35));
-    upgrades.maxHp = 100 + (waveNum - 1) * 15;
-    upgrades.hp = upgrades.maxHp;
-    upgrades.moveSpeed = 3.2 + Math.min(1.5, (waveNum - 1) * 0.08);
-
-    // אם הגל הוא 6 ומעלה, מצרף אוטומטית את גובלין העזר!
-    if (waveNum >= 6 && helperMonsters.length === 0) {
-        helperMonsters.push(new HelperMonster());
-        helperMonsters[0].level = Math.max(1, Math.floor(waveNum / 3));
-        helperMonsters[0].damage += (helperMonsters[0].level - 1) * 12;
-        helperMonsters[0].maxHp += (helperMonsters[0].level - 1) * 20;
-        helperMonsters[0].hp = helperMonsters[0].maxHp;
-    }
 
     startWave(waveNum);
     updateHUD();
@@ -3594,12 +3557,7 @@ function jumpToWave(waveNum, activateChat = false) {
         setChatPlaysMode(true, true);
     }
 
-    // אם הדרגה היא 12 ומעלה והשחקן טרם בחר מכשף, פותח את בחירת המכשף!
-    if (upgrades.level >= 12 && !wizardClassChosen) {
-        triggerWizardSelection();
-    } else {
-        gameState = 'playing';
-    }
+    gameState = 'playing';
 }
 
 /* -------------------------------------------------------------
