@@ -1009,6 +1009,10 @@
             <span id="faint-hud-badge" style="font-weight: bold; color: #c084fc; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; padding: 2px 8px; border-radius: 12px; font-size: 13px;">💫 התעלפויות: <span id="faint-count-display">2 / 2</span></span>
         </div>
 
+        <div class="hud-item" id="explosive-hud-container" style="display: none;">
+            <span id="explosive-hud-badge" style="font-weight: bold; color: #fb923c; background: rgba(249, 115, 22, 0.15); border: 1px solid #f97316; padding: 2px 8px; border-radius: 12px; font-size: 13px;">💣 פיצוצי מגע: <span id="explosive-count-display">0</span></span>
+        </div>
+
         <div class="hud-item" style="pointer-events: auto; display: flex; gap: 8px;">
             <button id="toggle-chat-btn" class="hud-action-btn">💬 צ'אט משחק [כבוי]</button>
             <button id="in-game-wave-btn" class="hud-action-btn">⏩ בחר גל</button>
@@ -3034,33 +3038,43 @@ function triggerArrowExplosion(x, y, hitMonster) {
     addFloatingText(x, y - 25, `💥 פיצוץ! -${blastDamage}`, "#f97316");
 }
 
-// שדרוג דרגה 15: פיצוץ הגנה סביב השחקן כאשר מפלצת נוגעת בו
+// שדרוג דרגה 15: פיצוץ הגנה סביב השחקן כאשר מפלצת נוגעת בו (מחסל את המפלצת ומנצל פיצוץ 1)
 function triggerPlayerTouchExplosion(touchingMonster) {
     if (!player) return;
-    const explosionCount = upgrades.explosiveCount || 1;
-    const blastRadius = 90 + explosionCount * 22;
-    const blastDamage = Math.round((upgrades.arrowDamage || 25) * (1.2 + explosionCount * 0.4));
+    if ((upgrades.explosiveCount || 0) <= 0) return;
 
+    // מוריד פיצוץ 1 ממלאי הפיצוצים
+    upgrades.explosiveCount--;
+    updateHUD();
+
+    const blastRadius = 120;
     visualExplosions.push(new VisualExplosion(player.x, player.y, blastRadius, '#ef4444'));
     sfx.playExplosion();
-    screenShake = Math.max(screenShake, 8 + explosionCount * 2);
+    screenShake = Math.max(screenShake, 10);
 
-    for (let k = 0; k < 18 + explosionCount * 6; k++) {
+    for (let k = 0; k < 22; k++) {
         const colors = ['#ef4444', '#f97316', '#fbbf24', '#ffffff'];
         const c = colors[Math.floor(Math.random() * colors.length)];
-        particles.push(new Particle(player.x, player.y, c, 4, 4, 25));
+        particles.push(new Particle(player.x, player.y, c, 4, 4.2, 26));
     }
 
-    // פיצוץ והדף של המפלצת שנגעה ושל כל מפלצת סמוכה
+    // חיסול מוחלט ומיידי של המפלצת שנגעה בך!
+    if (touchingMonster && touchingMonster.alive) {
+        const lethalDamage = Math.max(999999, Math.ceil(touchingMonster.hp * 2));
+        touchingMonster.takeDamage(lethalDamage);
+        addFloatingText(touchingMonster.x, touchingMonster.y - 20, "חיסול מגע! 💥💀", "#ef4444");
+    }
+
+    // פיצוץ והדף של שאר המפלצות באזור
+    const areaDamage = Math.round((upgrades.arrowDamage || 25) * 2.5);
     for (let j = 0; j < monsters.length; j++) {
         const m = monsters[j];
-        if (!m.alive) continue;
+        if (!m.alive || m === touchingMonster) continue;
         const d = Math.hypot(m.x - player.x, m.y - player.y);
         if (d < blastRadius + m.radius) {
-            m.takeDamage(blastDamage);
-            // הדפת המפלצת אחורה מהשחקן
+            m.takeDamage(areaDamage);
             if (d > 0) {
-                const pushDist = (blastRadius + m.radius - d) + 40;
+                const pushDist = (blastRadius + m.radius - d) + 45;
                 m.x += ((m.x - player.x) / d) * pushDist;
                 m.y += ((m.y - player.y) / d) * pushDist;
                 m.x = Math.max(m.radius, Math.min(canvas.width - m.radius, m.x));
@@ -3069,7 +3083,9 @@ function triggerPlayerTouchExplosion(touchingMonster) {
         }
     }
 
-    addFloatingText(player.x, player.y - 45, `💣 פיצוץ הגנה! -${blastDamage}💥`, "#ef4444");
+    const remainExplosions = upgrades.explosiveCount;
+    const countNote = remainExplosions > 0 ? `נותרו עוד ${remainExplosions} פיצוצים` : `אזלו הפיצוצים!`;
+    addFloatingText(player.x, player.y - 45, `💣 פיצוץ מגע! (${countNote})`, "#f97316");
 }
 
 /* -------------------------------------------------------------
@@ -3305,22 +3321,22 @@ const UPGRADE_POOL = [
     // 10. חצי נפץ ופיצוץ הגנה (נפתח בדרגה 15!)
     {
         id: 'explosive_touch',
-        name: 'חצי נפץ ופיצוץ הגנה',
+        name: 'חצי נפץ ופיצוץ מגע',
         unlockLevel: 15,
         isLegendary: true,
         tierName: '⭐ נפתח בדרגה 15!',
         badgeClass: 'badge-legendary',
         getDesc: () => {
             const curCount = upgrades.explosiveCount || 0;
-            const nextCount = curCount + 1;
-            return `<b>רמה ${nextCount}:</b> +פיצוץ 1 נוסף במגע חץ (רדיוס +18, נזק אזורי) ופיצוץ הדף סביבך על כל מפלצת שנוגעת בך! (כרגע: רמה ${curCount})`;
+            return `מעניק <b>+1 פיצוץ</b> (כרגע ברשותך: <b>${curCount}</b>).<br>• חצים מתפוצצים במגע עם נזק אזורי.<br>• כל מפלצת שנוגעת בך מתפוצצת, <b>מתה מיד במקום</b> ומנצלת פיצוץ 1 (אם אין פיצוצים - לא מתפוצצת)!`;
         },
         icon: '💣',
         apply: () => {
             upgrades.explosiveCount = (upgrades.explosiveCount || 0) + 1;
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
-            addFloatingText(px, py - 35, `💣 חצי נפץ ופיצוץ מגע שודרגו לרמה ${upgrades.explosiveCount}!`, "#f97316");
+            addFloatingText(px, py - 35, `💣 נוסף פיצוץ מגע! (סה"כ: ${upgrades.explosiveCount})`, "#f97316");
+            updateHUD();
         }
     }
 ];
@@ -3431,13 +3447,6 @@ function selectWizardClass(type) {
     sfx.playLevelUp();
     gameState = 'playing';
     updateAbilitiesHUD();
-
-    // אם המעבר לגל הבא המתין לבחירת המכשף
-    if (pendingWaveNext) {
-        const nextW = pendingWaveNext;
-        pendingWaveNext = null;
-        startWave(nextW);
-    }
 }
 
 function activateAbility(slotNum) {
@@ -3601,6 +3610,31 @@ function updateHUD() {
             faintBadge.style.borderColor = '#64748b';
             faintBadge.style.background = 'rgba(100, 116, 139, 0.15)';
             faintBadge.innerHTML = `⚔️ ללא התעלפות`;
+        }
+    }
+
+    // עדכון תגית כמות הפיצוצים ב-HUD העליון
+    const expContainer = document.getElementById('explosive-hud-container');
+    const expCountDisplay = document.getElementById('explosive-count-display');
+    const expBadge = document.getElementById('explosive-hud-badge');
+    if (expContainer && expCountDisplay) {
+        const count = upgrades.explosiveCount || 0;
+        if (count > 0 || upgrades.level >= 15) {
+            expContainer.style.display = 'inline-flex';
+            expCountDisplay.innerText = count;
+            if (expBadge) {
+                if (count > 0) {
+                    expBadge.style.color = '#fb923c';
+                    expBadge.style.borderColor = '#f97316';
+                    expBadge.style.background = 'rgba(249, 115, 22, 0.15)';
+                } else {
+                    expBadge.style.color = '#94a3b8';
+                    expBadge.style.borderColor = '#64748b';
+                    expBadge.style.background = 'rgba(100, 116, 139, 0.15)';
+                }
+            }
+        } else {
+            expContainer.style.display = 'none';
         }
     }
 }
