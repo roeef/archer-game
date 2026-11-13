@@ -3168,6 +3168,8 @@ function gainXP(amount) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🧙‍♂️ עלית לדרגה 12: בחר את התפתחות המכשף שלך!", "#a855f7");
         } else if (upgrades.level === 15) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💣 עלית לדרגה 15: נפתח שדרוג חצי נפץ ופיצוץ הגנה!", "#f97316");
+        } else if (upgrades.level === 20) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 עלית לדרגה 20: נפתח שדרוג 'לב עולה' (+120 מקס חיים)!", "#ec4899");
         }
 
         // במקום גל 12 - הופכים למכשף בדרגה 12!
@@ -3338,6 +3340,26 @@ const UPGRADE_POOL = [
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
             addFloatingText(px, py - 35, `💣 נוסף פיצוץ מגע! (סה"כ: ${upgrades.explosiveCount})`, "#f97316");
+            updateHUD();
+        }
+    },
+    // 11. לב עולה (נפתח בדרגה 20!)
+    {
+        id: 'rising_heart',
+        name: 'לב עולה 💖',
+        unlockLevel: 20,
+        isLegendary: true,
+        tierName: '⭐ נפתח בדרגה 20!',
+        badgeClass: 'badge-legendary',
+        getDesc: () => `מעלה את מקסימום החיים שלך ב-<b>120+</b> ומרפא 120 חיים באופן מיידי! (חיים נוכחיים: ${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`,
+        icon: '💖',
+        apply: () => {
+            upgrades.maxHp += 120;
+            upgrades.hp = Math.min(upgrades.maxHp, upgrades.hp + 120);
+            const px = player ? player.x : canvas.width / 2;
+            const py = player ? player.y : canvas.height / 2;
+            addFloatingText(px, py - 35, `💖 לב עולה: +120 מקס חיים! (${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, "#ec4899");
+            sfx.playLevelUp();
             updateHUD();
         }
     }
