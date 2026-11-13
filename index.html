@@ -2200,6 +2200,190 @@ class HelperMonster {
     }
 }
 
+// בוס מכני לעזרה (נפתח בדרגה 25) - רודף ותוקף מפלצות במגע (ללא ירי חצים)
+class MechanicalBossHelper {
+    constructor() {
+        this.x = player ? player.x - 55 : canvas.width / 2;
+        this.y = player ? player.y - 55 : canvas.height / 2;
+        this.radius = 42;          // גודל של הבוס הסופי (רדיוס 42)
+        this.color = '#71717a';    // גוף מתכתי מכני
+        this.speed = 2.4;          // מהירות מרדף
+        this.maxHp = 1600;         // חיים כמו הבוס הסופי
+        this.hp = 1600;
+        this.touchDamage = 65;     // נזק מגע בכל פגיעה במפלצת
+        this.touchCd = 0;          // מניעת נזק מרובה באותו פריים
+        this.invulnerableTimer = 0;// מניעת נזק מרובה מפריימים רצופים של מגע
+        this.level = 1;
+        this.alive = true;
+    }
+
+    update() {
+        if (!this.alive) return;
+        if (this.touchCd > 0) this.touchCd--;
+        if (this.invulnerableTimer > 0) this.invulnerableTimer--;
+
+        // מציאת המפלצת העוינת הקרובה ביותר
+        let nearestEnemy = null;
+        let minDist = Infinity;
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const dist = Math.hypot(m.x - this.x, m.y - this.y);
+            if (dist < minDist) {
+                minDist = dist;
+                nearestEnemy = m;
+            }
+        }
+
+        if (nearestEnemy) {
+            // רודף ישירות ובנחישות אחרי המפלצת!
+            const dx = nearestEnemy.x - this.x;
+            const dy = nearestEnemy.y - this.y;
+            const dist = Math.max(1, minDist);
+            this.x += (dx / dist) * this.speed;
+            this.y += (dy / dist) * this.speed;
+
+            // נזק מגע הדדי: כשהבוס המכני נוגע במפלצת - היא חוטפת נזק והוא חוטף נזק!
+            if (dist < this.radius + nearestEnemy.radius) {
+                if (this.touchCd === 0) {
+                    this.touchCd = 18; // כל 18 פריימים נזק מגע
+                    nearestEnemy.takeDamage(this.touchDamage);
+                    addFloatingText(nearestEnemy.x, nearestEnemy.y - 18, `בוס מכני: -${this.touchDamage} ⚙️`, "#f97316");
+
+                    // הבוס חוטף נזק מגע מהמפלצת שנגעה בו
+                    const enemyTouchDmg = nearestEnemy.touchDmg || 15;
+                    this.takeDamage(enemyTouchDmg);
+
+                    // ניצוצות מתכת ופיצוץ קטן
+                    for (let p = 0; p < 8; p++) {
+                        particles.push(new Particle(nearestEnemy.x, nearestEnemy.y, '#f97316', 3.5, 2.5, 16));
+                    }
+                }
+            }
+        } else if (player) {
+            // אם אין מפלצות: עוקב אחרי השחקן
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const pDist = Math.hypot(dx, dy);
+            if (pDist > 120) {
+                this.x += (dx / pDist) * this.speed;
+                this.y += (dy / pDist) * this.speed;
+            }
+        }
+
+        // גבולות המסך
+        this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
+        this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+    }
+
+    takeDamage(amount) {
+        if (!this.alive) return;
+        if (this.invulnerableTimer > 0) return;
+        this.invulnerableTimer = 14;
+        this.hp -= amount;
+        sfx.playHit();
+        addFloatingText(this.x, this.y - 25, `בוס מכני: -${amount}`, "#ef4444");
+
+        // ניצוצות מתכתיים
+        for (let i = 0; i < 5; i++) {
+            particles.push(new Particle(this.x, this.y, '#38bdf8', 3, 2, 14));
+        }
+
+        if (this.hp <= 0) {
+            this.hp = 0;
+            this.alive = false;
+            addFloatingText(this.x, this.y - 35, "הבוס המכני נהרס! ⚙️💥", "#ef4444");
+            for (let i = 0; i < 20; i++) {
+                particles.push(new Particle(this.x, this.y, '#f97316', 4.5, 3.5, 25));
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // הילה מכנית כחולה/ציאן שמסמנת שהוא בן-ברית
+        ctx.strokeStyle = '#06b6d4';
+        ctx.shadowColor = '#06b6d4';
+        ctx.shadowBlur = 16;
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius + 8, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // גוף טיטניום מכני (בצורת הבוס הסופי)
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // לוחות שריון מכניים וגלגלי שיניים פנימיים
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius * 0.65, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // קרני דרקון מכניות (כמו של הבוס הסופי)
+        ctx.fillStyle = '#06b6d4';
+        ctx.beginPath();
+        ctx.moveTo(-16, -this.radius + 4);
+        ctx.lineTo(-24, -this.radius - 16);
+        ctx.lineTo(-8, -this.radius - 2);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(16, -this.radius + 4);
+        ctx.lineTo(24, -this.radius - 16);
+        ctx.lineTo(8, -this.radius - 2);
+        ctx.closePath();
+        ctx.fill();
+
+        // עיני לייזר כחולות זוהרות
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(-13, -8, 5, 0, Math.PI * 2);
+        ctx.arc(13, -8, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(-13, -8, 2, 0, Math.PI * 2);
+        ctx.arc(13, -8, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // מד חיים ענקי מעל הראש
+        const barW = 54;
+        const barH = 6;
+        const hpPct = Math.max(0, this.hp / this.maxHp);
+        ctx.fillStyle = 'rgba(0,0,0,0.75)';
+        ctx.fillRect(-barW / 2, -this.radius - 22, barW, barH);
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(-barW / 2, -this.radius - 22, barW * hpPct, barH);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-barW / 2, -this.radius - 22, barW, barH);
+
+        // תג שם מעל הראש
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 11px Tahoma';
+        ctx.textAlign = 'center';
+        ctx.fillText(`🤖 בוס מכני (חיים: ${Math.ceil(this.hp)}/${this.maxHp})`, 0, -this.radius - 28);
+
+        ctx.restore();
+    }
+}
+
 class HelperBullet {
     constructor(x, y, angle, speed, damage) {
         this.x = x;
@@ -3170,6 +3354,8 @@ function gainXP(amount) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💣 עלית לדרגה 15: נפתח שדרוג חצי נפץ ופיצוץ הגנה!", "#f97316");
         } else if (upgrades.level === 20) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 עלית לדרגה 20: נפתח שדרוג 'לב עולה' (+120 מקס חיים)!", "#ec4899");
+        } else if (upgrades.level === 25) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🤖 עלית לדרגה 25: נפתח שדרוג 'בוס מכני' (עוזר עוצמתי עם 1600 חיים)!", "#06b6d4");
         }
 
         // במקום גל 12 - הופכים למכשף בדרגה 12!
@@ -3263,21 +3449,25 @@ const UPGRADE_POOL = [
         isLegendary: true,
         tierName: '⭐ נפתח בדרגה 6!',
         badgeClass: 'badge-legendary',
-        getDesc: () => helperMonsters.length === 0 ? 
-            'מזמן גובלין יורה (דרגה 3 מגל 3) שמצטרף כבן ברית, מסתובב חופשי ונלחם עבורך בכל המפלצות!' : 
-            `מחזק ומרפא את הגובלין העוזר! +30 מקס חיים, נזק +15 וקצב ירי מוגבר (רמה ${helperMonsters[0].level + 1})`, 
+        getDesc: () => {
+            const goblin = helperMonsters.find(h => h instanceof HelperMonster);
+            return !goblin ? 
+                'מזמן גובלין יורה (דרגה 3 מגל 3) שמצטרף כבן ברית, מסתובב חופשי ונלחם עבורך בכל המפלצות!' : 
+                `מחזק ומרפא את הגובלין העוזר! +30 מקס חיים, נזק +15 וקצב ירי מוגבר (רמה ${goblin.level + 1})`;
+        }, 
         icon: '👺', 
         apply: () => {
-            if (helperMonsters.length === 0) {
+            const goblin = helperMonsters.find(h => h instanceof HelperMonster);
+            if (!goblin) {
                 helperMonsters.push(new HelperMonster());
                 addFloatingText(player.x, player.y - 35, "גובלין בן ברית הצטרף לצידך! 💛", "#facc15");
             } else {
-                helperMonsters[0].level++;
-                helperMonsters[0].damage += 15;
-                helperMonsters[0].maxHp += 30;
-                helperMonsters[0].hp = helperMonsters[0].maxHp;
-                helperMonsters[0].shootCd = Math.max(16, helperMonsters[0].shootCd - 6);
-                addFloatingText(player.x, player.y - 35, `גובלין עזר שודרג ורופא במלואו (רמה ${helperMonsters[0].level})! ⚡`, "#4ade80");
+                goblin.level++;
+                goblin.damage += 15;
+                goblin.maxHp += 30;
+                goblin.hp = goblin.maxHp;
+                goblin.shootCd = Math.max(16, goblin.shootCd - 6);
+                addFloatingText(player.x, player.y - 35, `גובלין עזר שודרג ורופא במלואו (רמה ${goblin.level})! ⚡`, "#4ade80");
             }
         }
     },
@@ -3359,6 +3549,42 @@ const UPGRADE_POOL = [
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
             addFloatingText(px, py - 35, `💖 לב עולה: +120 מקס חיים! (${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, "#ec4899");
+            sfx.playLevelUp();
+            updateHUD();
+        }
+    },
+    // 12. בוס מכני (נפתח בדרגה 25!)
+    {
+        id: 'mechanical_boss',
+        name: 'בוס מכני 🤖',
+        unlockLevel: 25,
+        isLegendary: true,
+        tierName: '⭐ נפתח בדרגה 25!',
+        badgeClass: 'badge-legendary',
+        getDesc: () => {
+            const boss = helperMonsters.find(h => h instanceof MechanicalBossHelper);
+            if (!boss) {
+                return 'מזמן את <b>הבוס הסופי בגרסה מכנית</b> (1600 חיים!) שמצטרף אליך, רודף אחרי מפלצות ומרסק אותן במגע (ללא חצים)!';
+            } else {
+                return `מחזק ומרפא את הבוס המכני במלואו! +300 מקס חיים ו-+25 נזק מגע (רמה ${boss.level + 1})`;
+            }
+        },
+        icon: '🤖',
+        apply: () => {
+            const existingBoss = helperMonsters.find(h => h instanceof MechanicalBossHelper);
+            if (!existingBoss) {
+                const boss = new MechanicalBossHelper();
+                helperMonsters.push(boss);
+                const px = player ? player.x : canvas.width / 2;
+                const py = player ? player.y : canvas.height / 2;
+                addFloatingText(px, py - 35, "🤖 הבוס המכני הצטרף לצידך! (1600 חיים)", "#06b6d4");
+            } else {
+                existingBoss.level++;
+                existingBoss.maxHp += 300;
+                existingBoss.hp = existingBoss.maxHp;
+                existingBoss.touchDamage += 25;
+                addFloatingText(existingBoss.x, existingBoss.y - 35, `🤖 הבוס המכני שודרג ורופא במלואו (רמה ${existingBoss.level})!`, "#06b6d4");
+            }
             sfx.playLevelUp();
             updateHUD();
         }
