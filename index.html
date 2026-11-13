@@ -1304,7 +1304,7 @@ const MONSTER_SPECIES = [
     { id: 11, name: "אורק לוחם", type: "chaser", color: "#15803d", radius: 20, speed: 2.2, hp: 140, touchDmg: 18, shootCd: 0 },
     { id: 12, name: "קוסם קרח", type: "shooter", color: "#67e8f9", radius: 18, speed: 1.4, hp: 85, touchDmg: 0, bulletDmg: 13, bulletSpeed: 4.0, shootCd: 100 },
     { id: 13, name: "זאב צללים", type: "chaser", color: "#312e81", radius: 17, speed: 3.7, hp: 95, touchDmg: 20, shootCd: 0 },
-    { id: 14, name: "חרפושית קוצים", type: "tank", color: "#b45309", radius: 24, speed: 1.3, hp: 260, touchDmg: 22, bulletDmg: 14, bulletSpeed: 3.0, shootCd: 140 },
+    { id: 14, name: "חרפושית קוצים", type: "tank", color: "#b45309", radius: 24, speed: 2.8, hp: 260, touchDmg: 22, bulletDmg: 14, bulletSpeed: 3.0, shootCd: 140 },
     { id: 15, name: "שד להבות (בוס ביניים)", type: "boss", color: "#ef4444", radius: 28, speed: 1.4, hp: 450, touchDmg: 20, bulletDmg: 18, bulletSpeed: 3.8, shootCd: 85, multiShot: 3 },
 
     // Tiers 16-20 (Dangerous monsters)
@@ -2200,19 +2200,18 @@ class HelperMonster {
     }
 }
 
-// בוס מכני לעזרה (נפתח בדרגה 25) - רודף ותוקף מפלצות במגע (ללא ירי חצים)
+// בוס מכני לעזרה (נפתח בדרגה 25) - בגודל חרפושית קוצים (רדיוס 24), רודף ותוקף מפלצות במגע הדדי
 class MechanicalBossHelper {
     constructor() {
-        this.x = player ? player.x - 55 : canvas.width / 2;
-        this.y = player ? player.y - 55 : canvas.height / 2;
-        this.radius = 42;          // גודל של הבוס הסופי (רדיוס 42)
+        this.x = player ? player.x - 45 : canvas.width / 2;
+        this.y = player ? player.y - 45 : canvas.height / 2;
+        this.radius = 24;          // גודל של חרפושית קוצים (רדיוס 24 לפי בקשת המשתמש)
         this.color = '#71717a';    // גוף מתכתי מכני
-        this.speed = 2.4;          // מהירות מרדף
-        this.maxHp = 1600;         // חיים כמו הבוס הסופי
+        this.speed = 3.2;          // מהירות מרדף מהירה
+        this.maxHp = 1600;         // חיים כמו הבוס הסופי (1600)
         this.hp = 1600;
         this.touchDamage = 65;     // נזק מגע בכל פגיעה במפלצת
-        this.touchCd = 0;          // מניעת נזק מרובה באותו פריים
-        this.invulnerableTimer = 0;// מניעת נזק מרובה מפריימים רצופים של מגע
+        this.touchCd = 0;          // מרווח פעימות נזק מגע
         this.level = 1;
         this.alive = true;
     }
@@ -2220,9 +2219,8 @@ class MechanicalBossHelper {
     update() {
         if (!this.alive) return;
         if (this.touchCd > 0) this.touchCd--;
-        if (this.invulnerableTimer > 0) this.invulnerableTimer--;
 
-        // מציאת המפלצת העוינת הקרובה ביותר
+        // מציאת המפלצת העוינת הקרובה ביותר למרדף
         let nearestEnemy = null;
         let minDist = Infinity;
         for (let j = 0; j < monsters.length; j++) {
@@ -2236,39 +2234,49 @@ class MechanicalBossHelper {
         }
 
         if (nearestEnemy) {
-            // רודף ישירות ובנחישות אחרי המפלצת!
+            // רודף ישירות ובמהירות אחרי המפלצת
             const dx = nearestEnemy.x - this.x;
             const dy = nearestEnemy.y - this.y;
             const dist = Math.max(1, minDist);
             this.x += (dx / dist) * this.speed;
             this.y += (dy / dist) * this.speed;
-
-            // נזק מגע הדדי: כשהבוס המכני נוגע במפלצת - היא חוטפת נזק והוא חוטף נזק!
-            if (dist < this.radius + nearestEnemy.radius) {
-                if (this.touchCd === 0) {
-                    this.touchCd = 18; // כל 18 פריימים נזק מגע
-                    nearestEnemy.takeDamage(this.touchDamage);
-                    addFloatingText(nearestEnemy.x, nearestEnemy.y - 18, `בוס מכני: -${this.touchDamage} ⚙️`, "#f97316");
-
-                    // הבוס חוטף נזק מגע מהמפלצת שנגעה בו
-                    const enemyTouchDmg = nearestEnemy.touchDmg || 15;
-                    this.takeDamage(enemyTouchDmg);
-
-                    // ניצוצות מתכת ופיצוץ קטן
-                    for (let p = 0; p < 8; p++) {
-                        particles.push(new Particle(nearestEnemy.x, nearestEnemy.y, '#f97316', 3.5, 2.5, 16));
-                    }
-                }
-            }
         } else if (player) {
             // אם אין מפלצות: עוקב אחרי השחקן
             const dx = player.x - this.x;
             const dy = player.y - this.y;
             const pDist = Math.hypot(dx, dy);
-            if (pDist > 120) {
+            if (pDist > 100) {
                 this.x += (dx / pDist) * this.speed;
                 this.y += (dy / pDist) * this.speed;
             }
+        }
+
+        // נזק מגע הדדי: כשהבוס והמפלצות נפגשים - לשניהם יורד חיים!
+        let hadCollision = false;
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const dist = Math.hypot(m.x - this.x, m.y - this.y);
+            if (dist < this.radius + m.radius) {
+                hadCollision = true;
+                if (this.touchCd === 0) {
+                    // המפלצת חוטפת נזק מהבוס
+                    m.takeDamage(this.touchDamage);
+                    addFloatingText(m.x, m.y - 18, `בוס מכני: -${this.touchDamage} ⚙️`, "#f97316");
+
+                    // והבוס חוטף נזק מהמפלצת שנגעה בו!
+                    const enemyTouchDmg = Math.max(16, m.touchDmg || (m.species ? m.species.touchDmg : 0) || 16);
+                    this.takeDamage(enemyTouchDmg);
+
+                    // ניצוצות מתכת ופיצוץ מגע
+                    for (let p = 0; p < 8; p++) {
+                        particles.push(new Particle((this.x + m.x) / 2, (this.y + m.y) / 2, '#f97316', 3.5, 2.5, 16));
+                    }
+                }
+            }
+        }
+        if (hadCollision && this.touchCd === 0) {
+            this.touchCd = 12; // פעימת נזק כל 12 פריימים (כ-5 פעמים בשנייה) כל עוד הם נוגעים
         }
 
         // גבולות המסך
@@ -2278,11 +2286,9 @@ class MechanicalBossHelper {
 
     takeDamage(amount) {
         if (!this.alive) return;
-        if (this.invulnerableTimer > 0) return;
-        this.invulnerableTimer = 14;
         this.hp -= amount;
         sfx.playHit();
-        addFloatingText(this.x, this.y - 25, `בוס מכני: -${amount}`, "#ef4444");
+        addFloatingText(this.x, this.y - 20, `בוס מכני: -${amount}`, "#ef4444");
 
         // ניצוצות מתכתיים
         for (let i = 0; i < 5; i++) {
@@ -2292,7 +2298,7 @@ class MechanicalBossHelper {
         if (this.hp <= 0) {
             this.hp = 0;
             this.alive = false;
-            addFloatingText(this.x, this.y - 35, "הבוס המכני נהרס! ⚙️💥", "#ef4444");
+            addFloatingText(this.x, this.y - 30, "הבוס המכני נהרס! ⚙️💥", "#ef4444");
             for (let i = 0; i < 20; i++) {
                 particles.push(new Particle(this.x, this.y, '#f97316', 4.5, 3.5, 25));
             }
@@ -2306,13 +2312,13 @@ class MechanicalBossHelper {
         // הילה מכנית כחולה/ציאן שמסמנת שהוא בן-ברית
         ctx.strokeStyle = '#06b6d4';
         ctx.shadowColor = '#06b6d4';
-        ctx.shadowBlur = 16;
-        ctx.lineWidth = 3.5;
+        ctx.shadowBlur = 12;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(0, 0, this.radius + 8, 0, Math.PI * 2);
+        ctx.arc(0, 0, this.radius + 5, 0, Math.PI * 2);
         ctx.stroke();
 
-        // גוף טיטניום מכני (בצורת הבוס הסופי)
+        // גוף טיטניום מכני (בגודל חרפושית קוצים, רדיוס 24)
         ctx.shadowBlur = 0;
         ctx.fillStyle = this.color;
         ctx.beginPath();
@@ -2320,65 +2326,65 @@ class MechanicalBossHelper {
         ctx.fill();
 
         ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.2;
         ctx.stroke();
 
-        // לוחות שריון מכניים וגלגלי שיניים פנימיים
+        // לוחות שריון מכניים פנימיים
         ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.arc(0, 0, this.radius * 0.65, 0, Math.PI * 2);
         ctx.stroke();
 
-        // קרני דרקון מכניות (כמו של הבוס הסופי)
+        // קרני דרקון מכניות (מותאמות לגודל 24)
         ctx.fillStyle = '#06b6d4';
         ctx.beginPath();
-        ctx.moveTo(-16, -this.radius + 4);
-        ctx.lineTo(-24, -this.radius - 16);
-        ctx.lineTo(-8, -this.radius - 2);
+        ctx.moveTo(-9, -this.radius + 3);
+        ctx.lineTo(-14, -this.radius - 10);
+        ctx.lineTo(-4, -this.radius - 1);
         ctx.closePath();
         ctx.fill();
 
         ctx.beginPath();
-        ctx.moveTo(16, -this.radius + 4);
-        ctx.lineTo(24, -this.radius - 16);
-        ctx.lineTo(8, -this.radius - 2);
+        ctx.moveTo(9, -this.radius + 3);
+        ctx.lineTo(14, -this.radius - 10);
+        ctx.lineTo(4, -this.radius - 1);
         ctx.closePath();
         ctx.fill();
 
         // עיני לייזר כחולות זוהרות
         ctx.fillStyle = '#38bdf8';
         ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 6;
         ctx.beginPath();
-        ctx.arc(-13, -8, 5, 0, Math.PI * 2);
-        ctx.arc(13, -8, 5, 0, Math.PI * 2);
+        ctx.arc(-7, -4, 3.5, 0, Math.PI * 2);
+        ctx.arc(7, -4, 3.5, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(-13, -8, 2, 0, Math.PI * 2);
-        ctx.arc(13, -8, 2, 0, Math.PI * 2);
+        ctx.arc(-7, -4, 1.5, 0, Math.PI * 2);
+        ctx.arc(7, -4, 1.5, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // מד חיים ענקי מעל הראש
-        const barW = 54;
-        const barH = 6;
+        // מד חיים מעל הראש (מותאם לגודל 24)
+        const barW = 38;
+        const barH = 5;
         const hpPct = Math.max(0, this.hp / this.maxHp);
         ctx.fillStyle = 'rgba(0,0,0,0.75)';
-        ctx.fillRect(-barW / 2, -this.radius - 22, barW, barH);
+        ctx.fillRect(-barW / 2, -this.radius - 14, barW, barH);
         ctx.fillStyle = '#06b6d4';
-        ctx.fillRect(-barW / 2, -this.radius - 22, barW * hpPct, barH);
+        ctx.fillRect(-barW / 2, -this.radius - 14, barW * hpPct, barH);
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1;
-        ctx.strokeRect(-barW / 2, -this.radius - 22, barW, barH);
+        ctx.strokeRect(-barW / 2, -this.radius - 14, barW, barH);
 
         // תג שם מעל הראש
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 11px Tahoma';
+        ctx.font = 'bold 9.5px Tahoma';
         ctx.textAlign = 'center';
-        ctx.fillText(`🤖 בוס מכני (חיים: ${Math.ceil(this.hp)}/${this.maxHp})`, 0, -this.radius - 28);
+        ctx.fillText(`🤖 בוס מכני (${Math.ceil(this.hp)}/${this.maxHp})`, 0, -this.radius - 18);
 
         ctx.restore();
     }
@@ -2740,7 +2746,15 @@ class Monster {
 
             // Touch Damage check
             if (dist < this.radius + target.radius) {
-                target.takeDamage(this.touchDmg, this);
+                if (target instanceof MechanicalBossHelper) {
+                    if (target.touchCd === 0) {
+                        target.takeDamage(Math.max(16, this.touchDmg || 16));
+                        this.takeDamage(target.touchDamage);
+                        target.touchCd = 12;
+                    }
+                } else {
+                    target.takeDamage(this.touchDmg, this);
+                }
             }
         } else if (this.type === 'shooter') {
             // Keep medium distance from target
@@ -2760,9 +2774,17 @@ class Monster {
                 this.shootAtTarget(target);
             }
 
-            // Touch Damage (if any)
-            if (this.touchDmg > 0 && dist < this.radius + target.radius) {
-                target.takeDamage(this.touchDmg, this);
+            // Touch Damage (if any or against mechanical boss)
+            if (dist < this.radius + target.radius) {
+                if (target instanceof MechanicalBossHelper) {
+                    if (target.touchCd === 0) {
+                        target.takeDamage(16);
+                        this.takeDamage(target.touchDamage);
+                        target.touchCd = 12;
+                    }
+                } else if (this.touchDmg > 0) {
+                    target.takeDamage(this.touchDmg, this);
+                }
             }
         } else if (this.type === 'tank' || this.type === 'boss') {
             // Slow relentless march towards target
@@ -2779,7 +2801,15 @@ class Monster {
 
             // High contact damage
             if (dist < this.radius + target.radius) {
-                target.takeDamage(this.touchDmg, this);
+                if (target instanceof MechanicalBossHelper) {
+                    if (target.touchCd === 0) {
+                        target.takeDamage(Math.max(16, this.touchDmg || 16));
+                        this.takeDamage(target.touchDamage);
+                        target.touchCd = 12;
+                    }
+                } else {
+                    target.takeDamage(this.touchDmg, this);
+                }
             }
         }
     }
@@ -3564,7 +3594,7 @@ const UPGRADE_POOL = [
         getDesc: () => {
             const boss = helperMonsters.find(h => h instanceof MechanicalBossHelper);
             if (!boss) {
-                return 'מזמן את <b>הבוס הסופי בגרסה מכנית</b> (1600 חיים!) שמצטרף אליך, רודף אחרי מפלצות ומרסק אותן במגע (ללא חצים)!';
+                return 'מזמן את <b>הבוס המכני בגודל חרפושית קוצים</b> (1600 חיים!) שמצטרף אליך, רודף במהירות אחרי מפלצות ותוקף במגע הדדי (ללא חצים)!';
             } else {
                 return `מחזק ומרפא את הבוס המכני במלואו! +300 מקס חיים ו-+25 נזק מגע (רמה ${boss.level + 1})`;
             }
