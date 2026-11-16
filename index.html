@@ -36,6 +36,9 @@
             display: block;
             background: #141824;
             cursor: crosshair;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         /* Top HUD */
@@ -1062,8 +1065,8 @@
         <div class="controls-info">
             <strong>🎮 הוראות שליטה:</strong><br>
             • <b>W, A, S, D</b> או <b>חיצים</b> — תנועה במרחב.<br>
-            • <b>עכבר</b> — כיוון החץ | <b>קליק שמאלי</b> או <b>Ctrl</b> — ירי חץ (אפשר להחזיק לחוץ לירי רציף).<br>
-            • <b>רווח</b> — השהיית המשחק (Pause) | <b>C</b> / <b>T</b> — צ'אט משחק.<br>
+            • <b>עכבר</b> או <b>👆 מסך מגע</b> — כיוון החץ וירי חצים בלחיצה/נגיעה במסך (אפשר להחזיק לחוץ או לגרור אצבע לירי רציף) | <b>Ctrl</b> — ירי חץ.<br>
+            • <b>רווח</b> — השהיית המשחק (Pause) | <b>C</b> / <b>T</b> — צ'אט משחק (במצב בדיקה).<br>
             • <b>🧙‍♂️ יכולות מכשף (נפתחות בדרגה 12):</b><br>
             &nbsp;&nbsp;💥 <b>יכולת חזקה</b>: מקש <b>W</b> (או <b>PgUp</b> / <b>Z</b> / <b>1</b>) — הפעלת היכולת החזקה (הדף אש / חומה קפואה / ריפוי טבעי).<br>
             &nbsp;&nbsp;☄️ <b>יכולת חלשה</b>: מקש <b>R</b> (או <b>PgDn</b> / <b>X</b> / <b>2</b>) — הפעלת היכולת החלשה (כדור אש מתביית / הקפאה כפולה / מלכודות קוצים).
@@ -4562,8 +4565,10 @@ window.addEventListener('blur', () => {
 canvas.addEventListener('mousemove', e => {
     if (chatPlaysActive) return;
     const rect = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    mouse.x = (e.clientX - rect.left) * scaleX;
+    mouse.y = (e.clientY - rect.top) * scaleY;
 });
 
 canvas.addEventListener('mousedown', e => {
@@ -4573,6 +4578,55 @@ canvas.addEventListener('mousedown', e => {
 
 window.addEventListener('mouseup', e => {
     if (e.button === 0) mouse.isDown = false;
+});
+
+// תמיכה מלאה במסכי מגע (Touchscreen) - כיוון וירי מיידי בנגיעה במסך
+function updateTouchPosition(touch) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    mouse.x = (touch.clientX - rect.left) * scaleX;
+    mouse.y = (touch.clientY - rect.top) * scaleY;
+}
+
+canvas.addEventListener('touchstart', e => {
+    if (chatPlaysActive) return;
+    if (e.touches && e.touches.length > 0) {
+        e.preventDefault();
+        updateTouchPosition(e.touches[0]);
+        mouse.isDown = true;
+        sfx.init();
+
+        // ירי מיידי לכיוון הנגיעה במסך
+        if (player && gameState === 'playing' && !isPaused) {
+            player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
+            if (player.shootTimer <= 0) {
+                player.shoot();
+                player.shootTimer = upgrades.fireDelay;
+            }
+        }
+    }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+    if (chatPlaysActive) return;
+    if (e.touches && e.touches.length > 0) {
+        e.preventDefault();
+        updateTouchPosition(e.touches[0]);
+        mouse.isDown = true;
+    }
+}, { passive: false });
+
+window.addEventListener('touchend', e => {
+    if (!e.touches || e.touches.length === 0) {
+        mouse.isDown = false;
+    } else {
+        updateTouchPosition(e.touches[0]);
+    }
+});
+
+window.addEventListener('touchcancel', () => {
+    mouse.isDown = false;
 });
 
 // בחירת רמת קושי (קל / רגיל / קשה)
