@@ -3551,9 +3551,11 @@ function gainXP(amount) {
             scoreDisplay.innerText = '0 (בדיקה 🧪)';
         }
 
-        // הודעות חגיגיות בעלייה לדרגה 6, 8, 10, ו-12
-        if (upgrades.level === 6) {
-            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 6: נפתח שדרוג מפלצת לעזרה (גובלין דרגה 3)!", "#facc15");
+        // הודעות חגיגיות בעלייה לדרגות (5, 6, 8, 10, 12, 15, 20, 25)
+        if (upgrades.level === 5) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 5: נפתחו שדרוגים — 'חיים ובריאות' ו'הרחבת חצים'!", "#f43f5e");
+        } else if (upgrades.level === 6) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 6: נפתח שדרוג 'מפלצת לעזרה' (גובלין דרגה 3)!", "#facc15");
         } else if (upgrades.level === 8) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 עלית לדרגה 8: נפתח שדרוג עליית חיים למקס!", "#ec4899");
         } else if (upgrades.level === 10) {
@@ -3623,13 +3625,13 @@ const UPGRADE_POOL = [
         icon: '🎯', 
         apply: () => upgrades.piercing++ 
     },
-    // 5. חיים ובריאות (שדרוג על - נפתח ברמה 6)
+    // 5. חיים ובריאות (נפתח בדרגה 5!)
     { 
         id: 'heal_and_health', 
         name: 'חיים ובריאות', 
-        unlockLevel: 6,
+        unlockLevel: 5,
         isLegendary: true,
-        tierName: '⭐ שדרוג על',
+        tierName: '⭐ נפתח בדרגה 5!',
         badgeClass: 'badge-legendary',
         getDesc: () => `מרפא 60 חיים ומעלה את מקסימום החיים ב-35 (חיים: ${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, 
         icon: '❤️', 
@@ -3639,13 +3641,13 @@ const UPGRADE_POOL = [
             addFloatingText(player.x, player.y - 30, "+35 מקס חיים וריפוי! ❤️", "#ef4444");
         }
     },
-    // 6. הרחבת חצים (שדרוג על - נפתח ברמה 6)
+    // 6. הרחבת חצים (נפתח בדרגה 5!)
     { 
         id: 'multishot', 
         name: 'הרחבת חצים', 
-        unlockLevel: 6,
+        unlockLevel: 5,
         isLegendary: true,
-        tierName: '⭐ שדרוג על',
+        tierName: '⭐ נפתח בדרגה 5!',
         badgeClass: 'badge-legendary',
         getDesc: () => `יורה חץ נוסף במקביל בכל ירייה! (כרגע: ${upgrades.multiShot} חצים)`, 
         icon: '🏹', 
