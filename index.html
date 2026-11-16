@@ -2232,12 +2232,14 @@ class HelperMonster {
     }
 
     update() {
-        // חיפוש המפלצת העוינת הקרובה ביותר אל הגובלין העוזר
+        // חיפוש המפלצת העוינת הקרובה ביותר אל הגובלין העוזר - אך ורק מפלצות שנמצאות בתוך הלוח!
         let nearestEnemy = null;
         let minDist = Infinity;
         for (let j = 0; j < monsters.length; j++) {
             const m = monsters[j];
             if (!m.alive) continue;
+            // מפלצות לעזרה לא רואות ולא תוקפות מחוץ ללוח!
+            if (m.x < 15 || m.x > canvas.width - 15 || m.y < 15 || m.y > canvas.height - 15) continue;
             const dist = Math.hypot(m.x - this.x, m.y - this.y);
             if (dist < minDist) {
                 minDist = dist;
@@ -2261,14 +2263,14 @@ class HelperMonster {
                 this.y -= (dy / enemyDist) * (this.speed * 0.8);
             }
 
-            // ירי קליעים ירוקים על המפלצת
+            // ירי קליעים ירוקים על המפלצת (אך ורק אם היא בתוך הלוח)
             this.shootTimer++;
             if (this.shootTimer >= this.shootCd) {
                 this.shootTimer = 0;
                 this.shootAt(nearestEnemy);
             }
         } else if (player) {
-            // אם אין מפלצות על הלוח: משוטט חופשי בסביבת הקשת במהירות 1.4
+            // אם אין מפלצות על הלוח: משוטט חופשי בסביבת הקשת במהירות 1.4 (לא נצמד לקירות!)
             const dx = player.x - this.x;
             const dy = player.y - this.y;
             const pDist = Math.hypot(dx, dy);
@@ -2278,12 +2280,16 @@ class HelperMonster {
             }
         }
 
-        // גבולות המסך
-        this.x = Math.max(20, Math.min(canvas.width - 20, this.x));
-        this.y = Math.max(20, Math.min(canvas.height - 20, this.y));
+        // גבולות המסך (עם מרווח בטיחות מהקיר כדי שלא יידבק לקצה)
+        this.x = Math.max(28, Math.min(canvas.width - 28, this.x));
+        this.y = Math.max(28, Math.min(canvas.height - 28, this.y));
     }
 
     shootAt(target) {
+        // לא יורה אם המטרה מחוץ ללוח!
+        if (!target || target.x < 10 || target.x > canvas.width - 10 || target.y < 10 || target.y > canvas.height - 10) {
+            return;
+        }
         sfx.playShoot();
         const angle = Math.atan2(target.y - this.y, target.x - this.x);
         helperBullets.push(new HelperBullet(this.x, this.y, angle, 8.5, this.damage));
@@ -2383,12 +2389,14 @@ class MechanicalBossHelper {
         if (!this.alive) return;
         if (this.touchCd > 0) this.touchCd--;
 
-        // מציאת המפלצת העוינת הקרובה ביותר למרדף
+        // מציאת המפלצת העוינת הקרובה ביותר למרדף - אך ורק מפלצות שנמצאות בתוך הלוח!
         let nearestEnemy = null;
         let minDist = Infinity;
         for (let j = 0; j < monsters.length; j++) {
             const m = monsters[j];
             if (!m.alive) continue;
+            // מפלצות לעזרה לא רואות ולא רודפות מחוץ ללוח!
+            if (m.x < 15 || m.x > canvas.width - 15 || m.y < 15 || m.y > canvas.height - 15) continue;
             const dist = Math.hypot(m.x - this.x, m.y - this.y);
             if (dist < minDist) {
                 minDist = dist;
@@ -2404,7 +2412,7 @@ class MechanicalBossHelper {
             this.x += (dx / dist) * this.speed;
             this.y += (dy / dist) * this.speed;
         } else if (player) {
-            // אם אין מפלצות: עוקב אחרי השחקן
+            // אם אין מפלצות: עוקב אחרי השחקן (לא נצמד לקירות!)
             const dx = player.x - this.x;
             const dy = player.y - this.y;
             const pDist = Math.hypot(dx, dy);
@@ -2442,9 +2450,9 @@ class MechanicalBossHelper {
             this.touchCd = 12; // פעימת נזק כל 12 פריימים (כ-5 פעמים בשנייה) כל עוד הם נוגעים
         }
 
-        // גבולות המסך
-        this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
-        this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+        // גבולות המסך (מרווח בטיחות)
+        this.x = Math.max(30, Math.min(canvas.width - 30, this.x));
+        this.y = Math.max(30, Math.min(canvas.height - 30, this.y));
     }
 
     takeDamage(amount) {
@@ -2573,10 +2581,11 @@ class HelperBullet {
             particles.push(new Particle(this.x, this.y, '#4ade80', 3, 0.4, 14));
         }
 
-        // פגיעה במפלצות עוינות בלבד (לעולם לא פוגע בקשת!)
+        // פגיעה במפלצות עוינות בלבד (לעולם לא פוגע בקשת, ורק מפלצות בתוך הלוח!)
         for (let j = 0; j < monsters.length; j++) {
             const m = monsters[j];
             if (!m.alive) continue;
+            if (m.x < 0 || m.x > canvas.width || m.y < 0 || m.y > canvas.height) continue;
             const dist = Math.hypot(m.x - this.x, m.y - this.y);
             if (dist < m.radius + this.radius) {
                 m.takeDamage(this.damage);
@@ -2586,8 +2595,8 @@ class HelperBullet {
             }
         }
 
-        // גבולות מסך
-        if (this.x < -30 || this.x > canvas.width + 30 || this.y < -30 || this.y > canvas.height + 30) {
+        // גבולות מסך - נעלם מיד בקצה הלוח (לא עף מחוץ למסך)
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
             this.alive = false;
         }
     }
@@ -2920,21 +2929,37 @@ class Monster {
                 }
             }
         } else if (this.type === 'shooter') {
-            // Keep medium distance from target
-            const idealDist = 220;
-            if (dist > idealDist + 20) {
-                this.x += (dx / dist) * this.speed;
-                this.y += (dy / dist) * this.speed;
-            } else if (dist < idealDist - 40) {
-                this.x -= (dx / dist) * (this.speed * 0.5);
-                this.y -= (dy / dist) * (this.speed * 0.5);
+            const isOutside = (this.x < 15 || this.x > canvas.width - 15 || this.y < 15 || this.y > canvas.height - 15);
+            if (isOutside) {
+                // המפלצת נכנסת פנימה ללוח במהירות מובטחת ולעולם לא בורחת אחורה
+                this.x += (dx / dist) * Math.max(1.8, this.speed);
+                this.y += (dy / dist) * Math.max(1.8, this.speed);
+            } else {
+                // Keep medium distance from target
+                const idealDist = 220;
+                if (dist > idealDist + 20) {
+                    this.x += (dx / dist) * this.speed;
+                    this.y += (dy / dist) * this.speed;
+                } else if (dist < idealDist - 40) {
+                    const nextX = this.x - (dx / dist) * (this.speed * 0.5);
+                    const nextY = this.y - (dy / dist) * (this.speed * 0.5);
+                    // נסוגה לאחור רק אם זה לא מוציא אותה אל מחוץ ללוח!
+                    if (nextX >= this.radius && nextX <= canvas.width - this.radius) {
+                        this.x = nextX;
+                    }
+                    if (nextY >= this.radius && nextY <= canvas.height - this.radius) {
+                        this.y = nextY;
+                    }
+                }
             }
 
-            // Shoot bullets at target
+            // Shoot bullets at target (אך ורק אם המפלצת נמצאת בתוך הלוח)
             this.shootTimer++;
             if (this.shootTimer >= this.shootCd) {
                 this.shootTimer = 0;
-                this.shootAtTarget(target);
+                if (!isOutside) {
+                    this.shootAtTarget(target);
+                }
             }
 
             // Touch Damage (if any or against mechanical boss)
@@ -2974,6 +2999,20 @@ class Monster {
                     target.takeDamage(this.touchDmg, this);
                 }
             }
+        }
+
+        // מנגנון הגנה: מפלצת לא יכולה להיתקע או להישאר מחוץ ללוח
+        const isOffScreen = (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height);
+        if (isOffScreen) {
+            this.outsideTimer = (this.outsideTimer || 0) + 1;
+            // אם עברו מעל 1.5 שניות והמפלצת עדיין מחוץ למסך - מעבירים אותה מיד לתוך הלוח!
+            if (this.outsideTimer > 90) {
+                this.x = Math.max(25, Math.min(canvas.width - 25, this.x));
+                this.y = Math.max(25, Math.min(canvas.height - 25, this.y));
+                this.outsideTimer = 0;
+            }
+        } else {
+            this.outsideTimer = 0;
         }
     }
 
