@@ -1081,42 +1081,17 @@
             </div>
         </div>
 
-        <!-- כפתורי התחלת משחק ומדדים מתחת לרמת הקושי -->
-        <div style="display: flex; gap: 12px; margin-top: 14px; margin-bottom: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
-            <button id="start-btn" class="btn" style="padding: 13px 36px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #22c55e, #16a34a); border: 2px solid #4ade80; box-shadow: 0 0 25px rgba(34, 197, 94, 0.65); letter-spacing: 0.5px; cursor: pointer;">
+        <!-- כפתורי התחלת משחק, מדדים ובדיקת משחק מתחת לרמת הקושי -->
+        <div style="display: flex; gap: 12px; margin-top: 16px; margin-bottom: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+            <button id="start-btn" class="btn" style="padding: 14px 40px; font-size: 21px; font-weight: bold; background: linear-gradient(135deg, #22c55e, #16a34a); border: 2px solid #4ade80; box-shadow: 0 0 25px rgba(34, 197, 94, 0.65); letter-spacing: 0.5px; cursor: pointer;">
                 ▶️ התחל משחק (גל 1)!
             </button>
-            <button id="open-sliders-btn" class="btn" style="padding: 11px 24px; font-size: 15px; font-weight: bold; background: linear-gradient(135deg, #0ea5e9, #6366f1); border: 1.5px solid #38bdf8; box-shadow: 0 0 16px rgba(14, 165, 233, 0.45); cursor: pointer;">
+            <button id="open-sliders-btn" class="btn" style="padding: 11px 22px; font-size: 15px; font-weight: bold; background: linear-gradient(135deg, #0ea5e9, #6366f1); border: 1.5px solid #38bdf8; box-shadow: 0 0 16px rgba(14, 165, 233, 0.45); cursor: pointer;">
                 🎚️ כנס למדדים
             </button>
-            <button id="start-chat-plays-btn" class="btn" style="padding: 10px 20px; font-size: 14px; background: linear-gradient(135deg, #8b5cf6, #ec4899); border: 1px solid #c084fc; box-shadow: 0 0 16px rgba(236, 72, 153, 0.4);">
-                💬 התחל עם "צ'אט משחק" (AI)
+            <button id="open-test-modal-btn" class="btn" style="padding: 11px 22px; font-size: 15px; font-weight: bold; background: linear-gradient(135deg, #a855f7, #ec4899); border: 1.5px solid #d8b4fe; box-shadow: 0 0 16px rgba(168, 85, 247, 0.45); cursor: pointer;">
+                🧪 בדיקת משחק
             </button>
-        </div>
-
-        <!-- Wave Selection Box on Start Screen -->
-        <div class="wave-select-box">
-            <div style="font-size: 14px; font-weight: bold; color: #f59e0b; margin-bottom: 6px;">
-                🚀 קפיצה ישירה לכל שלב (1 - 30):
-            </div>
-            <div style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                <select id="stage-select-dropdown" class="wave-dropdown">
-                    <!-- Populated dynamically in JS -->
-                </select>
-                <button id="jump-stage-btn" class="btn" style="padding: 7px 18px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669);">קפוץ לשלב שנבחר!</button>
-            </div>
-            <div class="quick-stage-pills">
-                <button class="stage-pill" data-wave="1">גל 1 (התחלה)</button>
-                <button class="stage-pill" data-wave="5">גל 5 (מיני-בוס 🔥)</button>
-                <button class="stage-pill" data-wave="6">גל 6 (עקרב מדבר)</button>
-                <button class="stage-pill" data-wave="8">גל 8 (עכביש רעיל)</button>
-                <button class="stage-pill" data-wave="10">גל 10 (רוח רפאים)</button>
-                <button class="stage-pill" data-wave="12">גל 12 (קוסם קרח)</button>
-                <button class="stage-pill" data-wave="15">גל 15 (שד להבות 👹)</button>
-                <button class="stage-pill" data-wave="20">גל 20 (גנרל דרקוני 🐉)</button>
-                <button class="stage-pill" data-wave="25">גל 25 (ליץ' האלמוות 💀)</button>
-                <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
-            </div>
         </div>
     </div>
 
@@ -1311,6 +1286,59 @@
             <!-- כפתור סגור וחזור למסך הבית -->
             <div style="text-align: center;">
                 <button id="close-sliders-btn" class="btn" style="padding: 10px 28px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; box-shadow: 0 0 16px rgba(16, 185, 129, 0.45); font-weight: bold; cursor: pointer;">
+                    ✓ סגור וחזור למסך הבית
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- חלון בדיקת משחק (קפיצה לשלבים ומשחק עם צ'אט) -->
+    <div id="test-mode-modal" class="overlay hidden" style="z-index: 45;">
+        <div style="background: #0f172a; border: 2px solid #c084fc; border-radius: 16px; padding: 22px 26px; max-width: 520px; width: 92%; box-shadow: 0 0 35px rgba(192, 132, 252, 0.4); text-align: right; box-sizing: border-box;">
+            <h2 style="color: #c084fc; margin-top: 0; margin-bottom: 6px; text-align: center; font-size: 22px;">
+                🧪 בדיקת משחק (מצב בדיקה ופיתוח)
+            </h2>
+            <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 14px; line-height: 1.5;">
+                במצב בדיקה תוכל לקפוץ ישירות לכל שלב (1 - 30) ולבחור אם לשחק בעצמך או לתת לצ'אט (AI) לשחק!
+            </p>
+
+            <!-- בחירת שלב -->
+            <div style="background: rgba(30, 41, 59, 0.7); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(192, 132, 252, 0.35); margin-bottom: 14px;">
+                <div style="font-size: 13.5px; font-weight: bold; color: #f59e0b; margin-bottom: 8px; text-align: center;">
+                    🚀 בחר שלב לקפיצה ישירה:
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-bottom: 10px;">
+                    <select id="stage-select-dropdown" class="wave-dropdown" style="flex: 1; max-width: 320px;">
+                        <!-- Populated dynamically in JS -->
+                    </select>
+                </div>
+                <div class="quick-stage-pills">
+                    <button class="stage-pill" data-wave="1">גל 1 (התחלה)</button>
+                    <button class="stage-pill" data-wave="5">גל 5 (מיני-בוס 🔥)</button>
+                    <button class="stage-pill" data-wave="6">גל 6 (עקרב מדבר)</button>
+                    <button class="stage-pill" data-wave="8">גל 8 (עכביש רעיל)</button>
+                    <button class="stage-pill" data-wave="10">גל 10 (רוח רפאים)</button>
+                    <button class="stage-pill" data-wave="12">גל 12 (קוסם קרח)</button>
+                    <button class="stage-pill" data-wave="15">גל 15 (שד להבות 👹)</button>
+                    <button class="stage-pill" data-wave="20">גל 20 (גנרל דרקוני 🐉)</button>
+                    <button class="stage-pill" data-wave="25">גל 25 (ליץ' האלמוות 💀)</button>
+                    <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
+                </div>
+            </div>
+
+            <!-- אפשרויות התחלת בדיקה -->
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px;">
+                <button id="jump-stage-btn" class="btn" style="padding: 10px 22px; font-size: 14.5px; font-weight: bold; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; box-shadow: 0 0 14px rgba(16, 185, 129, 0.45); cursor: pointer;">
+                    🚀 שחק בשלב שנבחר
+                </button>
+                <button id="test-chat-plays-btn" class="btn" style="padding: 10px 22px; font-size: 14.5px; font-weight: bold; background: linear-gradient(135deg, #8b5cf6, #ec4899); border: 1px solid #c084fc; box-shadow: 0 0 16px rgba(236, 72, 153, 0.45); cursor: pointer;">
+                    💬 שחק עם "צ'אט משחק" (AI)
+                </button>
+            </div>
+
+            <!-- סגור וחזור -->
+            <div style="text-align: center;">
+                <button id="close-test-modal-btn" class="btn" style="padding: 8px 24px; font-size: 13.5px; background: #334155; border: 1px solid #64748b; cursor: pointer;">
                     ✓ סגור וחזור למסך הבית
                 </button>
             </div>
@@ -3962,6 +3990,12 @@ function updateHUD() {
             expContainer.style.display = 'none';
         }
     }
+
+    // כפתורי דילוג גל וצ'אט ב-HUD מוצגים אך ורק במצב בדיקת משחק (isTestMode)
+    const inGameWaveBtnEl = document.getElementById('in-game-wave-btn');
+    const toggleChatBtnEl = document.getElementById('toggle-chat-btn');
+    if (inGameWaveBtnEl) inGameWaveBtnEl.style.display = isTestMode ? 'inline-block' : 'none';
+    if (toggleChatBtnEl) toggleChatBtnEl.style.display = isTestMode ? 'inline-block' : 'none';
 }
 
 function triggerGameOver() {
@@ -4056,22 +4090,38 @@ function populateWaveDropdowns() {
     });
 }
 
-function jumpToWave(waveNum, activateChat = false) {
+let isTestMode = false;
+
+function jumpToWave(waveNum, activateChat = false, asTestMode = false) {
+    if (asTestMode) {
+        isTestMode = true;
+    }
+    // אם לא במצב בדיקה - חייבים להתחיל מגל 1, וללא צ'אט
+    if (!isTestMode) {
+        waveNum = 1;
+        activateChat = false;
+    }
+
     waveNum = Math.max(1, Math.min(MAX_WAVES, parseInt(waveNum) || 1));
     sfx.init();
     startScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
     victoryScreen.classList.add('hidden');
     if (waveJumpModal) waveJumpModal.classList.add('hidden');
+    const testModeModal = document.getElementById('test-mode-modal');
+    if (testModeModal) testModeModal.classList.add('hidden');
     
-    // איפוס מלא לקשת התחלתי בסיסי (אפשרות 1 - ללא שדרוגים מוקדמים)
+    // איפוס מלא לקשת התחלתי בסיסי (ללא שדרוגים מוקדמים)
     resetGame();
 
     startWave(waveNum);
     updateHUD();
 
-    if (activateChat) {
+    if (activateChat && isTestMode) {
         setChatPlaysMode(true, true);
+    } else {
+        setChatPlaysMode(false, false);
+        if (chatPanel) chatPanel.classList.add('hidden');
     }
 
     gameState = 'playing';
@@ -4380,8 +4430,8 @@ window.addEventListener('keydown', e => {
         isPaused = !isPaused;
     }
 
-    // הדלקת/כיבוי מצב צ'אט משחק באמצעות מקש T או כפתור ה-HUD (אם מתחת לגל 15, גם מקש C)
-    if ((e.key === 't' || e.key === 'T' || e.key === 'א' || e.key === 'c' || e.key === 'C' || e.key === 'ב') && !e.target.matches('input, textarea')) {
+    // הדלקת/כיבוי מצב צ'אט משחק באמצעות מקש T או C - זמין אך ורק במצב בדיקת משחק (isTestMode)
+    if (isTestMode && (e.key === 't' || e.key === 'T' || e.key === 'א' || e.key === 'c' || e.key === 'C' || e.key === 'ב') && !e.target.matches('input, textarea')) {
         setChatPlaysMode(!chatPlaysActive, true);
     }
 
@@ -4495,30 +4545,55 @@ if (closeSlidersBtn && slidersModal) {
     };
 }
 
-// כפתורי מסך פתיחה ובחירת שלב
+// כפתורי חלון בדיקת משחק (קפיצה לשלבים ומשחק עם צ'אט)
+const testModeModal = document.getElementById('test-mode-modal');
+const openTestModalBtn = document.getElementById('open-test-modal-btn');
+const closeTestModalBtn = document.getElementById('close-test-modal-btn');
+const testChatPlaysBtn = document.getElementById('test-chat-plays-btn');
+
+if (openTestModalBtn && testModeModal) {
+    openTestModalBtn.onclick = () => {
+        testModeModal.classList.remove('hidden');
+        sfx.init();
+        sfx.playHit();
+    };
+}
+if (closeTestModalBtn && testModeModal) {
+    closeTestModalBtn.onclick = () => {
+        testModeModal.classList.add('hidden');
+        sfx.init();
+        sfx.playHit();
+    };
+}
+
+// כפתור התחל משחק (משחק רגיל: תמיד מגל 1, ללא צ'אט וללא קפיצות)
 const startBtn = document.getElementById('start-btn');
 if (startBtn) {
     startBtn.onclick = () => {
-        jumpToWave(1);
+        isTestMode = false;
+        jumpToWave(1, false, false);
     };
 }
 
-if (startChatPlaysBtn) {
-    startChatPlaysBtn.onclick = () => {
-        jumpToWave(1, true);
-    };
-}
-
+// כפתורי בדיקת משחק (קפיצה לשלב שנבחר / משחק עם צ'אט)
 if (jumpStageBtn && stageSelectDropdown) {
     jumpStageBtn.onclick = () => {
-        jumpToWave(stageSelectDropdown.value);
+        jumpToWave(stageSelectDropdown.value, false, true);
     };
 }
 
-// לחיצה על כל אחת מגלולות השלבים המהירים
+if (testChatPlaysBtn && stageSelectDropdown) {
+    testChatPlaysBtn.onclick = () => {
+        jumpToWave(stageSelectDropdown.value, true, true);
+    };
+}
+
+// לחיצה על כל אחת מגלולות השלבים המהירים בחלון בדיקת משחק
 document.querySelectorAll('.stage-pill').forEach(btn => {
     btn.onclick = () => {
-        jumpToWave(btn.dataset.wave);
+        if (stageSelectDropdown) stageSelectDropdown.value = btn.dataset.wave;
+        if (inGameWaveSelect) inGameWaveSelect.value = btn.dataset.wave;
+        jumpToWave(btn.dataset.wave, false, true);
     };
 });
 
@@ -4589,7 +4664,7 @@ if (inGameJumpCloseBtn && waveJumpModal) {
 
 if (inGameJumpConfirmBtn && inGameWaveSelect) {
     inGameJumpConfirmBtn.onclick = () => {
-        jumpToWave(inGameWaveSelect.value, chatPlaysActive);
+        jumpToWave(inGameWaveSelect.value, chatPlaysActive, true);
     };
 }
 
