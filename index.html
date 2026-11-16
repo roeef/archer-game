@@ -3554,8 +3554,14 @@ function gainXP(amount) {
             scoreDisplay.innerText = '0 (בדיקה 🧪)';
         }
 
-        // הודעות חגיגיות בעלייה לדרגות (5, 6, 8, 10, 12, 15, 20, 25)
-        if (upgrades.level === 5) {
+        // הודעות חגיגיות בעלייה לדרגות (2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25)
+        if (upgrades.level === 2) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "⚡ עלית לדרגה 2: נפתח שדרוג 'קשת מהירה'!", "#38bdf8");
+        } else if (upgrades.level === 3) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🗡️ עלית לדרגה 3: נפתח שדרוג 'חיצים חדים'!", "#a78bfa");
+        } else if (upgrades.level === 4) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎯 עלית לדרגה 4: נפתח שדרוג 'חץ חודר'!", "#38bdf8");
+        } else if (upgrades.level === 5) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 5: נפתחו שדרוגים — 'חיים ובריאות' ו'הרחבת חצים'!", "#f43f5e");
         } else if (upgrades.level === 6) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 6: נפתח שדרוג 'מפלצת לעזרה' (גובלין דרגה 3)!", "#facc15");
@@ -3566,7 +3572,7 @@ function gainXP(amount) {
         } else if (upgrades.level === 12 && !wizardClassChosen) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🧙‍♂️ עלית לדרגה 12: בחר את התפתחות המכשף שלך!", "#a855f7");
         } else if (upgrades.level === 15) {
-            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💣 עלית לדרגה 15: נפתח שדרוג חצי נפץ ופיצוץ הגנה!", "#f97316");
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💣 עלית לדרגה 15: נפתח שדרוג חצי נפץ ופיצוץ מגע!", "#f97316");
         } else if (upgrades.level === 20) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "💖 עלית לדרגה 20: נפתח שדרוג 'לב עולה' (+120 מקס חיים)!", "#ec4899");
         } else if (upgrades.level === 25) {
@@ -3584,44 +3590,44 @@ function gainXP(amount) {
 }
 
 const UPGRADE_POOL = [
-    // 1. הדבר הכי בסיסי / גרוע (נפתח ראשון ברמה 2)
+    // 1. הדבר הכי בסיסי (נפתח בדרגה 1)
     { 
         id: 'movespeed', 
         name: 'מגפי קלות', 
-        unlockLevel: 2,
+        unlockLevel: 1,
         tierName: 'דרגה 1 (בסיסי)',
         badgeClass: 'badge-basic',
         getDesc: () => `תוספת קטנה למהירות תנועה +15% (כרגע: ${upgrades.moveSpeed.toFixed(1)})`, 
         icon: '👟', 
         apply: () => upgrades.moveSpeed += 0.5 
     },
-    // 2. קצת יותר טוב (נפתח ברמה 3)
+    // 2. קצת יותר טוב (נפתח ברמה 2)
     { 
         id: 'speed', 
         name: 'קשת מהירה', 
-        unlockLevel: 3,
+        unlockLevel: 2,
         tierName: 'דרגה 2 (טוב)',
         badgeClass: 'badge-good',
         getDesc: () => `מגביר מעט את קצב הירי ב-15%`, 
         icon: '⚡', 
         apply: () => upgrades.fireDelay = Math.max(5, Math.round(upgrades.fireDelay * 0.85)) 
     },
-    // 3. טוב עוד יותר (נפתח ברמה 4)
+    // 3. מתקדם (נפתח ברמה 3)
     { 
         id: 'damage', 
         name: 'חיצים חדים', 
-        unlockLevel: 4,
+        unlockLevel: 3,
         tierName: 'דרגה 3 (מתקדם)',
         badgeClass: 'badge-advanced',
         getDesc: () => `מעלה את נזק החצים ב-25% (כרגע: ${upgrades.arrowDamage})`, 
         icon: '🗡️', 
         apply: () => upgrades.arrowDamage = Math.round(upgrades.arrowDamage * 1.25) 
     },
-    // 4. מתקדם מאוד (נפתח ברמה 5)
+    // 4. חזק (נפתח ברמה 4)
     { 
         id: 'pierce', 
         name: 'חץ חודר', 
-        unlockLevel: 5,
+        unlockLevel: 4,
         tierName: 'דרגה 4 (חזק)',
         badgeClass: 'badge-advanced',
         getDesc: () => `חצים חודרים מפלצת נוספת בשורה (כרגע: ${upgrades.piercing})`, 
