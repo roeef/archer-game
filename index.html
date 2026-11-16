@@ -1283,6 +1283,19 @@
                 </div>
             </div>
 
+            <!-- תצוגת מכפיל ניקוד מחושב בזמן אמת לפי מהירות, קושי וחיים -->
+            <div id="score-multiplier-preview" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #a855f7; border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; text-align: center; box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);">
+                <div style="font-size: 13px; color: #cbd5e1; margin-bottom: 3px; font-weight: bold;">
+                    🎯 מכפיל ניקוד לפי ההגדרות שלך:
+                </div>
+                <div id="score-multiplier-val" style="font-size: 18px; font-weight: bold; color: #38bdf8;">
+                    פי 1.0 (100% ניקוד)
+                </div>
+                <div id="score-multiplier-breakdown" style="font-size: 11px; color: #94a3b8; margin-top: 3px;">
+                    מהירות: 1.0x | קושי: רגיל (1.0x) | חיים: 100 (100%)
+                </div>
+            </div>
+
             <!-- כפתור סגור וחזור למסך הבית -->
             <div style="text-align: center;">
                 <button id="close-sliders-btn" class="btn" style="padding: 10px 28px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; box-shadow: 0 0 16px rgba(16, 185, 129, 0.45); font-weight: bold; cursor: pointer;">
@@ -1813,6 +1826,8 @@ function setDifficulty(diff) {
         hudBadge.style.borderColor = conf.border;
         hudBadge.style.background = conf.bg;
     }
+
+    updateScoreMultiplierPreview();
 }
 
 /* התאמת חיים התחלתיים (מ-60 עד 120) */
@@ -1834,6 +1849,8 @@ function setStartingHp(val) {
         upgrades.hp = Math.max(1, Math.min(upgrades.maxHp, upgrades.hp + diff));
         updateHUD();
     }
+
+    updateScoreMultiplierPreview();
 }
 
 /* התאמת מהירות מפלצות (מ-עשירית 0.1 עד פי 3) */
@@ -1882,6 +1899,54 @@ function setMonsterSpeedMultiplier(val) {
             btn.classList.remove('active');
         }
     });
+
+    updateScoreMultiplierPreview();
+}
+
+/* -------------------------------------------------------------
+   חישוב מכפיל ניקוד כולל (מהירות מפלצות + קושי + חיים התחלתיים)
+------------------------------------------------------------- */
+function getScoreMultiplier() {
+    // 1. מהירות מפלצות: מהירות כפולה = פי 2, חצי מהירות = חצי נקודות
+    const speedMult = monsterSpeedMultiplierSetting;
+
+    // 2. רמת קושי: קל = חצי נקודות (0.5), רגיל = 1.0, קשה = כפול נקודות (2.0)
+    let diffMult = 1.0;
+    if (gameDifficulty === 'easy') diffMult = 0.5;
+    else if (gameDifficulty === 'hard') diffMult = 2.0;
+
+    // 3. מד חיים התחלתיים: 100 חיים = רגיל (1.0).
+    // כל 20+ חיים = 20%- נקודות (120 חיים = 0.8). כל 20- חיים = 20%+ נקודות (80 חיים = 1.2).
+    const hpDiff = 100 - startingHpSetting;
+    const hpMult = 1.0 + (hpDiff / 100.0);
+
+    return Math.max(0.01, speedMult * diffMult * hpMult);
+}
+
+function updateScoreMultiplierPreview() {
+    const totalMult = getScoreMultiplier();
+    const valEl = document.getElementById('score-multiplier-val');
+    const breakdownEl = document.getElementById('score-multiplier-breakdown');
+    if (!valEl || !breakdownEl) return;
+
+    let diffText = 'רגיל (1.0x)';
+    if (gameDifficulty === 'easy') diffText = 'קל (חצי 0.5x)';
+    else if (gameDifficulty === 'hard') diffText = 'קשה (כפול 2.0x)';
+
+    const hpDiff = 100 - startingHpSetting;
+    let hpText = `${startingHpSetting} (100%)`;
+    if (hpDiff < 0) {
+        hpText = `${startingHpSetting} (${hpDiff}%)`;
+    } else if (hpDiff > 0) {
+        hpText = `${startingHpSetting} (+${hpDiff}%)`;
+    }
+
+    valEl.innerText = `פי ${totalMult.toFixed(2)} (${Math.round(totalMult * 100)}% ניקוד)`;
+    if (totalMult >= 1.5) valEl.style.color = '#4ade80';
+    else if (totalMult < 0.8) valEl.style.color = '#f87171';
+    else valEl.style.color = '#38bdf8';
+
+    breakdownEl.innerText = `מהירות: ${monsterSpeedMultiplierSetting.toFixed(1)}x | קושי: ${diffText} | חיים: ${hpText}`;
 }
 
 /* Player Upgrades */
@@ -2947,13 +3012,14 @@ class Monster {
     }
 
     onDeath() {
-        // נקודות ניתנות לכל סוג מפלצת, מוכפלות במהירות המפלצות (אך במצב בדיקה לא מקבלים נקודות)
+        // נקודות ניתנות לכל סוג מפלצת, מוכפלות במכפיל המשולב (מהירות, קושי וחיים התחלתיים)
         if (!isTestMode) {
             let baseMonsterScore = this.species.id * 60;
             if (this.species.type === 'boss') baseMonsterScore += 300;
             else if (this.species.type === 'tank') baseMonsterScore += 100;
 
-            const killScore = Math.max(10, Math.round(baseMonsterScore * monsterSpeedMultiplierSetting));
+            const scoreMultiplier = getScoreMultiplier();
+            const killScore = Math.max(1, Math.round(baseMonsterScore * scoreMultiplier));
             score += killScore;
             scoreDisplay.innerText = score;
         } else {
@@ -3472,9 +3538,10 @@ function gainXP(amount) {
         levelDisplay.innerText = upgrades.level;
         sfx.playLevelUp();
 
-        // נקודות על דרגות שמשיגים (רק במשחק רגיל, גדל ככל שהמפלצות יותר מהירות)
+        // נקודות על דרגות שמשיגים (רק במשחק רגיל, מושפע ממהירות, קושי וחיים)
         if (!isTestMode) {
-            const levelPoints = Math.round(upgrades.level * 250 * monsterSpeedMultiplierSetting);
+            const scoreMultiplier = getScoreMultiplier();
+            const levelPoints = Math.max(1, Math.round(upgrades.level * 250 * scoreMultiplier));
             score += levelPoints;
             scoreDisplay.innerText = score;
             const px = player ? player.x : canvas.width / 2;
