@@ -650,57 +650,92 @@
             box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
         }
 
-        /* Faint Mode Selector Styling */
-        .faint-container {
-            margin: 8px 0 12px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
+        /* Custom Sliders Styling (חיים התחלתיים ומהירות מפלצות) */
+        .custom-settings-box {
+            margin: 10px 0;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 10px;
+            padding: 10px 14px;
+            text-align: right;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
         }
-        .faint-pill {
-            background: #1e293b;
-            border: 2px solid #334155;
-            color: #94a3b8;
-            font-size: 13px;
-            font-weight: bold;
-            padding: 6px 14px;
-            border-radius: 20px;
+        .styled-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #334155;
+            outline: none;
+            margin: 6px 0;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            transition: background 0.2s;
         }
-        .faint-pill:hover {
-            transform: translateY(-1px);
+        .styled-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+            border: 2px solid #ffffff;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .styled-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.18);
+            background: #67e8f9;
+        }
+        .styled-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+            border: 2px solid #ffffff;
+        }
+        .slider-val-badge {
+            display: inline-block;
+            font-size: 12.5px;
+            font-weight: bold;
+            padding: 2px 9px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        .hp-badge {
+            background: rgba(244, 63, 94, 0.25);
+            border: 1px solid #f43f5e;
+            color: #fda4af;
+        }
+        .speed-badge {
+            background: rgba(249, 115, 22, 0.25);
+            border: 1px solid #f97316;
+            color: #fdba74;
+        }
+        .speed-preset-btn {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .speed-preset-btn:hover {
+            background: #334155;
             color: #fff;
+            border-color: #f97316;
         }
-        .faint-pill.active[data-faints="0"],
-        .faint-pill.active[data-faints="1"] {
-            background: rgba(59, 130, 246, 0.22);
-            border-color: #3b82f6;
-            color: #60a5fa;
-            box-shadow: 0 0 14px rgba(59, 130, 246, 0.45);
-        }
-        .faint-pill.active[data-faints="2"] {
-            background: rgba(192, 132, 252, 0.2);
-            border-color: #a855f7;
-            color: #c084fc;
-            box-shadow: 0 0 14px rgba(168, 85, 247, 0.45);
-        }
-        .faint-pill.active[data-faints="3"] {
-            background: rgba(236, 72, 153, 0.2);
-            border-color: #ec4899;
-            color: #f472b6;
-            box-shadow: 0 0 14px rgba(236, 72, 153, 0.45);
-        }
-        .faint-pill.active[data-faints="4"] {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: #f59e0b;
-            color: #fbbf24;
-            box-shadow: 0 0 14px rgba(245, 158, 11, 0.45);
+        .speed-preset-btn.active {
+            background: rgba(249, 115, 22, 0.3);
+            border-color: #f97316;
+            color: #fed7aa;
+            font-weight: bold;
+            box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
         }
 
         /* In-Game Wave Jump Modal */
@@ -1005,10 +1040,6 @@
             <span id="diff-hud-badge" style="font-weight: bold; color: #60a5fa; background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; padding: 2px 8px; border-radius: 12px; font-size: 13px;">⚙️ רגיל</span>
         </div>
 
-        <div class="hud-item" id="faint-hud-container" style="display: none;">
-            <span id="faint-hud-badge" style="font-weight: bold; color: #c084fc; background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; padding: 2px 8px; border-radius: 12px; font-size: 13px;">💫 התעלפויות: <span id="faint-count-display">2 / 2</span></span>
-        </div>
-
         <div class="hud-item" id="explosive-hud-container" style="display: none;">
             <span id="explosive-hud-badge" style="font-weight: bold; color: #fb923c; background: rgba(249, 115, 22, 0.15); border: 1px solid #f97316; padding: 2px 8px; border-radius: 12px; font-size: 13px;">💣 פיצוצי מגע: <span id="explosive-count-display">0</span></span>
         </div>
@@ -1050,16 +1081,55 @@
             </div>
         </div>
 
-        <!-- Game Mode Selection (Normal Mode / Faint Mode) -->
-        <div style="margin-top: 10px; text-align: center;">
-            <div style="font-size: 14px; font-weight: bold; color: #c084fc; margin-bottom: 6px;">
-                🎮 בחר מצב משחק:
+        <!-- Custom Settings: Starting HP (60-120) & Monster Speed (1/3 to 10) -->
+        <div class="custom-settings-box">
+            <div style="font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 8px; text-align: center;">
+                🎚️ התאמת מדדים אישית (חיים ומהירות):
             </div>
-            <div class="faint-container">
-                <button class="faint-pill active" data-faints="1" title="מצב רגיל — התעלפות אחת לפני פסילה (משותק לשנייה וקם לתחייה)">⚔️ מצב רגיל (התעלפות אחת)</button>
-                <button class="faint-pill" data-faints="2" title="2 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 2 התעלפויות</button>
-                <button class="faint-pill" data-faints="3" title="3 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 3 התעלפויות</button>
-                <button class="faint-pill" data-faints="4" title="4 התעלפויות במקום מוות (משותק לשנייה וקם לתחייה)">💫 4 התעלפויות</button>
+            
+            <!-- Starting HP Slider (60 to 120) -->
+            <div style="margin-bottom: 10px; background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(244, 63, 94, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #f43f5e;">
+                        ❤️ חיים התחלתיים (60 - 120):
+                    </label>
+                    <span class="slider-val-badge hp-badge starting-hp-badge">❤️ 100 חיים</span>
+                </div>
+                <input type="range" class="styled-slider starting-hp-slider" min="60" max="120" step="1" value="100">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                    <span>60 (אתגר)</span>
+                    <span>80</span>
+                    <span style="color: #38bdf8; font-weight: bold;">100 (רגיל)</span>
+                    <span>110</span>
+                    <span>120 (מקסימום)</span>
+                </div>
+            </div>
+
+            <!-- Monster Speed Slider (1/3 to 10) -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(249, 115, 22, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #f97316;">
+                        ⚡ מהירות מפלצות (חלקי / מכפיל מ-1/3 עד 10):
+                    </label>
+                    <span class="slider-val-badge speed-badge monster-speed-badge">פי 1.0 (מהירות רגילה ⚔️)</span>
+                </div>
+                <input type="range" class="styled-slider monster-speed-slider" min="0.33" max="10" step="0.05" value="1.0">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                    <span>1/3x (איטי)</span>
+                    <span style="color: #38bdf8; font-weight: bold;">1.0x (רגיל)</span>
+                    <span>2.5x</span>
+                    <span>5.0x</span>
+                    <span>10.0x (טורבו!)</span>
+                </div>
+                <!-- Quick Preset Pills -->
+                <div style="display: flex; gap: 6px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                    <button type="button" class="speed-preset-btn" data-speed="0.33">🐌 1/3 (איטי)</button>
+                    <button type="button" class="speed-preset-btn" data-speed="0.5">0.5x (חצי)</button>
+                    <button type="button" class="speed-preset-btn active" data-speed="1.0">1.0x (רגיל)</button>
+                    <button type="button" class="speed-preset-btn" data-speed="2.0">2.0x (כפול)</button>
+                    <button type="button" class="speed-preset-btn" data-speed="5.0">5.0x (אש)</button>
+                    <button type="button" class="speed-preset-btn" data-speed="10.0">⚡ 10x (טירוף!)</button>
+                </div>
             </div>
         </div>
 
@@ -1218,12 +1288,37 @@
             <button class="diff-pill active" data-diff="normal">⚔️ רגיל</button>
             <button class="diff-pill" data-diff="hard">🔥 קשה (כפול)</button>
         </div>
-        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
-            <span style="font-size: 13px; color: #c084fc; font-weight: bold;">מצב משחק:</span>
-            <button class="faint-pill active" data-faints="1">⚔️ מצב רגיל (התעלפות אחת)</button>
-            <button class="faint-pill" data-faints="2">💫 2 התעלפויות</button>
-            <button class="faint-pill" data-faints="3">💫 3 התעלפויות</button>
-            <button class="faint-pill" data-faints="4">💫 4 התעלפויות</button>
+        <!-- Custom Settings in Modal: Starting HP & Monster Speed -->
+        <div class="custom-settings-box" style="margin-bottom: 12px; width: 100%;">
+            <!-- Starting HP Slider (60 to 120) -->
+            <div style="margin-bottom: 8px; background: rgba(15, 23, 42, 0.6); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(244, 63, 94, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #f43f5e;">
+                        ❤️ חיים התחלתיים (60 - 120):
+                    </label>
+                    <span class="slider-val-badge hp-badge starting-hp-badge">❤️ 100 חיים</span>
+                </div>
+                <input type="range" class="styled-slider starting-hp-slider" min="60" max="120" step="1" value="100">
+            </div>
+
+            <!-- Monster Speed Slider (1/3 to 10) -->
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(249, 115, 22, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #f97316;">
+                        ⚡ מהירות מפלצות (1/3 עד 10):
+                    </label>
+                    <span class="slider-val-badge speed-badge monster-speed-badge">פי 1.0 (רגיל)</span>
+                </div>
+                <input type="range" class="styled-slider monster-speed-slider" min="0.33" max="10" step="0.05" value="1.0">
+                <div style="display: flex; gap: 4px; justify-content: center; margin-top: 4px; flex-wrap: wrap;">
+                    <button type="button" class="speed-preset-btn" data-speed="0.33">1/3x</button>
+                    <button type="button" class="speed-preset-btn" data-speed="0.5">0.5x</button>
+                    <button type="button" class="speed-preset-btn active" data-speed="1.0">1.0x</button>
+                    <button type="button" class="speed-preset-btn" data-speed="2.0">2.0x</button>
+                    <button type="button" class="speed-preset-btn" data-speed="5.0">5.0x</button>
+                    <button type="button" class="speed-preset-btn" data-speed="10.0">10x ⚡</button>
+                </div>
+            </div>
         </div>
         <button id="in-game-jump-close-btn" class="btn" style="background: #334155; font-size: 13px; padding: 6px 20px;">סגור וחזור למשחק</button>
     </div>
@@ -1698,26 +1793,67 @@ function setDifficulty(diff) {
     }
 }
 
-/* מצב משחק: מצב רגיל (התעלפות אחת = 1) או מצב התעלפות מוגבר (2, 3, 4 התעלפויות) */
-let maxFaints = 1; // ברירת מחדל: 1 = מצב רגיל (התעלפות אחת)
-let currentFaints = 1;
+/* התאמת חיים התחלתיים (מ-60 עד 120) */
+let startingHpSetting = 100;
 
-function setFaintMode(count) {
-    count = parseInt(count, 10);
-    if (isNaN(count)) count = 0;
-    maxFaints = count;
-    currentFaints = count;
+function setStartingHp(val) {
+    const prev = startingHpSetting;
+    startingHpSetting = Math.max(60, Math.min(120, parseInt(val, 10) || 100));
 
-    // עדכון כפתורי הבחירה במסך הפתיחה ובחלון הדילוג
-    document.querySelectorAll('.faint-pill').forEach(btn => {
-        if (parseInt(btn.dataset.faints, 10) === count) {
+    // סנכרון כל מדדי החיים והסליידרים בדף
+    document.querySelectorAll('.starting-hp-slider').forEach(s => s.value = startingHpSetting);
+    document.querySelectorAll('.starting-hp-badge').forEach(b => {
+        b.innerText = `❤️ ${startingHpSetting} חיים`;
+    });
+
+    if (typeof upgrades !== 'undefined' && upgrades) {
+        const diff = startingHpSetting - prev;
+        upgrades.maxHp = Math.max(60, upgrades.maxHp + diff);
+        upgrades.hp = Math.max(1, Math.min(upgrades.maxHp, upgrades.hp + diff));
+        updateHUD();
+    }
+}
+
+/* התאמת מהירות מפלצות (חלקי / מכפיל מ-1/3 עד 10) */
+let monsterSpeedMultiplierSetting = 1.0;
+
+function setMonsterSpeedMultiplier(val) {
+    monsterSpeedMultiplierSetting = Math.max(0.33, Math.min(10, parseFloat(val) || 1.0));
+
+    // עדכון מיידי של כל המפלצות החיות במסך
+    if (typeof monsters !== 'undefined' && monsters) {
+        monsters.forEach(m => {
+            if (m.species) {
+                m.speed = m.species.speed * monsterSpeedMultiplierSetting;
+            }
+        });
+    }
+
+    // סנכרון כל מדדי המהירות והסליידרים בדף
+    document.querySelectorAll('.monster-speed-slider').forEach(s => s.value = monsterSpeedMultiplierSetting);
+    document.querySelectorAll('.monster-speed-badge').forEach(b => {
+        if (Math.abs(monsterSpeedMultiplierSetting - 0.33) < 0.05) {
+            b.innerText = 'פי 1/3 (0.33x - איטי פי 3 🐌)';
+        } else if (Math.abs(monsterSpeedMultiplierSetting - 1.0) < 0.05) {
+            b.innerText = 'פי 1.0 (מהירות רגילה ⚔️)';
+        } else if (monsterSpeedMultiplierSetting < 1.0) {
+            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(2)} (איטי)`;
+        } else if (monsterSpeedMultiplierSetting >= 9.9) {
+            b.innerText = 'פי 10.0 (טורבו מקסימלי 🌪️!)';
+        } else {
+            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(2)} (מהיר ⚡)`;
+        }
+    });
+
+    // עדכון כפתורי בחירה מהירה
+    document.querySelectorAll('.speed-preset-btn').forEach(btn => {
+        const pSpeed = parseFloat(btn.dataset.speed);
+        if (Math.abs(pSpeed - monsterSpeedMultiplierSetting) < 0.06) {
             btn.classList.add('active');
         } else {
             btn.classList.remove('active');
         }
     });
-
-    updateHUD();
 }
 
 /* Player Upgrades */
@@ -1747,20 +1883,9 @@ class Player {
         this.angle = 0;
         this.invulnerableTimer = 0;
         this.shootTimer = 0;
-        this.faintTimer = 0; // זמן התעלפות בפריימים (60 פריימים = 1 שנייה)
     }
 
     update() {
-        // אם השחקן מעולף - הוא משותק לשנייה אחת בדיוק ולא יכול לזוז או לירות
-        if (this.faintTimer > 0) {
-            this.faintTimer--;
-            if (this.faintTimer === 0) {
-                addFloatingText(this.x, this.y - 30, "✨ התאוששת מההתעלפות!", "#38bdf8");
-            }
-            if (this.invulnerableTimer > 0) this.invulnerableTimer--;
-            return;
-        }
-
         // Movement
         let dx = 0;
         let dy = 0;
@@ -1817,7 +1942,7 @@ class Player {
     }
 
     takeDamage(amount, source = null) {
-        if (this.invulnerableTimer > 0 || this.faintTimer > 0) return;
+        if (this.invulnerableTimer > 0) return;
         upgrades.hp -= amount;
         this.invulnerableTimer = 35; // frames of blinking invulnerability
         sfx.playPlayerHurt();
@@ -1833,45 +1958,8 @@ class Player {
 
         if (upgrades.hp <= 0) {
             upgrades.hp = 0;
-            currentFaints--;
-            if (maxFaints > 0 && currentFaints > 0) {
-                this.triggerFaint();
-            } else {
-                currentFaints = 0;
-                triggerGameOver();
-            }
+            triggerGameOver();
         }
-        updateHUD();
-    }
-
-    triggerFaint() {
-        this.faintTimer = 60; // משותק לשנייה אחת בדיוק (60 פריימים ב-60 FPS)
-        this.invulnerableTimer = 90; // 1.5 שניות חסינות להגנה (שנייה בזמן מעולף + חצי שנייה התאוששות)
-        upgrades.hp = upgrades.maxHp; // החזרת חיים מלאים
-
-        // הדיפת מפלצות קרובות כדי שלא יישארו צמודות לשחקן כשהוא מתאושש
-        monsters.forEach(m => {
-            const dx = m.x - this.x;
-            const dy = m.y - this.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < 180 && dist > 0) {
-                const pushDist = (180 - dist) + 50;
-                m.x += (dx / dist) * pushDist;
-                m.y += (dy / dist) * pushDist;
-                m.x = Math.max(m.radius, Math.min(canvas.width - m.radius, m.x));
-                m.y = Math.max(m.radius, Math.min(canvas.height - m.radius, m.y));
-            }
-        });
-
-        // יצירת חלקיקי התעלפות
-        for (let i = 0; i < 24; i++) {
-            particles.push(new Particle(this.x, this.y, '#c084fc', 3.5, 2.5, 30));
-        }
-
-        screenShake = 12;
-        sfx.playFaint();
-        const remainText = currentFaints === 1 ? 'נותרה התעלפות אחרונה!' : `נותרו עוד ${currentFaints} התעלפויות`;
-        addFloatingText(this.x, this.y - 45, `💫 התעלפת! (${remainText})`, "#c084fc");
         updateHUD();
     }
 
@@ -1918,27 +2006,6 @@ class Player {
             ctx.font = 'bold 11px Tahoma';
             ctx.textAlign = 'center';
             ctx.fillText(wizardLabel, 0, -this.radius - 12);
-            ctx.restore();
-        }
-
-        // אפקט התעלפות מעל ראש השחקן (כוכבים מסתובבים וטקסט מעולף)
-        if (this.faintTimer > 0) {
-            ctx.save();
-            const starOrbitAngle = (60 - this.faintTimer) * 0.22;
-            const starRadius = 24;
-            for (let s = 0; s < 3; s++) {
-                const a = starOrbitAngle + (s * (Math.PI * 2 / 3));
-                const sx = Math.cos(a) * starRadius;
-                const sy = Math.sin(a) * (starRadius * 0.45) - this.radius - 22;
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('💫', sx, sy);
-            }
-            ctx.fillStyle = '#f472b6';
-            ctx.font = 'bold 12px Tahoma';
-            ctx.textAlign = 'center';
-            ctx.fillText('מעולף! 💤', 0, -this.radius - 38);
             ctx.restore();
         }
 
@@ -2674,7 +2741,7 @@ class Monster {
         this.hp = species.hp;
         this.maxHp = species.hp;
         this.radius = species.radius;
-        this.speed = species.speed;
+        this.speed = species.speed * monsterSpeedMultiplierSetting;
         this.color = species.color;
         this.type = species.type;
         this.touchDmg = species.touchDmg || 0;
@@ -3736,7 +3803,7 @@ function activateAbility(slotNum) {
 }
 
 function activateStrongAbility() {
-    if (strongCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player || player.faintTimer > 0) return;
+    if (strongCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player) return;
 
     if (wizardClass === 'fire') {
         sfx.playFlame();
@@ -3761,7 +3828,7 @@ function activateStrongAbility() {
 }
 
 function activateWeakAbility() {
-    if (weakCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player || player.faintTimer > 0) return;
+    if (weakCooldownTimer > 0 || !wizardClass || gameState !== 'playing' || !player) return;
 
     if (wizardClass === 'fire') {
         sfx.playFlame();
@@ -3871,28 +3938,6 @@ function updateHUD() {
     xpFill.style.width = `${xpPct}%`;
     xpText.innerText = `${Math.floor(xpPct)}%`;
 
-    const faintContainer = document.getElementById('faint-hud-container');
-    const faintBadge = document.getElementById('faint-hud-badge');
-    if (faintContainer && faintBadge) {
-        faintContainer.style.display = 'inline-flex';
-        if (maxFaints === 1) {
-            faintBadge.style.color = currentFaints > 0 ? '#60a5fa' : '#ef4444';
-            faintBadge.style.borderColor = currentFaints > 0 ? '#3b82f6' : '#ef4444';
-            faintBadge.style.background = currentFaints > 0 ? 'rgba(59, 130, 246, 0.15)' : 'rgba(239, 68, 68, 0.15)';
-            faintBadge.innerHTML = `⚔️ מצב רגיל (התעלפות אחת): <span id="faint-count-display">${currentFaints} / 1</span>`;
-        } else if (maxFaints > 1) {
-            faintBadge.style.color = currentFaints > 0 ? '#c084fc' : '#ef4444';
-            faintBadge.style.borderColor = currentFaints > 0 ? '#a855f7' : '#ef4444';
-            faintBadge.style.background = currentFaints > 0 ? 'rgba(168, 85, 247, 0.15)' : 'rgba(239, 68, 68, 0.15)';
-            faintBadge.innerHTML = `💫 התעלפויות: <span id="faint-count-display">${currentFaints} / ${maxFaints}</span>`;
-        } else {
-            faintBadge.style.color = '#94a3b8';
-            faintBadge.style.borderColor = '#64748b';
-            faintBadge.style.background = 'rgba(100, 116, 139, 0.15)';
-            faintBadge.innerHTML = `⚔️ ללא התעלפות`;
-        }
-    }
-
     // עדכון תגית כמות הפיצוצים ב-HUD העליון
     const expContainer = document.getElementById('explosive-hud-container');
     const expCountDisplay = document.getElementById('explosive-count-display');
@@ -3940,8 +3985,8 @@ function resetGame() {
         multiShot: 1,
         piercing: 1,
         moveSpeed: 3.2,
-        maxHp: 100,
-        hp: 100,
+        maxHp: startingHpSetting,
+        hp: startingHpSetting,
         xp: 0,
         level: 1,
         xpToNext: 80,
@@ -3978,7 +4023,6 @@ function resetGame() {
     if (wizardModalOverlay) wizardModalOverlay.classList.add('hidden');
 
     player = new Player();
-    currentFaints = maxFaints;
     gameOverScreen.classList.add('hidden');
     victoryScreen.classList.add('hidden');
     upgradeModal.classList.add('hidden');
@@ -4400,10 +4444,24 @@ document.querySelectorAll('.diff-pill').forEach(btn => {
     };
 });
 
-// בחירת מצב התעלפות (כבוי / 2 / 3 / 4 התעלפויות)
-document.querySelectorAll('.faint-pill').forEach(btn => {
+// בחירת חיים התחלתיים (מדד 60 - 120)
+document.querySelectorAll('.starting-hp-slider').forEach(slider => {
+    slider.addEventListener('input', function() {
+        setStartingHp(this.value);
+    });
+});
+
+// בחירת מהירות מפלצות (מדד 1/3 עד 10)
+document.querySelectorAll('.monster-speed-slider').forEach(slider => {
+    slider.addEventListener('input', function() {
+        setMonsterSpeedMultiplier(this.value);
+    });
+});
+
+// כפתורי בחירה מהירה של מהירות מפלצות
+document.querySelectorAll('.speed-preset-btn').forEach(btn => {
     btn.onclick = () => {
-        setFaintMode(btn.dataset.faints);
+        setMonsterSpeedMultiplier(btn.dataset.speed);
         sfx.init();
         sfx.playHit();
     };
@@ -4776,7 +4834,8 @@ function gameLoop() {
 // אתחול רשימות השלבים בתיבות הבחירה והגדרות ברירת מחדל
 populateWaveDropdowns();
 setDifficulty('normal');
-setFaintMode(1);
+setStartingHp(100);
+setMonsterSpeedMultiplier(1.0);
 
 // Start loop
 gameLoop();
