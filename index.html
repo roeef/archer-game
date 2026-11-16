@@ -1081,56 +1081,17 @@
             </div>
         </div>
 
-        <!-- Custom Settings: Starting HP (60-120) & Monster Speed (1/3 to 10) -->
-        <div class="custom-settings-box">
-            <div style="font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 8px; text-align: center;">
-                🎚️ התאמת מדדים אישית (חיים ומהירות):
-            </div>
-            
-            <!-- Starting HP Slider (60 to 120) -->
-            <div style="margin-bottom: 10px; background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(244, 63, 94, 0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #f43f5e;">
-                        ❤️ חיים התחלתיים (60 - 120):
-                    </label>
-                    <span class="slider-val-badge hp-badge starting-hp-badge">❤️ 100 חיים</span>
-                </div>
-                <input type="range" class="styled-slider starting-hp-slider" min="60" max="120" step="1" value="100">
-                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 2px;">
-                    <span>60 (אתגר)</span>
-                    <span>80</span>
-                    <span style="color: #38bdf8; font-weight: bold;">100 (רגיל)</span>
-                    <span>110</span>
-                    <span>120 (מקסימום)</span>
-                </div>
-            </div>
-
-            <!-- Monster Speed Slider (1/3 to 10) -->
-            <div style="background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(249, 115, 22, 0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #f97316;">
-                        ⚡ מהירות מפלצות (חלקי / מכפיל מ-1/3 עד 10):
-                    </label>
-                    <span class="slider-val-badge speed-badge monster-speed-badge">פי 1.0 (מהירות רגילה ⚔️)</span>
-                </div>
-                <input type="range" class="styled-slider monster-speed-slider" min="0.33" max="10" step="0.05" value="1.0">
-                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 2px;">
-                    <span>1/3x (איטי)</span>
-                    <span style="color: #38bdf8; font-weight: bold;">1.0x (רגיל)</span>
-                    <span>2.5x</span>
-                    <span>5.0x</span>
-                    <span>10.0x (טורבו!)</span>
-                </div>
-                <!-- Quick Preset Pills -->
-                <div style="display: flex; gap: 6px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
-                    <button type="button" class="speed-preset-btn" data-speed="0.33">🐌 1/3 (איטי)</button>
-                    <button type="button" class="speed-preset-btn" data-speed="0.5">0.5x (חצי)</button>
-                    <button type="button" class="speed-preset-btn active" data-speed="1.0">1.0x (רגיל)</button>
-                    <button type="button" class="speed-preset-btn" data-speed="2.0">2.0x (כפול)</button>
-                    <button type="button" class="speed-preset-btn" data-speed="5.0">5.0x (אש)</button>
-                    <button type="button" class="speed-preset-btn" data-speed="10.0">⚡ 10x (טירוף!)</button>
-                </div>
-            </div>
+        <!-- כפתורי התחלת משחק ומדדים מתחת לרמת הקושי -->
+        <div style="display: flex; gap: 12px; margin-top: 14px; margin-bottom: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+            <button id="start-btn" class="btn" style="padding: 13px 36px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #22c55e, #16a34a); border: 2px solid #4ade80; box-shadow: 0 0 25px rgba(34, 197, 94, 0.65); letter-spacing: 0.5px; cursor: pointer;">
+                ▶️ התחל משחק (גל 1)!
+            </button>
+            <button id="open-sliders-btn" class="btn" style="padding: 11px 24px; font-size: 15px; font-weight: bold; background: linear-gradient(135deg, #0ea5e9, #6366f1); border: 1.5px solid #38bdf8; box-shadow: 0 0 16px rgba(14, 165, 233, 0.45); cursor: pointer;">
+                🎚️ כנס למדדים
+            </button>
+            <button id="start-chat-plays-btn" class="btn" style="padding: 10px 20px; font-size: 14px; background: linear-gradient(135deg, #8b5cf6, #ec4899); border: 1px solid #c084fc; box-shadow: 0 0 16px rgba(236, 72, 153, 0.4);">
+                💬 התחל עם "צ'אט משחק" (AI)
+            </button>
         </div>
 
         <!-- Wave Selection Box on Start Screen -->
@@ -1156,11 +1117,6 @@
                 <button class="stage-pill" data-wave="25">גל 25 (ליץ' האלמוות 💀)</button>
                 <button class="stage-pill" data-wave="30">גל 30 (בוס סופי 👑)</button>
             </div>
-        </div>
-
-        <div style="display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; justify-content: center; align-items: center;">
-            <button id="start-btn" class="btn">התחל משחק (גל 1)!</button>
-            <button id="start-chat-plays-btn" class="btn" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); font-size: 15px; padding: 10px 22px; box-shadow: 0 0 20px rgba(236, 72, 153, 0.45);">💬 התחל עם "צ'אט משחק" (AI)</button>
         </div>
     </div>
 
@@ -1288,39 +1244,77 @@
             <button class="diff-pill active" data-diff="normal">⚔️ רגיל</button>
             <button class="diff-pill" data-diff="hard">🔥 קשה (כפול)</button>
         </div>
-        <!-- Custom Settings in Modal: Starting HP & Monster Speed -->
-        <div class="custom-settings-box" style="margin-bottom: 12px; width: 100%;">
-            <!-- Starting HP Slider (60 to 120) -->
-            <div style="margin-bottom: 8px; background: rgba(15, 23, 42, 0.6); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(244, 63, 94, 0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #f43f5e;">
-                        ❤️ חיים התחלתיים (60 - 120):
+        <!-- Button to open Sliders from in-game jump modal -->
+        <div style="margin-bottom: 12px; text-align: center;">
+            <button id="open-sliders-from-modal-btn" class="btn" style="padding: 7px 20px; font-size: 13.5px; background: linear-gradient(135deg, #0ea5e9, #6366f1); border: 1px solid #38bdf8; box-shadow: 0 0 12px rgba(14, 165, 233, 0.4);">
+                🎚️ כנס למדדים (חיים ומהירות)
+            </button>
+        </div>
+        <button id="in-game-jump-close-btn" class="btn" style="background: #334155; font-size: 13px; padding: 6px 20px;">סגור וחזור למשחק</button>
+    </div>
+
+    <!-- חלון מדדים ייעודי (נפתח בלחיצה על 'כנס למדדים') -->
+    <div id="sliders-modal" class="overlay hidden" style="z-index: 40;">
+        <div style="background: #0f172a; border: 2px solid #38bdf8; border-radius: 16px; padding: 22px 26px; max-width: 480px; width: 92%; box-shadow: 0 0 35px rgba(56, 189, 248, 0.35); text-align: right; box-sizing: border-box;">
+            <h2 style="color: #38bdf8; margin-top: 0; margin-bottom: 8px; text-align: center; font-size: 20px;">
+                🎚️ התאמת מדדים (חיים ומהירות)
+            </h2>
+            <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 16px;">
+                כוונן את מדד החיים ההתחלתיים ואת מדד מהירות המפלצות לפי רצונך:
+            </p>
+
+            <!-- 1. מדד חיים התחלתיים (60 עד 120) -->
+            <div style="margin-bottom: 14px; background: rgba(30, 41, 59, 0.7); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(244, 63, 94, 0.35);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label style="font-size: 13.5px; font-weight: bold; color: #f43f5e;">
+                        ❤️ מדד חיים התחלתיים (מ-60 עד 120):
                     </label>
                     <span class="slider-val-badge hp-badge starting-hp-badge">❤️ 100 חיים</span>
                 </div>
                 <input type="range" class="styled-slider starting-hp-slider" min="60" max="120" step="1" value="100">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 3px;">
+                    <span>60 (אתגר)</span>
+                    <span>80</span>
+                    <span style="color: #38bdf8; font-weight: bold;">100 (רגיל)</span>
+                    <span>110</span>
+                    <span>120 (מקסימום)</span>
+                </div>
             </div>
 
-            <!-- Monster Speed Slider (1/3 to 10) -->
-            <div style="background: rgba(15, 23, 42, 0.6); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(249, 115, 22, 0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                    <label style="font-size: 12px; font-weight: bold; color: #f97316;">
-                        ⚡ מהירות מפלצות (1/3 עד 10):
+            <!-- 2. מדד מהירות מפלצות (0.1 עד 3.0 עם קפיצות וכפול) -->
+            <div style="margin-bottom: 18px; background: rgba(30, 41, 59, 0.7); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(249, 115, 22, 0.35);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <label style="font-size: 13.5px; font-weight: bold; color: #f97316;">
+                        ⚡ מדד מהירות מפלצות (מ-עשירית עד פי 3):
                     </label>
-                    <span class="slider-val-badge speed-badge monster-speed-badge">פי 1.0 (רגיל)</span>
+                    <span class="slider-val-badge speed-badge monster-speed-badge">פי 1.0 (מהירות רגילה ⚔️)</span>
                 </div>
-                <input type="range" class="styled-slider monster-speed-slider" min="0.33" max="10" step="0.05" value="1.0">
-                <div style="display: flex; gap: 4px; justify-content: center; margin-top: 4px; flex-wrap: wrap;">
-                    <button type="button" class="speed-preset-btn" data-speed="0.33">1/3x</button>
-                    <button type="button" class="speed-preset-btn" data-speed="0.5">0.5x</button>
-                    <button type="button" class="speed-preset-btn active" data-speed="1.0">1.0x</button>
-                    <button type="button" class="speed-preset-btn" data-speed="2.0">2.0x</button>
-                    <button type="button" class="speed-preset-btn" data-speed="5.0">5.0x</button>
-                    <button type="button" class="speed-preset-btn" data-speed="10.0">10x ⚡</button>
+                <input type="range" class="styled-slider monster-speed-slider" min="0.1" max="3" step="0.1" value="1.0">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 3px;">
+                    <span>עשירית (0.1x)</span>
+                    <span>0.5x</span>
+                    <span style="color: #38bdf8; font-weight: bold;">1.0x (רגיל)</span>
+                    <span>2.0x (כפול)</span>
+                    <span>3.0x (פי 3)</span>
+                </div>
+                <!-- כפתורי קפיצות ומכפילים -->
+                <div style="display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
+                    <button type="button" class="speed-preset-btn" data-speed="0.1">🐌 עשירית (0.1x)</button>
+                    <button type="button" class="speed-preset-btn" data-speed="0.25">0.25x</button>
+                    <button type="button" class="speed-preset-btn" data-speed="0.5">חצי (0.5x)</button>
+                    <button type="button" class="speed-preset-btn active" data-speed="1.0">רגיל (1.0x)</button>
+                    <button type="button" class="speed-preset-btn" data-speed="2.0">⚡ כפול (2.0x)</button>
+                    <button type="button" class="speed-preset-btn" data-speed="3.0">🔥 פי 3 (3.0x)</button>
                 </div>
             </div>
+
+            <!-- כפתור סגור וחזור למסך הבית -->
+            <div style="text-align: center;">
+                <button id="close-sliders-btn" class="btn" style="padding: 10px 28px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; box-shadow: 0 0 16px rgba(16, 185, 129, 0.45); font-weight: bold; cursor: pointer;">
+                    ✓ סגור וחזור למסך הבית
+                </button>
+            </div>
         </div>
-        <button id="in-game-jump-close-btn" class="btn" style="background: #334155; font-size: 13px; padding: 6px 20px;">סגור וחזור למשחק</button>
     </div>
 </div> <!-- end game-container -->
 
@@ -1814,11 +1808,11 @@ function setStartingHp(val) {
     }
 }
 
-/* התאמת מהירות מפלצות (חלקי / מכפיל מ-1/3 עד 10) */
+/* התאמת מהירות מפלצות (מ-עשירית 0.1 עד פי 3) */
 let monsterSpeedMultiplierSetting = 1.0;
 
 function setMonsterSpeedMultiplier(val) {
-    monsterSpeedMultiplierSetting = Math.max(0.33, Math.min(10, parseFloat(val) || 1.0));
+    monsterSpeedMultiplierSetting = Math.max(0.1, Math.min(3.0, parseFloat(val) || 1.0));
 
     // עדכון מיידי של כל המפלצות החיות במסך
     if (typeof monsters !== 'undefined' && monsters) {
@@ -1832,20 +1826,26 @@ function setMonsterSpeedMultiplier(val) {
     // סנכרון כל מדדי המהירות והסליידרים בדף
     document.querySelectorAll('.monster-speed-slider').forEach(s => s.value = monsterSpeedMultiplierSetting);
     document.querySelectorAll('.monster-speed-badge').forEach(b => {
-        if (Math.abs(monsterSpeedMultiplierSetting - 0.33) < 0.05) {
-            b.innerText = 'פי 1/3 (0.33x - איטי פי 3 🐌)';
-        } else if (Math.abs(monsterSpeedMultiplierSetting - 1.0) < 0.05) {
+        if (Math.abs(monsterSpeedMultiplierSetting - 0.1) < 0.04) {
+            b.innerText = 'פי 0.1 (עשירית - 1/10 מהירות 🐌)';
+        } else if (Math.abs(monsterSpeedMultiplierSetting - 0.25) < 0.04) {
+            b.innerText = 'פי 0.25 (רבע מהירות 🐢)';
+        } else if (Math.abs(monsterSpeedMultiplierSetting - 0.5) < 0.04) {
+            b.innerText = 'פי 0.5 (חצי מהירות)';
+        } else if (Math.abs(monsterSpeedMultiplierSetting - 1.0) < 0.04) {
             b.innerText = 'פי 1.0 (מהירות רגילה ⚔️)';
+        } else if (Math.abs(monsterSpeedMultiplierSetting - 2.0) < 0.04) {
+            b.innerText = 'פי 2.0 (מהירות כפולה ⚡)';
+        } else if (Math.abs(monsterSpeedMultiplierSetting - 3.0) < 0.04) {
+            b.innerText = 'פי 3.0 (מהיר פי 3 🔥)';
         } else if (monsterSpeedMultiplierSetting < 1.0) {
-            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(2)} (איטי)`;
-        } else if (monsterSpeedMultiplierSetting >= 9.9) {
-            b.innerText = 'פי 10.0 (טורבו מקסימלי 🌪️!)';
+            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(1)} (איטי)`;
         } else {
-            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(2)} (מהיר ⚡)`;
+            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(1)} (מהיר ⚡)`;
         }
     });
 
-    // עדכון כפתורי בחירה מהירה
+    // עדכון כפתורי בחירה מהירה ("קפיצות", "כפול", "עשירית")
     document.querySelectorAll('.speed-preset-btn').forEach(btn => {
         const pSpeed = parseFloat(btn.dataset.speed);
         if (Math.abs(pSpeed - monsterSpeedMultiplierSetting) < 0.06) {
@@ -3638,14 +3638,14 @@ const UPGRADE_POOL = [
         isLegendary: true,
         tierName: '⭐ נפתח בדרגה 20!',
         badgeClass: 'badge-legendary',
-        getDesc: () => `מעלה את מקסימום החיים שלך ב-<b>120+</b> ומרפא 120 חיים באופן מיידי! (חיים נוכחיים: ${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`,
+        getDesc: () => `מעלה <b>רק את מקסימום החיים</b> שלך ב-<b>120+</b> (ללא ריפוי חיים נוכחיים)! שילוב מושלם עם שדרוג 'עליית חיים למקס'! (מקס חדש: ${upgrades.maxHp + 120})`,
         icon: '💖',
         apply: () => {
             upgrades.maxHp += 120;
-            upgrades.hp = Math.min(upgrades.maxHp, upgrades.hp + 120);
+            // מעלה רק את המקסימום ב-120 (ללא ריפוי החיים הנוכחיים), כך ששדרוג "עליית חיים למקס" יעזור במיוחד!
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
-            addFloatingText(px, py - 35, `💖 לב עולה: +120 מקס חיים! (${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, "#ec4899");
+            addFloatingText(px, py - 35, `💖 לב עולה: מקס החיים עלה ב-120! (${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, "#ec4899");
             sfx.playLevelUp();
             updateHUD();
         }
@@ -4467,10 +4467,41 @@ document.querySelectorAll('.speed-preset-btn').forEach(btn => {
     };
 });
 
+// כפתורי חלון מדדים מותאם אישית (חיים ומהירות מפלצות)
+const slidersModal = document.getElementById('sliders-modal');
+const openSlidersBtn = document.getElementById('open-sliders-btn');
+const openSlidersFromModalBtn = document.getElementById('open-sliders-from-modal-btn');
+const closeSlidersBtn = document.getElementById('close-sliders-btn');
+
+if (openSlidersBtn && slidersModal) {
+    openSlidersBtn.onclick = () => {
+        slidersModal.classList.remove('hidden');
+        sfx.init();
+        sfx.playHit();
+    };
+}
+if (openSlidersFromModalBtn && slidersModal) {
+    openSlidersFromModalBtn.onclick = () => {
+        slidersModal.classList.remove('hidden');
+        sfx.init();
+        sfx.playHit();
+    };
+}
+if (closeSlidersBtn && slidersModal) {
+    closeSlidersBtn.onclick = () => {
+        slidersModal.classList.add('hidden');
+        sfx.init();
+        sfx.playHit();
+    };
+}
+
 // כפתורי מסך פתיחה ובחירת שלב
-document.getElementById('start-btn').onclick = () => {
-    jumpToWave(1);
-};
+const startBtn = document.getElementById('start-btn');
+if (startBtn) {
+    startBtn.onclick = () => {
+        jumpToWave(1);
+    };
+}
 
 if (startChatPlaysBtn) {
     startChatPlaysBtn.onclick = () => {
