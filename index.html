@@ -787,6 +787,82 @@
             box-shadow: 0 0 8px rgba(236, 72, 153, 0.5);
         }
 
+        /* סגנונות לכפתורי קפיצות נוספים למדדי קשת ומפלצות */
+        .generic-slider-preset-btn {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .generic-slider-preset-btn:hover {
+            background: #334155;
+            color: #fff;
+            border-color: #38bdf8;
+        }
+        .generic-slider-preset-btn.active {
+            background: rgba(56, 189, 248, 0.3);
+            border-color: #38bdf8;
+            color: #bae6fd;
+            font-weight: bold;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+        }
+
+        .generic-monster-preset-btn {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .generic-monster-preset-btn:hover {
+            background: #334155;
+            color: #fff;
+            border-color: #f97316;
+        }
+        .generic-monster-preset-btn.active {
+            background: rgba(249, 115, 22, 0.3);
+            border-color: #f97316;
+            color: #fed7aa;
+            font-weight: bold;
+            box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+        }
+
+        /* כפתורי לשוניות סינון מדדים */
+        .slider-tab-btn {
+            transition: all 0.18s ease;
+        }
+        .slider-tab-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* תיבת הקלדת מספר מותאמת אישית למדדים */
+        .slider-num-input {
+            width: 58px;
+            background: #0f172a;
+            border: 1.5px solid #38bdf8;
+            color: #38bdf8;
+            border-radius: 6px;
+            padding: 3px 4px;
+            font-size: 12.5px;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+        .slider-num-input:focus {
+            border-color: #c084fc;
+            box-shadow: 0 0 8px rgba(192, 132, 252, 0.45);
+            color: #fff;
+        }
+
         /* In-Game Wave Jump Modal */
         #wave-jump-modal {
             position: absolute;
@@ -1281,111 +1357,278 @@
     <div id="sliders-modal" class="overlay hidden" style="z-index: 40;">
         <div style="background: #0f172a; border: 2px solid #38bdf8; border-radius: 16px; padding: 18px 22px; max-width: 520px; width: 94%; max-height: 88vh; overflow-y: auto; box-shadow: 0 0 35px rgba(56, 189, 248, 0.35); text-align: right; box-sizing: border-box;">
             <h2 style="color: #38bdf8; margin-top: 0; margin-bottom: 6px; text-align: center; font-size: 20px;">
-                🎚️ התאמת מדדים (חיים ומהירות)
+                🎚️ התאמת מדדי משחק (קשת ומפלצות)
             </h2>
-            <p style="font-size: 12.5px; color: #94a3b8; text-align: center; margin-bottom: 14px;">
-                כוונן את מדדי החיים והמהירות שלך ושל המפלצות לפי רצונך:
+            <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 12px; line-height: 1.4;">
+                כוונן באופן מדויק 11 מדדים שונים של הקשת ושל המפלצות:
             </p>
 
-            <!-- 1. מדד חיים התחלתיים (60 עד 120) -->
-            <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(244, 63, 94, 0.35);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #f43f5e;">
-                        ❤️ מדד חיים התחלתיים (מ-60 עד 120):
-                    </label>
-                    <span class="slider-val-badge hp-badge starting-hp-badge">❤️ 100 חיים</span>
+            <!-- לשוניות סינון מדדים לפי קטגוריה -->
+            <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; flex-wrap: wrap;">
+                <button type="button" class="slider-tab-btn active" data-tab="all" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1.5px solid #38bdf8; background: rgba(56, 189, 248, 0.25); color: #38bdf8;">🌟 כל המדדים (11)</button>
+                <button type="button" class="slider-tab-btn" data-tab="player" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid #64748b; background: rgba(30, 41, 59, 0.6); color: #cbd5e1;">🏹 הקשת שלי (5)</button>
+                <button type="button" class="slider-tab-btn" data-tab="monsters" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid #64748b; background: rgba(30, 41, 59, 0.6); color: #cbd5e1;">👾 המפלצות (6)</button>
+            </div>
+
+            <!-- ================= קבוצת מדדי הקשת שלי (5 מדדים) ================= -->
+            <div class="slider-section-player">
+                <div style="font-size: 13px; font-weight: bold; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <span>🏹 מדדי הקשת והחצים שלי (טווח 1/3 עד 3)</span>
+                    <span style="font-size: 10.5px; color: #64748b; font-weight: normal;">(5 מדדים)</span>
                 </div>
-                <input type="range" class="styled-slider starting-hp-slider" min="60" max="120" step="1" value="100">
-                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #94a3b8; margin-top: 3px;">
-                    <span>60 (אתגר)</span>
-                    <span>80</span>
-                    <span style="color: #38bdf8; font-weight: bold;">100 (רגיל)</span>
-                    <span>110</span>
-                    <span>120 (מקסימום)</span>
+
+                <!-- 1. מדד חיים התחלתיים (1/3 עד 3: 33 עד 300 חיים) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(244, 63, 94, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #f43f5e;">
+                            ❤️ חיים התחלתיים (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input starting-hp-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge hp-badge starting-hp-badge" style="background: rgba(244, 63, 94, 0.15); border: 1px solid #f43f5e; color: #fda4af; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">❤️ 100 חיים (פי 1.0)</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider starting-hp-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-slider-preset-btn starting-hp-preset-btn" data-hp="0.33">🌱 שליש (0.33)</button>
+                        <button type="button" class="generic-slider-preset-btn starting-hp-preset-btn" data-hp="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-slider-preset-btn starting-hp-preset-btn active" data-hp="1.0">100 חיים (1.00)</button>
+                        <button type="button" class="generic-slider-preset-btn starting-hp-preset-btn" data-hp="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-slider-preset-btn starting-hp-preset-btn" data-hp="3.0">🔥 פי 3 (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 2. מדד מהירות שחקן (1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #38bdf8;">
+                            🏃‍♂️ מהירות תנועה לעצמי (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input player-speed-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge player-speed-badge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider player-speed-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="player-speed-preset-btn" data-speed="0.33">🐌 שליש (0.33)</button>
+                        <button type="button" class="player-speed-preset-btn" data-speed="0.5">חצי (0.50)</button>
+                        <button type="button" class="player-speed-preset-btn active" data-speed="1.0">רגיל (1.00)</button>
+                        <button type="button" class="player-speed-preset-btn" data-speed="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="player-speed-preset-btn" data-speed="3.0">🔥 פי 3 (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 3. מדד קצב ירי הקשת (1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #60a5fa;">
+                            🏹 קצב ירי הקשת (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input player-fire-rate-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge player-fire-rate-badge" style="background: rgba(59, 130, 246, 0.15); border: 1px solid #60a5fa; color: #93c5fd; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider player-fire-rate-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-slider-preset-btn player-fire-rate-preset-btn" data-rate="0.33">שליש (0.33)</button>
+                        <button type="button" class="generic-slider-preset-btn player-fire-rate-preset-btn" data-rate="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-slider-preset-btn player-fire-rate-preset-btn active" data-rate="1.0">רגיל (1.00)</button>
+                        <button type="button" class="generic-slider-preset-btn player-fire-rate-preset-btn" data-rate="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-slider-preset-btn player-fire-rate-preset-btn" data-rate="3.0">🔥 מקלע (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 4. מדד מהירות חצי הקשת (1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(20, 184, 166, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #2dd4bf;">
+                            💨 מהירות חצי הקשת (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input player-arrow-speed-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge player-arrow-speed-badge" style="background: rgba(20, 184, 166, 0.15); border: 1px solid #2dd4bf; color: #5eead4; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider player-arrow-speed-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-slider-preset-btn player-arrow-speed-preset-btn" data-speed="0.33">שליש (0.33)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-speed-preset-btn" data-speed="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-speed-preset-btn active" data-speed="1.0">רגיל (1.00)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-speed-preset-btn" data-speed="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-speed-preset-btn" data-speed="3.0">🚀 בזק (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 5. מדד נזק חצי הקשת (1/3 עד 3) -->
+                <div style="margin-bottom: 14px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(234, 179, 8, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #facc15;">
+                            🎯 נזק חצי הקשת (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input player-arrow-damage-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge player-arrow-damage-badge" style="background: rgba(234, 179, 8, 0.15); border: 1px solid #facc15; color: #fde047; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider player-arrow-damage-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn" data-damage="0.33">שליש (0.33)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn" data-damage="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn active" data-damage="1.0">רגיל (1.00)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn" data-damage="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn" data-damage="3.0">💥 פי 3 (3.00)</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- 2. מדד מהירות לעצמי (מ-0.1 עד 3.0) -->
-            <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.35);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #38bdf8;">
-                        🏃‍♂️ מדד מהירות לעצמי (מ-עשירית עד פי 3):
-                    </label>
-                    <span class="slider-val-badge player-speed-badge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: bold;">פי 1.0 (מהירות רגילה 🏃)</span>
+            <!-- ================= קבוצת מדדי המפלצות (6 מדדים) ================= -->
+            <div class="slider-section-monsters">
+                <div style="font-size: 13px; font-weight: bold; color: #f97316; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <span>👾 מדדי המפלצות והכדורים שלהן (טווח 1/3 עד 3)</span>
+                    <span style="font-size: 10.5px; color: #64748b; font-weight: normal;">(6 מדדים)</span>
                 </div>
-                <input type="range" class="styled-slider player-speed-slider" min="0.1" max="3" step="0.1" value="1.0">
-                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #94a3b8; margin-top: 3px;">
-                    <span>עשירית (0.1x)</span>
-                    <span>0.5x</span>
-                    <span style="color: #38bdf8; font-weight: bold;">1.0x (רגיל)</span>
-                    <span>2.0x (כפול)</span>
-                    <span>3.0x (פי 3)</span>
+
+                <!-- 6. מדד חיים למפלצות (1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(236, 72, 153, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #ec4899;">
+                            👾 חיים למפלצות (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input monster-hp-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge monster-hp-badge" style="background: rgba(236, 72, 153, 0.15); border: 1px solid #ec4899; color: #f472b6; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider monster-hp-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="monster-hp-preset-btn" data-hp="0.33">🌱 שליש (0.33)</button>
+                        <button type="button" class="monster-hp-preset-btn" data-hp="0.5">חצי (0.50)</button>
+                        <button type="button" class="monster-hp-preset-btn active" data-hp="1.0">רגיל (1.00)</button>
+                        <button type="button" class="monster-hp-preset-btn" data-hp="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="monster-hp-preset-btn" data-hp="3.0">💀 פי 3 (3.00)</button>
+                    </div>
                 </div>
-                <!-- כפתורי קפיצות ומכפילים למהירות שחקן -->
-                <div style="display: flex; gap: 6px; justify-content: center; margin-top: 8px; flex-wrap: wrap;">
-                    <button type="button" class="player-speed-preset-btn" data-speed="0.1">🐌 עשירית (0.1x)</button>
-                    <button type="button" class="player-speed-preset-btn" data-speed="0.5">חצי (0.5x)</button>
-                    <button type="button" class="player-speed-preset-btn active" data-speed="1.0">רגיל (1.0x)</button>
-                    <button type="button" class="player-speed-preset-btn" data-speed="2.0">⚡ כפול (2.0x)</button>
-                    <button type="button" class="player-speed-preset-btn" data-speed="3.0">🔥 פי 3 (3.0x)</button>
+
+                <!-- 7. מדד מהירות מפלצות (1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(249, 115, 22, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #f97316;">
+                            ⚡ מהירות תנועת מפלצות (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input monster-speed-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge speed-badge monster-speed-badge">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider monster-speed-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="speed-preset-btn" data-speed="0.33">🐌 שליש (0.33)</button>
+                        <button type="button" class="speed-preset-btn" data-speed="0.5">חצי (0.50)</button>
+                        <button type="button" class="speed-preset-btn active" data-speed="1.0">רגיל (1.00)</button>
+                        <button type="button" class="speed-preset-btn" data-speed="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="speed-preset-btn" data-speed="3.0">🔥 פי 3 (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 8. מדד קצב ירי מפלצות (זמן בין יריות: 1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(168, 85, 247, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #c084fc;">
+                            ⏱️ קצב ירי מפלצות (זמן בין יריות: 1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input monster-fire-rate-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge monster-fire-rate-badge" style="background: rgba(168, 85, 247, 0.15); border: 1px solid #c084fc; color: #d8b4fe; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider monster-fire-rate-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-monster-preset-btn monster-fire-rate-preset-btn" data-rate="0.33">🐌 שליש (0.33)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-fire-rate-preset-btn" data-rate="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-fire-rate-preset-btn active" data-rate="1.0">רגיל (1.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-fire-rate-preset-btn" data-rate="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-fire-rate-preset-btn" data-rate="3.0">🔥 מטר (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 9. מדד מהירות כדורי המפלצות (1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #f87171;">
+                            🔮 מהירות כדורי המפלצות (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input monster-bullet-speed-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge monster-bullet-speed-badge" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #f87171; color: #fca5a5; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider monster-bullet-speed-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-speed-preset-btn" data-speed="0.33">שליש (0.33)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-speed-preset-btn" data-speed="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-speed-preset-btn active" data-speed="1.0">רגיל (1.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-speed-preset-btn" data-speed="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-speed-preset-btn" data-speed="3.0">🚀 פי 3 (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 10. מדד נזק כדורי המפלצות (1/3 עד 3) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(244, 63, 94, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #fb7185;">
+                            💥 נזק כדורי המפלצות (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input monster-bullet-damage-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge monster-bullet-damage-badge" style="background: rgba(244, 63, 94, 0.15); border: 1px solid #fb7185; color: #fda4af; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider monster-bullet-damage-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-damage-preset-btn" data-damage="0.33">שליש (0.33)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-damage-preset-btn" data-damage="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-damage-preset-btn active" data-damage="1.0">רגיל (1.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-damage-preset-btn" data-damage="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-bullet-damage-preset-btn" data-damage="3.0">💀 פי 3 (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 11. מדד נזק מגע של מפלצות (1/3 עד 3) -->
+                <div style="margin-bottom: 14px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(220, 38, 38, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #ef4444;">
+                            🩸 נזק מגע של מפלצות (1/3 עד 3):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input monster-touch-damage-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge monster-touch-damage-badge" style="background: rgba(220, 38, 38, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">פי 1.0</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider monster-touch-damage-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-monster-preset-btn monster-touch-damage-preset-btn" data-damage="0.33">שליש (0.33)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-touch-damage-preset-btn" data-damage="0.5">חצי (0.50)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-touch-damage-preset-btn active" data-damage="1.0">רגיל (1.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-touch-damage-preset-btn" data-damage="2.0">⚡ כפול (2.00)</button>
+                        <button type="button" class="generic-monster-preset-btn monster-touch-damage-preset-btn" data-damage="3.0">💀 פי 3 (3.00)</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- 3. מדד מהירות מפלצות (0.1 עד 3.0 עם קפיצות וכפול) -->
-            <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(249, 115, 22, 0.35);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #f97316;">
-                        ⚡ מדד מהירות מפלצות (מ-עשירית עד פי 3):
-                    </label>
-                    <span class="slider-val-badge speed-badge monster-speed-badge">פי 1.0 (מהירות רגילה ⚔️)</span>
-                </div>
-                <input type="range" class="styled-slider monster-speed-slider" min="0.1" max="3" step="0.1" value="1.0">
-                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #94a3b8; margin-top: 3px;">
-                    <span>עשירית (0.1x)</span>
-                    <span>0.5x</span>
-                    <span style="color: #38bdf8; font-weight: bold;">1.0x (רגיל)</span>
-                    <span>2.0x (כפול)</span>
-                    <span>3.0x (פי 3)</span>
-                </div>
-                <!-- כפתורי קפיצות ומכפילים למהירות מפלצות -->
-                <div style="display: flex; gap: 6px; justify-content: center; margin-top: 8px; flex-wrap: wrap;">
-                    <button type="button" class="speed-preset-btn" data-speed="0.1">🐌 עשירית (0.1x)</button>
-                    <button type="button" class="speed-preset-btn" data-speed="0.25">0.25x</button>
-                    <button type="button" class="speed-preset-btn" data-speed="0.5">חצי (0.5x)</button>
-                    <button type="button" class="speed-preset-btn active" data-speed="1.0">רגיל (1.0x)</button>
-                    <button type="button" class="speed-preset-btn" data-speed="2.0">⚡ כפול (2.0x)</button>
-                    <button type="button" class="speed-preset-btn" data-speed="3.0">🔥 פי 3 (3.0x)</button>
-                </div>
-            </div>
-
-            <!-- 4. מדד חיים למפלצות (מ-שליש 1/3 עד פי 5) -->
-            <div style="margin-bottom: 14px; background: rgba(30, 41, 59, 0.7); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(236, 72, 153, 0.35);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #ec4899;">
-                        👾 מדד חיים למפלצות (מ-שליש עד פי 5):
-                    </label>
-                    <span class="slider-val-badge monster-hp-badge" style="background: rgba(236, 72, 153, 0.15); border: 1px solid #ec4899; color: #f472b6; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: bold;">פי 1.0 (חיים רגילים 👾)</span>
-                </div>
-                <input type="range" class="styled-slider monster-hp-slider" min="0.33" max="5.0" step="0.05" value="1.0">
-                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #94a3b8; margin-top: 3px;">
-                    <span>שליש (1/3x)</span>
-                    <span>חצי (0.5x)</span>
-                    <span style="color: #38bdf8; font-weight: bold;">1.0x (רגיל)</span>
-                    <span>2.0x (כפול)</span>
-                    <span>פי 5 (5.0x)</span>
-                </div>
-                <!-- כפתורי קפיצות ומכפילים לחיים מפלצות -->
-                <div style="display: flex; gap: 6px; justify-content: center; margin-top: 8px; flex-wrap: wrap;">
-                    <button type="button" class="monster-hp-preset-btn" data-hp="0.33">🌱 שליש (1/3x)</button>
-                    <button type="button" class="monster-hp-preset-btn" data-hp="0.5">חצי (0.5x)</button>
-                    <button type="button" class="monster-hp-preset-btn active" data-hp="1.0">רגיל (1.0x)</button>
-                    <button type="button" class="monster-hp-preset-btn" data-hp="2.0">⚡ כפול (2.0x)</button>
-                    <button type="button" class="monster-hp-preset-btn" data-hp="3.0">פי 3 (3.0x)</button>
-                    <button type="button" class="monster-hp-preset-btn" data-hp="5.0">💀 פי 5 (5.0x)</button>
-                </div>
-            </div>
-
-            <!-- תצוגת מכפיל ניקוד מחושב בזמן אמת לפי מהירות, קושי וחיים -->
+            <!-- תצוגת מכפיל ניקוד מחושב בזמן אמת לפי כל 11 המדדים -->
             <div id="score-multiplier-preview" style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #a855f7; border-radius: 12px; padding: 10px 14px; margin-bottom: 14px; text-align: center; box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);">
                 <div style="font-size: 12.5px; color: #cbd5e1; margin-bottom: 3px; font-weight: bold;">
                     🎯 מכפיל ניקוד לפי ההגדרות שלך:
@@ -1393,15 +1636,15 @@
                 <div id="score-multiplier-val" style="font-size: 18px; font-weight: bold; color: #38bdf8;">
                     פי 1.0 (100% ניקוד)
                 </div>
-                <div id="score-multiplier-breakdown" style="font-size: 11px; color: #94a3b8; margin-top: 3px; line-height: 1.4;">
-                    מהירות מפלצות: 1.0x | חיים מפלצות: 1.0x | מהירות שחקן: 1.0x | קושי: רגיל | חיים: 100
+                <div id="score-multiplier-breakdown" style="font-size: 10.5px; color: #94a3b8; margin-top: 4px; line-height: 1.5;">
+                    מפלצות: חיים: 1.0x | מהירות: 1.0x | קצב ירי: 1.0x | קשת: חיים: 100 | מהירות: 1.0x | נזק: 1.0x
                 </div>
             </div>
 
             <!-- כפתור סגור וחזור למסך הבית -->
             <div style="text-align: center;">
                 <button id="close-sliders-btn" class="btn" style="padding: 9px 26px; font-size: 14px; background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; box-shadow: 0 0 16px rgba(16, 185, 129, 0.45); font-weight: bold; cursor: pointer;">
-                    ✓ סגור וחזור למסך הבית
+                    ✓ סגור וחזור למשחק
                 </button>
             </div>
         </div>
@@ -1932,22 +2175,37 @@ function setDifficulty(diff) {
     updateScoreMultiplierPreview();
 }
 
-/* התאמת חיים התחלתיים (מ-60 עד 120) */
+/* התאמת חיים התחלתיים (1/3 עד 3: מ-33 עד 300 חיים) */
 let startingHpSetting = 100;
+let startingHpMultiplierSetting = 1.0;
 
 function setStartingHp(val) {
+    const raw = parseFloat(val) || 1.0;
+    // אם הוזן ערך מעל 10, מניחים שמדובר בחיים אבסולוטיים (למשל 100) וממירים למכפיל
+    const mult = raw > 10 ? (raw / 100.0) : raw;
+    startingHpMultiplierSetting = Math.max(0.33, Math.min(3.0, mult));
+    const newHp = Math.round(100 * startingHpMultiplierSetting);
     const prev = startingHpSetting;
-    startingHpSetting = Math.max(60, Math.min(120, parseInt(val, 10) || 100));
+    startingHpSetting = newHp;
 
-    // סנכרון כל מדדי החיים והסליידרים בדף
-    document.querySelectorAll('.starting-hp-slider').forEach(s => s.value = startingHpSetting);
+    // סנכרון סליידרים, תיבות מספר ותגיות
+    document.querySelectorAll('.starting-hp-slider').forEach(s => s.value = startingHpMultiplierSetting);
+    document.querySelectorAll('.starting-hp-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = startingHpMultiplierSetting.toFixed(2);
+    });
     document.querySelectorAll('.starting-hp-badge').forEach(b => {
-        b.innerText = `❤️ ${startingHpSetting} חיים`;
+        b.innerText = `❤️ ${startingHpSetting} חיים (פי ${startingHpMultiplierSetting.toFixed(2)})`;
+    });
+
+    document.querySelectorAll('.starting-hp-preset-btn').forEach(btn => {
+        const p = parseFloat(btn.dataset.hp);
+        if (Math.abs(p - startingHpMultiplierSetting) < 0.06) btn.classList.add('active');
+        else btn.classList.remove('active');
     });
 
     if (typeof upgrades !== 'undefined' && upgrades) {
         const diff = startingHpSetting - prev;
-        upgrades.maxHp = Math.max(60, upgrades.maxHp + diff);
+        upgrades.maxHp = Math.max(30, upgrades.maxHp + diff);
         upgrades.hp = Math.max(1, Math.min(upgrades.maxHp, upgrades.hp + diff));
         updateHUD();
     }
@@ -1955,11 +2213,11 @@ function setStartingHp(val) {
     updateScoreMultiplierPreview();
 }
 
-/* התאמת מהירות מפלצות (מ-עשירית 0.1 עד פי 3) */
+/* התאמת מהירות מפלצות (1/3 עד 3) */
 let monsterSpeedMultiplierSetting = 1.0;
 
 function setMonsterSpeedMultiplier(val) {
-    monsterSpeedMultiplierSetting = Math.max(0.1, Math.min(3.0, parseFloat(val) || 1.0));
+    monsterSpeedMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
 
     // עדכון מיידי של כל המפלצות החיות במסך
     if (typeof monsters !== 'undefined' && monsters) {
@@ -1970,29 +2228,16 @@ function setMonsterSpeedMultiplier(val) {
         });
     }
 
-    // סנכרון כל מדדי המהירות והסליידרים בדף
+    // סנכרון סליידר, תיבת מספר ותגית
     document.querySelectorAll('.monster-speed-slider').forEach(s => s.value = monsterSpeedMultiplierSetting);
+    document.querySelectorAll('.monster-speed-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = monsterSpeedMultiplierSetting.toFixed(2);
+    });
     document.querySelectorAll('.monster-speed-badge').forEach(b => {
-        if (Math.abs(monsterSpeedMultiplierSetting - 0.1) < 0.04) {
-            b.innerText = 'פי 0.1 (עשירית - 1/10 מהירות 🐌)';
-        } else if (Math.abs(monsterSpeedMultiplierSetting - 0.25) < 0.04) {
-            b.innerText = 'פי 0.25 (רבע מהירות 🐢)';
-        } else if (Math.abs(monsterSpeedMultiplierSetting - 0.5) < 0.04) {
-            b.innerText = 'פי 0.5 (חצי מהירות)';
-        } else if (Math.abs(monsterSpeedMultiplierSetting - 1.0) < 0.04) {
-            b.innerText = 'פי 1.0 (מהירות רגילה ⚔️)';
-        } else if (Math.abs(monsterSpeedMultiplierSetting - 2.0) < 0.04) {
-            b.innerText = 'פי 2.0 (מהירות כפולה ⚡)';
-        } else if (Math.abs(monsterSpeedMultiplierSetting - 3.0) < 0.04) {
-            b.innerText = 'פי 3.0 (מהיר פי 3 🔥)';
-        } else if (monsterSpeedMultiplierSetting < 1.0) {
-            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(1)} (איטי)`;
-        } else {
-            b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(1)} (מהיר ⚡)`;
-        }
+        b.innerText = `פי ${monsterSpeedMultiplierSetting.toFixed(2)}`;
     });
 
-    // עדכון כפתורי בחירה מהירה ("קפיצות", "כפול", "עשירית")
+    // עדכון כפתורי בחירה מהירה
     document.querySelectorAll('.speed-preset-btn').forEach(btn => {
         const pSpeed = parseFloat(btn.dataset.speed);
         if (Math.abs(pSpeed - monsterSpeedMultiplierSetting) < 0.06) {
@@ -2005,30 +2250,19 @@ function setMonsterSpeedMultiplier(val) {
     updateScoreMultiplierPreview();
 }
 
-/* התאמת מהירות שחקן (לעצמי) (מ-עשירית 0.1 עד פי 3) */
+/* התאמת מהירות שחקן (לעצמי: 1/3 עד 3) */
 let playerSpeedMultiplierSetting = 1.0;
 
 function setPlayerSpeedMultiplier(val) {
-    playerSpeedMultiplierSetting = Math.max(0.1, Math.min(3.0, parseFloat(val) || 1.0));
+    playerSpeedMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
 
     // סנכרון סליידרים ותגיות של מהירות שחקן
     document.querySelectorAll('.player-speed-slider').forEach(s => s.value = playerSpeedMultiplierSetting);
+    document.querySelectorAll('.player-speed-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = playerSpeedMultiplierSetting.toFixed(2);
+    });
     document.querySelectorAll('.player-speed-badge').forEach(b => {
-        if (Math.abs(playerSpeedMultiplierSetting - 0.1) < 0.04) {
-            b.innerText = 'פי 0.1 (עשירית - 1/10 מהירות 🐌)';
-        } else if (Math.abs(playerSpeedMultiplierSetting - 0.5) < 0.04) {
-            b.innerText = 'פי 0.5 (חצי מהירות)';
-        } else if (Math.abs(playerSpeedMultiplierSetting - 1.0) < 0.04) {
-            b.innerText = 'פי 1.0 (מהירות רגילה 🏃)';
-        } else if (Math.abs(playerSpeedMultiplierSetting - 2.0) < 0.04) {
-            b.innerText = 'פי 2.0 (מהירות כפולה ⚡)';
-        } else if (Math.abs(playerSpeedMultiplierSetting - 3.0) < 0.04) {
-            b.innerText = 'פי 3.0 (מהיר פי 3 🔥)';
-        } else if (playerSpeedMultiplierSetting < 1.0) {
-            b.innerText = `פי ${playerSpeedMultiplierSetting.toFixed(1)} (איטי)`;
-        } else {
-            b.innerText = `פי ${playerSpeedMultiplierSetting.toFixed(1)} (מהיר ⚡)`;
-        }
+        b.innerText = `פי ${playerSpeedMultiplierSetting.toFixed(2)}`;
     });
 
     // עדכון כפתורי קפיצות של מהירות שחקן
@@ -2044,11 +2278,11 @@ function setPlayerSpeedMultiplier(val) {
     updateScoreMultiplierPreview();
 }
 
-/* התאמת חיים למפלצות (מ-שליש 0.33 עד פי 5) */
+/* התאמת חיים למפלצות (1/3 עד 3) */
 let monsterHpMultiplierSetting = 1.0;
 
 function setMonsterHpMultiplier(val) {
-    monsterHpMultiplierSetting = Math.max(0.33, Math.min(5.0, parseFloat(val) || 1.0));
+    monsterHpMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
 
     // עדכון מיידי של חיים של כל המפלצות החיות במסך באופן יחסי
     if (typeof monsters !== 'undefined' && monsters) {
@@ -2063,24 +2297,11 @@ function setMonsterHpMultiplier(val) {
 
     // סנכרון סליידרים ותגיות של חיים למפלצות
     document.querySelectorAll('.monster-hp-slider').forEach(s => s.value = monsterHpMultiplierSetting);
+    document.querySelectorAll('.monster-hp-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = monsterHpMultiplierSetting.toFixed(2);
+    });
     document.querySelectorAll('.monster-hp-badge').forEach(b => {
-        if (Math.abs(monsterHpMultiplierSetting - 0.33) < 0.05) {
-            b.innerText = 'פי 1/3 (שליש חיים 🌱)';
-        } else if (Math.abs(monsterHpMultiplierSetting - 0.5) < 0.04) {
-            b.innerText = 'פי 0.5 (חצי חיים)';
-        } else if (Math.abs(monsterHpMultiplierSetting - 1.0) < 0.04) {
-            b.innerText = 'פי 1.0 (חיים רגילים 👾)';
-        } else if (Math.abs(monsterHpMultiplierSetting - 2.0) < 0.04) {
-            b.innerText = 'פי 2.0 (חיים כפולים ⚡)';
-        } else if (Math.abs(monsterHpMultiplierSetting - 3.0) < 0.04) {
-            b.innerText = 'פי 3.0 (חיים פי 3 🔥)';
-        } else if (Math.abs(monsterHpMultiplierSetting - 5.0) < 0.04) {
-            b.innerText = 'פי 5.0 (חיים פי 5 💀)';
-        } else if (monsterHpMultiplierSetting < 1.0) {
-            b.innerText = `פי ${monsterHpMultiplierSetting.toFixed(2)} (פחות חיים)`;
-        } else {
-            b.innerText = `פי ${monsterHpMultiplierSetting.toFixed(2)} (יותר חיים)`;
-        }
+        b.innerText = `פי ${monsterHpMultiplierSetting.toFixed(2)}`;
     });
 
     // עדכון כפתורי קפיצות של חיים למפלצות
@@ -2096,30 +2317,240 @@ function setMonsterHpMultiplier(val) {
     updateScoreMultiplierPreview();
 }
 
+/* התאמת קצב ירי מפלצות (זמן בין ירייה לירייה: 1/3 עד 3) */
+let monsterFireRateMultiplierSetting = 1.0;
+
+function setMonsterFireRateMultiplier(val) {
+    monsterFireRateMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
+
+    if (typeof monsters !== 'undefined' && monsters) {
+        monsters.forEach(m => {
+            if (m.species && m.species.shootCd) {
+                m.shootCd = Math.max(10, Math.round(m.species.shootCd / monsterFireRateMultiplierSetting));
+            }
+        });
+    }
+
+    document.querySelectorAll('.monster-fire-rate-slider').forEach(s => s.value = monsterFireRateMultiplierSetting);
+    document.querySelectorAll('.monster-fire-rate-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = monsterFireRateMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.monster-fire-rate-badge').forEach(b => {
+        b.innerText = `פי ${monsterFireRateMultiplierSetting.toFixed(2)}`;
+    });
+
+    document.querySelectorAll('.monster-fire-rate-preset-btn').forEach(btn => {
+        const pRate = parseFloat(btn.dataset.rate);
+        if (Math.abs(pRate - monsterFireRateMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+/* התאמת מהירות כדורי המפלצות (1/3 עד 3) */
+let monsterBulletSpeedMultiplierSetting = 1.0;
+
+function setMonsterBulletSpeedMultiplier(val) {
+    monsterBulletSpeedMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
+
+    document.querySelectorAll('.monster-bullet-speed-slider').forEach(s => s.value = monsterBulletSpeedMultiplierSetting);
+    document.querySelectorAll('.monster-bullet-speed-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = monsterBulletSpeedMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.monster-bullet-speed-badge').forEach(b => {
+        b.innerText = `פי ${monsterBulletSpeedMultiplierSetting.toFixed(2)}`;
+    });
+
+    document.querySelectorAll('.monster-bullet-speed-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.speed);
+        if (Math.abs(pVal - monsterBulletSpeedMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+/* התאמת נזק כדורי המפלצות (1/3 עד 3) */
+let monsterBulletDamageMultiplierSetting = 1.0;
+
+function setMonsterBulletDamageMultiplier(val) {
+    monsterBulletDamageMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
+
+    document.querySelectorAll('.monster-bullet-damage-slider').forEach(s => s.value = monsterBulletDamageMultiplierSetting);
+    document.querySelectorAll('.monster-bullet-damage-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = monsterBulletDamageMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.monster-bullet-damage-badge').forEach(b => {
+        b.innerText = `פי ${monsterBulletDamageMultiplierSetting.toFixed(2)}`;
+    });
+
+    document.querySelectorAll('.monster-bullet-damage-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.damage);
+        if (Math.abs(pVal - monsterBulletDamageMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+/* התאמת נזק מגע של מפלצות (1/3 עד 3) */
+let monsterTouchDamageMultiplierSetting = 1.0;
+
+function setMonsterTouchDamageMultiplier(val) {
+    monsterTouchDamageMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
+
+    if (typeof monsters !== 'undefined' && monsters) {
+        monsters.forEach(m => {
+            if (m.species) {
+                m.touchDmg = Math.max(0, Math.round((m.species.touchDmg || 0) * monsterTouchDamageMultiplierSetting));
+            }
+        });
+    }
+
+    document.querySelectorAll('.monster-touch-damage-slider').forEach(s => s.value = monsterTouchDamageMultiplierSetting);
+    document.querySelectorAll('.monster-touch-damage-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = monsterTouchDamageMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.monster-touch-damage-badge').forEach(b => {
+        b.innerText = `פי ${monsterTouchDamageMultiplierSetting.toFixed(2)}`;
+    });
+
+    document.querySelectorAll('.monster-touch-damage-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.damage);
+        if (Math.abs(pVal - monsterTouchDamageMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+/* התאמת קצב ירי הקשת (1/3 עד 3) */
+let playerFireRateMultiplierSetting = 1.0;
+
+function setPlayerFireRateMultiplier(val) {
+    playerFireRateMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
+
+    document.querySelectorAll('.player-fire-rate-slider').forEach(s => s.value = playerFireRateMultiplierSetting);
+    document.querySelectorAll('.player-fire-rate-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = playerFireRateMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.player-fire-rate-badge').forEach(b => {
+        b.innerText = `פי ${playerFireRateMultiplierSetting.toFixed(2)}`;
+    });
+
+    document.querySelectorAll('.player-fire-rate-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.rate);
+        if (Math.abs(pVal - playerFireRateMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+/* התאמת מהירות חצי הקשת (1/3 עד 3) */
+let playerArrowSpeedMultiplierSetting = 1.0;
+
+function setPlayerArrowSpeedMultiplier(val) {
+    playerArrowSpeedMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
+
+    document.querySelectorAll('.player-arrow-speed-slider').forEach(s => s.value = playerArrowSpeedMultiplierSetting);
+    document.querySelectorAll('.player-arrow-speed-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = playerArrowSpeedMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.player-arrow-speed-badge').forEach(b => {
+        b.innerText = `פי ${playerArrowSpeedMultiplierSetting.toFixed(2)}`;
+    });
+
+    document.querySelectorAll('.player-arrow-speed-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.speed);
+        if (Math.abs(pVal - playerArrowSpeedMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+/* התאמת נזק חצי הקשת (1/3 עד 3) */
+let playerArrowDamageMultiplierSetting = 1.0;
+
+function setPlayerArrowDamageMultiplier(val) {
+    playerArrowDamageMultiplierSetting = Math.max(0.33, Math.min(3.0, parseFloat(val) || 1.0));
+
+    document.querySelectorAll('.player-arrow-damage-slider').forEach(s => s.value = playerArrowDamageMultiplierSetting);
+    document.querySelectorAll('.player-arrow-damage-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = playerArrowDamageMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.player-arrow-damage-badge').forEach(b => {
+        b.innerText = `פי ${playerArrowDamageMultiplierSetting.toFixed(2)}`;
+    });
+
+    document.querySelectorAll('.player-arrow-damage-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.damage);
+        if (Math.abs(pVal - playerArrowDamageMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+function getPlayerFireDelay() {
+    return Math.max(3, Math.round(upgrades.fireDelay / playerFireRateMultiplierSetting));
+}
+
 /* -------------------------------------------------------------
-   חישוב מכפיל ניקוד כולל (מהירות מפלצות + קושי + חיים התחלתיים + חיים מפלצות + מהירות שחקן)
+   חישוב מכפיל ניקוד כולל (לפי כל 11 המדדים המשפיעים)
 ------------------------------------------------------------- */
 function getScoreMultiplier() {
-    // 1. מהירות מפלצות: מהירות כפולה = פי 2, חצי מהירות = חצי נקודות
-    const speedMult = monsterSpeedMultiplierSetting;
+    // מפלצות: יותר מהר / יותר חיים / יותר נזק / יותר קצב ירי = יותר ניקוד
+    const mSpeedMult = monsterSpeedMultiplierSetting;
+    const mHpMult = monsterHpMultiplierSetting;
+    const mFireRateMult = monsterFireRateMultiplierSetting;
+    const mBulletSpdMult = monsterBulletSpeedMultiplierSetting;
+    const mBulletDmgMult = monsterBulletDamageMultiplierSetting;
+    const mTouchDmgMult = monsterTouchDamageMultiplierSetting;
 
-    // 2. רמת קושי: קל = חצי נקודות (0.5), רגיל = 1.0, קשה = כפול נקודות (2.0)
+    // קושי בסיסי
     let diffMult = 1.0;
     if (gameDifficulty === 'easy') diffMult = 0.5;
     else if (gameDifficulty === 'hard') diffMult = 2.0;
 
-    // 3. מד חיים התחלתיים: 100 חיים = רגיל (1.0).
-    // כל 20+ חיים = 20%- נקודות (120 חיים = 0.8). כל 20- חיים = 20%+ נקודות (80 חיים = 1.2).
+    // חיים התחלתיים קשת
     const hpDiff = 100 - startingHpSetting;
     const hpMult = 1.0 + (hpDiff / 100.0);
 
-    // 4. חיים למפלצות: יותר חיים = יותר נקודות (פי 2 חיים = פי 2 נקודות, שליש חיים = שליש נקודות)
-    const monsterHpMult = monsterHpMultiplierSetting;
+    // קשת: מהיר יותר / יורה מהר יותר / נזק חזק יותר = משחק קל יותר (פחות נקודות)
+    const pSpeedMult = (1.0 / playerSpeedMultiplierSetting);
+    const pFireRateMult = (1.0 / playerFireRateMultiplierSetting);
+    const pArrowSpdMult = (1.0 / playerArrowSpeedMultiplierSetting);
+    const pArrowDmgMult = (1.0 / playerArrowDamageMultiplierSetting);
 
-    // 5. מהירות שחקן (לעצמי): שחקן מהיר יותר = קל יותר (פחות נקודות), איטי יותר = מאתגר יותר (יותר נקודות)
-    const playerSpeedMult = (1.0 / playerSpeedMultiplierSetting);
+    // שקלול הרמוני ומאוזן
+    const monsterFactor = mSpeedMult * mHpMult * Math.sqrt(mFireRateMult * mBulletSpdMult * mBulletDmgMult * mTouchDmgMult);
+    const playerFactor = diffMult * hpMult * Math.sqrt(pSpeedMult * pFireRateMult * pArrowSpdMult * pArrowDmgMult);
 
-    return Math.max(0.01, speedMult * diffMult * hpMult * monsterHpMult * playerSpeedMult);
+    return Math.max(0.01, monsterFactor * playerFactor);
 }
 
 function updateScoreMultiplierPreview() {
@@ -2145,7 +2576,10 @@ function updateScoreMultiplierPreview() {
     else if (totalMult < 0.8) valEl.style.color = '#f87171';
     else valEl.style.color = '#38bdf8';
 
-    breakdownEl.innerText = `מהירות מפלצות: ${monsterSpeedMultiplierSetting.toFixed(1)}x | חיים מפלצות: ${monsterHpMultiplierSetting.toFixed(2)}x | מהירות שחקן: ${playerSpeedMultiplierSetting.toFixed(1)}x | קושי: ${diffText} | חיים: ${hpText}`;
+    breakdownEl.innerHTML = `
+        <div style="margin-bottom: 2px;"><b>מפלצות:</b> חיים: ${monsterHpMultiplierSetting.toFixed(1)}x | מהירות: ${monsterSpeedMultiplierSetting.toFixed(1)}x | ירי: ${monsterFireRateMultiplierSetting.toFixed(1)}x | כדורים: ${monsterBulletSpeedMultiplierSetting.toFixed(1)}x / ${monsterBulletDamageMultiplierSetting.toFixed(1)}x | מגע: ${monsterTouchDamageMultiplierSetting.toFixed(1)}x</div>
+        <div><b>קשת:</b> חיים: ${hpText} | מהירות: ${playerSpeedMultiplierSetting.toFixed(1)}x | קצב ירי: ${playerFireRateMultiplierSetting.toFixed(1)}x | חצים: ${playerArrowSpeedMultiplierSetting.toFixed(1)}x / ${playerArrowDamageMultiplierSetting.toFixed(1)}x | קושי: ${diffText}</div>
+    `;
 }
 
 /* Player Upgrades */
@@ -2230,7 +2664,7 @@ class Player {
         const isShooting = (mouse.isDown || keys['Control'] || keys['ControlLeft'] || keys['ControlRight']) && !chatPlaysActive;
         if (isShooting && this.shootTimer <= 0) {
             this.shoot();
-            this.shootTimer = upgrades.fireDelay;
+            this.shootTimer = getPlayerFireDelay();
         }
 
         // Invulnerability
@@ -2243,6 +2677,9 @@ class Player {
         const count = upgrades.multiShot;
         const spread = 0.16; // radians
 
+        const arrowSpd = upgrades.arrowSpeed * playerArrowSpeedMultiplierSetting;
+        const arrowDmg = Math.max(1, Math.round(upgrades.arrowDamage * playerArrowDamageMultiplierSetting));
+
         for (let i = 0; i < count; i++) {
             const offset = (i - (count - 1) / 2) * spread;
             const arrowAngle = baseAngle + offset;
@@ -2250,8 +2687,8 @@ class Player {
                 this.x + Math.cos(arrowAngle) * 20,
                 this.y + Math.sin(arrowAngle) * 20,
                 arrowAngle,
-                upgrades.arrowSpeed,
-                upgrades.arrowDamage,
+                arrowSpd,
+                arrowDmg,
                 upgrades.piercing
             ));
         }
@@ -3069,8 +3506,8 @@ class Monster {
         this.speed = species.speed * monsterSpeedMultiplierSetting;
         this.color = species.color;
         this.type = species.type;
-        this.touchDmg = species.touchDmg || 0;
-        this.shootCd = species.shootCd || 0;
+        this.touchDmg = Math.max(0, Math.round((species.touchDmg || 0) * monsterTouchDamageMultiplierSetting));
+        this.shootCd = species.shootCd ? Math.max(10, Math.round(species.shootCd / monsterFireRateMultiplierSetting)) : 0;
         this.shootTimer = Math.floor(Math.random() * (this.shootCd || 60));
         this.frozenTimer = 0; // זמן הקפאה של מכשף קרח
         this.alive = true;
@@ -3237,11 +3674,13 @@ class Monster {
     }
 
     shootAtTarget(target) {
-
         sfx.playMonsterShoot();
         const angle = Math.atan2(target.y - this.y, target.x - this.x);
         const count = this.species.multiShot || 1;
         const spread = 0.22;
+
+        const bulletSpeed = (this.species.bulletSpeed || 3.5) * monsterBulletSpeedMultiplierSetting;
+        const bulletDmg = Math.max(1, Math.round((this.species.bulletDmg || 10) * monsterBulletDamageMultiplierSetting));
 
         for (let i = 0; i < count; i++) {
             const offset = (i - (count - 1) / 2) * spread;
@@ -3249,8 +3688,8 @@ class Monster {
                 this.x,
                 this.y,
                 angle + offset,
-                this.species.bulletSpeed || 3.5,
-                this.species.bulletDmg || 10,
+                bulletSpeed,
+                bulletDmg,
                 this.color
             ));
         }
@@ -4930,56 +5369,71 @@ document.querySelectorAll('.diff-pill').forEach(btn => {
     };
 });
 
-// בחירת חיים התחלתיים (מדד 60 - 120)
-document.querySelectorAll('.starting-hp-slider').forEach(slider => {
-    slider.addEventListener('input', function() {
-        setStartingHp(this.value);
+// חיבור כל 11 המדדים (סליידרים, תיבות הקלדת מספר, וכפתורי בחירה מהירה)
+function bindSliderControl(sliderClass, inputClass, presetClass, dataAttr, setterFn) {
+    document.querySelectorAll(sliderClass).forEach(slider => {
+        slider.addEventListener('input', function() {
+            setterFn(this.value);
+        });
     });
-});
-
-// בחירת מהירות מפלצות (מדד 1/3 עד 10)
-document.querySelectorAll('.monster-speed-slider').forEach(slider => {
-    slider.addEventListener('input', function() {
-        setMonsterSpeedMultiplier(this.value);
+    document.querySelectorAll(inputClass).forEach(inp => {
+        const handleVal = function() {
+            const raw = parseFloat(this.value);
+            // אם זה מספר אמיתי - מביא את המדד ישר אל המספר!
+            if (!isNaN(raw) && raw >= 0.1 && raw <= 10) {
+                setterFn(raw);
+            }
+        };
+        inp.addEventListener('input', handleVal);
+        inp.addEventListener('change', handleVal);
     });
-});
+    if (presetClass && dataAttr) {
+        document.querySelectorAll(presetClass).forEach(btn => {
+            btn.onclick = () => {
+                setterFn(btn.dataset[dataAttr]);
+                sfx.init();
+                sfx.playHit();
+            };
+        });
+    }
+}
 
-// בחירת מהירות שחקן (מדד 0.1 עד 3.0)
-document.querySelectorAll('.player-speed-slider').forEach(slider => {
-    slider.addEventListener('input', function() {
-        setPlayerSpeedMultiplier(this.value);
-    });
-});
+// 1-5: מדדי הקשת
+bindSliderControl('.starting-hp-slider', '.starting-hp-input', '.starting-hp-preset-btn', 'hp', setStartingHp);
+bindSliderControl('.player-speed-slider', '.player-speed-input', '.player-speed-preset-btn', 'speed', setPlayerSpeedMultiplier);
+bindSliderControl('.player-fire-rate-slider', '.player-fire-rate-input', '.player-fire-rate-preset-btn', 'rate', setPlayerFireRateMultiplier);
+bindSliderControl('.player-arrow-speed-slider', '.player-arrow-speed-input', '.player-arrow-speed-preset-btn', 'speed', setPlayerArrowSpeedMultiplier);
+bindSliderControl('.player-arrow-damage-slider', '.player-arrow-damage-input', '.player-arrow-damage-preset-btn', 'damage', setPlayerArrowDamageMultiplier);
 
-// כפתורי בחירה מהירה של מהירות שחקן
-document.querySelectorAll('.player-speed-preset-btn').forEach(btn => {
+// 6-11: מדדי המפלצות
+bindSliderControl('.monster-hp-slider', '.monster-hp-input', '.monster-hp-preset-btn', 'hp', setMonsterHpMultiplier);
+bindSliderControl('.monster-speed-slider', '.monster-speed-input', '.speed-preset-btn', 'speed', setMonsterSpeedMultiplier);
+bindSliderControl('.monster-fire-rate-slider', '.monster-fire-rate-input', '.monster-fire-rate-preset-btn', 'rate', setMonsterFireRateMultiplier);
+bindSliderControl('.monster-bullet-speed-slider', '.monster-bullet-speed-input', '.monster-bullet-speed-preset-btn', 'speed', setMonsterBulletSpeedMultiplier);
+bindSliderControl('.monster-bullet-damage-slider', '.monster-bullet-damage-input', '.monster-bullet-damage-preset-btn', 'damage', setMonsterBulletDamageMultiplier);
+bindSliderControl('.monster-touch-damage-slider', '.monster-touch-damage-input', '.monster-touch-damage-preset-btn', 'damage', setMonsterTouchDamageMultiplier);
+
+// לשוניות סינון מדדים בחלון (הכל / קשת / מפלצות)
+document.querySelectorAll('.slider-tab-btn').forEach(btn => {
     btn.onclick = () => {
-        setPlayerSpeedMultiplier(btn.dataset.speed);
-        sfx.init();
-        sfx.playHit();
-    };
-});
+        document.querySelectorAll('.slider-tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.border = '1px solid #64748b';
+            b.style.background = 'rgba(30, 41, 59, 0.6)';
+            b.style.color = '#cbd5e1';
+        });
+        btn.classList.add('active');
+        btn.style.border = '1.5px solid #38bdf8';
+        btn.style.background = 'rgba(56, 189, 248, 0.25)';
+        btn.style.color = '#38bdf8';
 
-// בחירת חיים למפלצות (מדד 1/3 עד פי 5)
-document.querySelectorAll('.monster-hp-slider').forEach(slider => {
-    slider.addEventListener('input', function() {
-        setMonsterHpMultiplier(this.value);
-    });
-});
-
-// כפתורי בחירה מהירה של חיים למפלצות
-document.querySelectorAll('.monster-hp-preset-btn').forEach(btn => {
-    btn.onclick = () => {
-        setMonsterHpMultiplier(btn.dataset.hp);
-        sfx.init();
-        sfx.playHit();
-    };
-});
-
-// כפתורי בחירה מהירה של מהירות מפלצות
-document.querySelectorAll('.speed-preset-btn').forEach(btn => {
-    btn.onclick = () => {
-        setMonsterSpeedMultiplier(btn.dataset.speed);
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.slider-section-player').forEach(el => {
+            el.style.display = (tab === 'all' || tab === 'player') ? 'block' : 'none';
+        });
+        document.querySelectorAll('.slider-section-monsters').forEach(el => {
+            el.style.display = (tab === 'all' || tab === 'monsters') ? 'block' : 'none';
+        });
         sfx.init();
         sfx.playHit();
     };
