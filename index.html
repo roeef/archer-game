@@ -4544,9 +4544,9 @@ function gainXP(amount) {
 
         // הודעות חגיגיות בעלייה לדרגות (1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25)
         if (upgrades.level === 1) {
-            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "⚡ עלית לדרגה 1: נפתח שדרוג 'קשת מהירה'!", "#38bdf8");
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 1: בחר שדרוג ראשון!", "#38bdf8");
         } else if (upgrades.level === 2) {
-            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 2: בחר שדרוג נוסף!", "#38bdf8");
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "⚡ עלית לדרגה 2: נפתח שדרוג 'קשת מהירה'!", "#38bdf8");
         } else if (upgrades.level === 3) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🗡️ עלית לדרגה 3: נפתח שדרוג 'חיצים חדים'!", "#a78bfa");
         } else if (upgrades.level === 4) {
@@ -4623,12 +4623,12 @@ const UPGRADE_POOL = [
             upgrades.counts.movespeed = (upgrades.counts.movespeed || 0) + 1;
         }
     },
-    // 2. קשת מהירה (נפתח בדרגה 1!)
+    // 2. קצת יותר טוב (נפתח ברמה 2)
     { 
         id: 'speed', 
         name: 'קשת מהירה', 
-        unlockLevel: 1,
-        tierName: 'דרגה 1 (טוב)',
+        unlockLevel: 2,
+        tierName: 'דרגה 2 (טוב)',
         badgeClass: 'badge-good',
         getDesc: () => {
             const cnt = (upgrades.counts && upgrades.counts.speed) || 0;
