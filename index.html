@@ -229,7 +229,7 @@
             text-align: center;
             position: relative;
             box-sizing: border-box;
-            min-height: 112px;
+            min-height: 118px;
             justify-content: space-between;
         }
 
@@ -312,13 +312,19 @@
         }
 
         .upgrade-desc {
-            font-size: 9px;
+            font-size: 8.5px;
             color: #cbd5e1;
-            line-height: 1.2;
+            line-height: 1.25;
             flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
+            text-align: center;
+            margin: 2px 0;
+            width: 100%;
+            word-break: break-word;
+        }
+        .upgrade-desc b {
+            color: #38bdf8;
+            font-weight: bold;
         }
 
         /* Tier display in corner */
@@ -2848,7 +2854,22 @@ let upgrades = {
     xpToNext: 80,
     luck: 0,             // שדרוג מזל (סיכוי של שליש להפיל עוד עיגול ניקוד)
     arrowsLeft: 100,     // מלאי חצים מוגבל התחלתי (100)
-    explosiveCount: 0
+    explosiveCount: 0,
+    counts: {
+        ammo_pack: 0,
+        movespeed: 0,
+        speed: 0,
+        damage: 0,
+        pierce: 0,
+        heal_and_health: 0,
+        multishot: 0,
+        helper_monster: 0,
+        max_hp_boost: 0,
+        luck: 0,
+        explosive_touch: 0,
+        rising_heart: 0,
+        mechanical_boss: 0
+    }
 };
 
 /* -------------------------------------------------------------
@@ -4564,10 +4585,17 @@ const UPGRADE_POOL = [
         unlockLevel: 1,
         tierName: '🏹 פתוח תמיד!',
         badgeClass: 'badge-basic',
-        getDesc: () => `מוסיף מיידית <b>+${arrowUpgradeGainSetting} חצים</b> למלאי! (כרגע נותרו: <b>${upgrades.arrowsLeft || 0}</b>)`,
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.ammo_pack) || 0;
+            const curLeft = upgrades.arrowsLeft || 0;
+            const afterLeft = curLeft + arrowUpgradeGainSetting;
+            return `מוסיף <b>+${arrowUpgradeGainSetting} חצים</b> למלאי!<br>מלאי כרגע: <b>${curLeft} חצים</b>.<br>נקנה: <b>${cnt} פעמים</b> (+${cnt * arrowUpgradeGainSetting} חצים סה"כ).<br>לאחר שדרוג: <b>${afterLeft} חצים</b>!`;
+        },
         icon: '📦',
         apply: () => {
             upgrades.arrowsLeft = (upgrades.arrowsLeft || 0) + arrowUpgradeGainSetting;
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.ammo_pack = (upgrades.counts.ammo_pack || 0) + 1;
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
             addFloatingText(px, py - 35, `+${arrowUpgradeGainSetting} חצים נוספו! 🏹📦`, "#38bdf8");
@@ -4582,9 +4610,18 @@ const UPGRADE_POOL = [
         unlockLevel: 1,
         tierName: 'דרגה 1 (בסיסי)',
         badgeClass: 'badge-basic',
-        getDesc: () => `תוספת קטנה למהירות תנועה +15% (כרגע: ${upgrades.moveSpeed.toFixed(1)})`, 
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.movespeed) || 0;
+            const curSpeed = (upgrades.moveSpeed * playerSpeedMultiplierSetting).toFixed(1);
+            const nextSpeed = ((upgrades.moveSpeed + 0.5) * playerSpeedMultiplierSetting).toFixed(1);
+            return `תוספת מהירות תנועה <b>+0.5</b>.<br>מהירות כרגע: <b>${curSpeed}</b> (בסיס: ${upgrades.moveSpeed.toFixed(1)}).<br>נקנו: <b>${cnt} זוגות</b> (בונוס שנצבר: +${(cnt * 0.5).toFixed(1)}).<br>לאחר שדרוג: <b>${nextSpeed}</b>!`;
+        }, 
         icon: '👟', 
-        apply: () => upgrades.moveSpeed += 0.5 
+        apply: () => {
+            upgrades.moveSpeed += 0.5;
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.movespeed = (upgrades.counts.movespeed || 0) + 1;
+        }
     },
     // 2. קצת יותר טוב (נפתח ברמה 2)
     { 
@@ -4593,9 +4630,20 @@ const UPGRADE_POOL = [
         unlockLevel: 2,
         tierName: 'דרגה 2 (טוב)',
         badgeClass: 'badge-good',
-        getDesc: () => `מגביר מעט את קצב הירי ב-15%`, 
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.speed) || 0;
+            const curDelay = getPlayerFireDelay();
+            const curRps = (60 / curDelay).toFixed(1);
+            const nextDelay = Math.max(3, Math.round(Math.max(5, Math.round(upgrades.fireDelay * 0.85)) / playerFireRateMultiplierSetting));
+            const nextRps = (60 / nextDelay).toFixed(1);
+            return `מגביר קצב ירי ב-15%.<br>מהירות כרגע: <b>${curRps} יריות/שנייה</b> (השהיה: ${curDelay} פריימים).<br>נקנה: <b>${cnt} פעמים</b>.<br>לאחר שדרוג: <b>${nextRps} יריות/שנייה</b> (${nextDelay} פריימים)!`;
+        }, 
         icon: '⚡', 
-        apply: () => upgrades.fireDelay = Math.max(5, Math.round(upgrades.fireDelay * 0.85)) 
+        apply: () => {
+            upgrades.fireDelay = Math.max(5, Math.round(upgrades.fireDelay * 0.85));
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.speed = (upgrades.counts.speed || 0) + 1;
+        }
     },
     // 3. מתקדם (נפתח ברמה 3)
     { 
@@ -4604,9 +4652,20 @@ const UPGRADE_POOL = [
         unlockLevel: 3,
         tierName: 'דרגה 3 (מתקדם)',
         badgeClass: 'badge-advanced',
-        getDesc: () => `מעלה את נזק החצים ב-25% (כרגע: ${upgrades.arrowDamage})`, 
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.damage) || 0;
+            const curBase = upgrades.arrowDamage;
+            const curActual = Math.round(curBase * playerArrowDamageMultiplierSetting);
+            const nextBase = Math.round(curBase * 1.25);
+            const nextActual = Math.round(nextBase * playerArrowDamageMultiplierSetting);
+            return `מעלה נזק חצים ב-25%.<br>נזק כרגע: <b>${curActual}</b> (בסיס: ${curBase}).<br>נקנה: <b>${cnt} פעמים</b>.<br>לאחר שדרוג: <b>${nextActual} נזק</b> (בסיס: ${nextBase})!`;
+        }, 
         icon: '🗡️', 
-        apply: () => upgrades.arrowDamage = Math.round(upgrades.arrowDamage * 1.25) 
+        apply: () => {
+            upgrades.arrowDamage = Math.round(upgrades.arrowDamage * 1.25);
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.damage = (upgrades.counts.damage || 0) + 1;
+        }
     },
     // 4. חזק (נפתח ברמה 4)
     { 
@@ -4615,9 +4674,16 @@ const UPGRADE_POOL = [
         unlockLevel: 4,
         tierName: 'דרגה 4 (חזק)',
         badgeClass: 'badge-advanced',
-        getDesc: () => `חצים חודרים מפלצת נוספת בשורה (כרגע: ${upgrades.piercing})`, 
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.pierce) || 0;
+            return `חצים חודרים מפלצת נוספת בשורה.<br>חדירה כרגע: <b>${upgrades.piercing} מפלצות</b>.<br>נקנה: <b>${cnt} פעמים</b>.<br>לאחר שדרוג: יחדור <b>${upgrades.piercing + 1} מפלצות</b>!`;
+        }, 
         icon: '🎯', 
-        apply: () => upgrades.piercing++ 
+        apply: () => {
+            upgrades.piercing++;
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.pierce = (upgrades.counts.pierce || 0) + 1;
+        }
     },
     // 5. חיים ובריאות (נפתח בדרגה 5!)
     { 
@@ -4627,12 +4693,23 @@ const UPGRADE_POOL = [
         isLegendary: true,
         tierName: '⭐ נפתח בדרגה 5!',
         badgeClass: 'badge-legendary',
-        getDesc: () => `מרפא 60 חיים ומעלה את מקסימום החיים ב-35 (חיים: ${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, 
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.heal_and_health) || 0;
+            const curHp = Math.ceil(upgrades.hp);
+            const curMax = upgrades.maxHp;
+            const afterHp = Math.min(curMax + 35, curHp + 60);
+            const afterMax = curMax + 35;
+            return `מרפא 60 חיים ומעלה מקס ב-35.<br>חיים כרגע: <b>${curHp}/${curMax}</b>.<br>נקנה: <b>${cnt} פעמים</b> (+${cnt * 35} מקס שנצבר).<br>לאחר שדרוג: <b>${afterHp}/${afterMax}</b>!`;
+        }, 
         icon: '❤️', 
         apply: () => {
             upgrades.maxHp += 35;
             upgrades.hp = Math.min(upgrades.maxHp, upgrades.hp + 60);
-            addFloatingText(player.x, player.y - 30, "+35 מקס חיים וריפוי! ❤️", "#ef4444");
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.heal_and_health = (upgrades.counts.heal_and_health || 0) + 1;
+            const px = player ? player.x : canvas.width / 2;
+            const py = player ? player.y : canvas.height / 2;
+            addFloatingText(px, py - 30, "+35 מקס חיים וריפוי! ❤️", "#ef4444");
         }
     },
     // 6. הרחבת חצים (נפתח בדרגה 5!)
@@ -4643,9 +4720,16 @@ const UPGRADE_POOL = [
         isLegendary: true,
         tierName: '⭐ נפתח בדרגה 5!',
         badgeClass: 'badge-legendary',
-        getDesc: () => `יורה חץ נוסף במקביל בכל ירייה! (כרגע: ${upgrades.multiShot} חצים)`, 
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.multishot) || 0;
+            return `יורה חץ נוסף במקביל בכל ירייה!<br>חצים בירייה כרגע: <b>${upgrades.multiShot} חצים</b> במקביל.<br>נקנה: <b>${cnt} פעמים</b>.<br>לאחר שדרוג: <b>${upgrades.multiShot + 1} חצים במקביל</b>!`;
+        }, 
         icon: '🏹', 
-        apply: () => upgrades.multiShot++ 
+        apply: () => {
+            upgrades.multiShot++;
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.multishot = (upgrades.counts.multishot || 0) + 1;
+        }
     },
     // 7. מפלצת לעזרה (נפתח בדרגה 6!)
     { 
@@ -4657,23 +4741,29 @@ const UPGRADE_POOL = [
         badgeClass: 'badge-legendary',
         getDesc: () => {
             const goblin = helperMonsters.find(h => h instanceof HelperMonster);
-            return !goblin ? 
-                'מזמן גובלין יורה (דרגה 3 מגל 3) שמצטרף כבן ברית, מסתובב חופשי ונלחם עבורך בכל המפלצות!' : 
-                `מחזק ומרפא את הגובלין העוזר! +30 מקס חיים, נזק +15 וקצב ירי מוגבר (רמה ${goblin.level + 1})`;
+            if (!goblin) {
+                return `מזמן גובלין יורה בן ברית שנלחם עבורך!<br>מצב כרגע: <b>טרם זומן</b>.<br>לאחר שדרוג: יצטרף גובלין בן ברית (רמה 1, 100 חיים, 20 נזק)!`;
+            } else {
+                return `מחזק ומרפא את הגובלין במלואו!<br>כרגע: <b>רמה ${goblin.level}</b> (חיים: ${Math.ceil(goblin.hp)}/${goblin.maxHp}, נזק: ${goblin.damage}).<br>לאחר שדרוג: <b>רמה ${goblin.level + 1}</b> (${goblin.maxHp + 30} חיים, ${goblin.damage + 15} נזק)!`;
+            }
         }, 
         icon: '👺', 
         apply: () => {
             const goblin = helperMonsters.find(h => h instanceof HelperMonster);
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.helper_monster = (upgrades.counts.helper_monster || 0) + 1;
+            const px = player ? player.x : canvas.width / 2;
+            const py = player ? player.y : canvas.height / 2;
             if (!goblin) {
                 helperMonsters.push(new HelperMonster());
-                addFloatingText(player.x, player.y - 35, "גובלין בן ברית הצטרף לצידך! 💛", "#facc15");
+                addFloatingText(px, py - 35, "גובלין בן ברית הצטרף לצידך! 💛", "#facc15");
             } else {
                 goblin.level++;
                 goblin.damage += 15;
                 goblin.maxHp += 30;
                 goblin.hp = goblin.maxHp;
                 goblin.shootCd = Math.max(16, goblin.shootCd - 6);
-                addFloatingText(player.x, player.y - 35, `גובלין עזר שודרג ורופא במלואו (רמה ${goblin.level})! ⚡`, "#4ade80");
+                addFloatingText(px, py - 35, `גובלין עזר שודרג ורופא במלואו (רמה ${goblin.level})! ⚡`, "#4ade80");
             }
         }
     },
@@ -4685,11 +4775,21 @@ const UPGRADE_POOL = [
         isLegendary: true,
         tierName: '⭐ נפתח בדרגה 8!',
         badgeClass: 'badge-legendary',
-        getDesc: () => `מרפא את כל החיים שלך עד למקסימום המלא (ממלא ל-${upgrades.maxHp}/${upgrades.maxHp} חיים!) ללא שינוי המקס`, 
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.max_hp_boost) || 0;
+            const curHp = Math.ceil(upgrades.hp);
+            const curMax = upgrades.maxHp;
+            const missing = Math.max(0, curMax - curHp);
+            return `מרפא את כל החיים למקסימום המלא!<br>חיים כרגע: <b>${curHp}/${curMax}</b> (חסרים: ${missing}).<br>נקנה: <b>${cnt} פעמים</b>.<br>לאחר שדרוג: <b>${curMax}/${curMax} חיים מלאים!</b> (+${missing} ריפוי)`;
+        }, 
         icon: '💖', 
         apply: () => {
             upgrades.hp = upgrades.maxHp;
-            addFloatingText(player.x, player.y - 30, "חיים מלאים עד למקס! 💖", "#10b981");
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.max_hp_boost = (upgrades.counts.max_hp_boost || 0) + 1;
+            const px = player ? player.x : canvas.width / 2;
+            const py = player ? player.y : canvas.height / 2;
+            addFloatingText(px, py - 30, "חיים מלאים עד למקס! 💖", "#10b981");
         }
     },
     // 9. מזל (נפתח בדרגה 10!)
@@ -4703,19 +4803,20 @@ const UPGRADE_POOL = [
         getDesc: () => {
             const curLvl = upgrades.luck || 0;
             const nextLvl = curLvl + 1;
+            const cnt = (upgrades.counts && upgrades.counts.luck) || 0;
+            const curText = getLuckChanceText(curLvl);
             const nextText = getLuckChanceText(nextLvl);
-            if (curLvl === 0) {
-                return `<b>רמה 1:</b> ${nextText} מכל מפלצת שתובס!`;
-            } else {
-                const curText = getLuckChanceText(curLvl);
-                return `כרגע רמה ${curLvl} (${curText}).<br><b>שדרוג לרמה ${nextLvl}:</b> ${nextText}!`;
-            }
+            return `מגדיל סיכוי לדרופים וניקוד כפול.<br>כרגע: <b>רמה ${curLvl}</b> (${curText}).<br>נקנה: <b>${cnt} פעמים</b>.<br>לאחר שדרוג: <b>רמה ${nextLvl}</b> (${nextText})!`;
         },
         icon: '🍀', 
         apply: () => {
             upgrades.luck = (upgrades.luck || 0) + 1;
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.luck = (upgrades.counts.luck || 0) + 1;
             const chanceText = getLuckChanceText(upgrades.luck);
-            addFloatingText(player.x, player.y - 30, `מזל רמה ${upgrades.luck}! 🍀 (${chanceText})`, "#facc15");
+            const px = player ? player.x : canvas.width / 2;
+            const py = player ? player.y : canvas.height / 2;
+            addFloatingText(px, py - 30, `מזל רמה ${upgrades.luck}! 🍀 (${chanceText})`, "#facc15");
         }
     },
     // 10. חצי נפץ ופיצוץ הגנה (נפתח בדרגה 15!)
@@ -4728,11 +4829,14 @@ const UPGRADE_POOL = [
         badgeClass: 'badge-legendary',
         getDesc: () => {
             const curCount = upgrades.explosiveCount || 0;
-            return `מעניק <b>+1 פיצוץ</b> (כרגע ברשותך: <b>${curCount}</b>).<br>• חצים מתפוצצים במגע עם נזק אזורי.<br>• כל מפלצת שנוגעת בך מתפוצצת, <b>מתה מיד במקום</b> ומנצלת פיצוץ 1 (אם אין פיצוצים - לא מתפוצצת)!`;
+            const cnt = (upgrades.counts && upgrades.counts.explosive_touch) || 0;
+            return `מעניק <b>+1 פיצוץ מגע</b> (מחסל מפלצת נוגעת במקום!).<br>כרגע ברשותך: <b>${curCount} פיצוצים</b>.<br>נקנה: <b>${cnt} פעמים</b>.<br>לאחר שדרוג: <b>${curCount + 1} פיצוצים</b>!`;
         },
         icon: '💣',
         apply: () => {
             upgrades.explosiveCount = (upgrades.explosiveCount || 0) + 1;
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.explosive_touch = (upgrades.counts.explosive_touch || 0) + 1;
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
             addFloatingText(px, py - 35, `💣 נוסף פיצוץ מגע! (סה"כ: ${upgrades.explosiveCount})`, "#f97316");
@@ -4747,11 +4851,18 @@ const UPGRADE_POOL = [
         isLegendary: true,
         tierName: '⭐ נפתח בדרגה 20!',
         badgeClass: 'badge-legendary',
-        getDesc: () => `מעלה <b>רק את מקסימום החיים</b> שלך ב-<b>120+</b> (ללא ריפוי חיים נוכחיים)! שילוב מושלם עם שדרוג 'עליית חיים למקס'! (מקס חדש: ${upgrades.maxHp + 120})`,
+        getDesc: () => {
+            const cnt = (upgrades.counts && upgrades.counts.rising_heart) || 0;
+            const curHp = Math.ceil(upgrades.hp);
+            const curMax = upgrades.maxHp;
+            const afterMax = curMax + 120;
+            return `מעלה רק מקס חיים ב-<b>+120</b> (ללא ריפוי).<br>חיים כרגע: <b>${curHp}/${curMax}</b>.<br>נקנה: <b>${cnt} פעמים</b> (+${cnt * 120} מקס שנצבר).<br>לאחר שדרוג: <b>${curHp}/${afterMax}</b> (מקס חדש: ${afterMax})!`;
+        },
         icon: '💖',
         apply: () => {
             upgrades.maxHp += 120;
-            // מעלה רק את המקסימום ב-120 (ללא ריפוי החיים הנוכחיים), כך ששדרוג "עליית חיים למקס" יעזור במיוחד!
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.rising_heart = (upgrades.counts.rising_heart || 0) + 1;
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
             addFloatingText(px, py - 35, `💖 לב עולה: מקס החיים עלה ב-120! (${Math.ceil(upgrades.hp)}/${upgrades.maxHp})`, "#ec4899");
@@ -4770,14 +4881,16 @@ const UPGRADE_POOL = [
         getDesc: () => {
             const boss = helperMonsters.find(h => h instanceof MechanicalBossHelper);
             if (!boss) {
-                return 'מזמן את <b>הבוס המכני בגודל חרפושית קוצים</b> (1600 חיים!) שמצטרף אליך, רודף במהירות אחרי מפלצות ותוקף במגע הדדי (ללא חצים)!';
+                return `מזמן בוס מכני ענק (1600 חיים!) שמחסל מפלצות במגע.<br>כרגע: <b>טרם זומן</b>.<br>לאחר שדרוג: יצטרף בוס מכני (1600 חיים, 50 נזק מגע)!`;
             } else {
-                return `מחזק ומרפא את הבוס המכני במלואו! +300 מקס חיים ו-+25 נזק מגע (רמה ${boss.level + 1})`;
+                return `מחזק ומרפא את הבוס המכני במלואו!<br>כרגע: <b>רמה ${boss.level}</b> (חיים: ${Math.ceil(boss.hp)}/${boss.maxHp}, נזק: ${boss.damage}).<br>לאחר שדרוג: <b>רמה ${boss.level + 1}</b> (${boss.maxHp + 300} חיים, ${boss.damage + 25} נזק)!`;
             }
         },
         icon: '🤖',
         apply: () => {
             const existingBoss = helperMonsters.find(h => h instanceof MechanicalBossHelper);
+            upgrades.counts = upgrades.counts || {};
+            upgrades.counts.mechanical_boss = (upgrades.counts.mechanical_boss || 0) + 1;
             if (!existingBoss) {
                 const boss = new MechanicalBossHelper();
                 helperMonsters.push(boss);
@@ -4788,7 +4901,7 @@ const UPGRADE_POOL = [
                 existingBoss.level++;
                 existingBoss.maxHp += 300;
                 existingBoss.hp = existingBoss.maxHp;
-                existingBoss.touchDamage += 25;
+                existingBoss.touchDamage = (existingBoss.touchDamage || 50) + 25;
                 addFloatingText(existingBoss.x, existingBoss.y - 35, `🤖 הבוס המכני שודרג ורופא במלואו (רמה ${existingBoss.level})!`, "#06b6d4");
             }
             sfx.playLevelUp();
@@ -5150,7 +5263,22 @@ function resetGame() {
         xpToNext: 80,
         luck: 0,
         arrowsLeft: initialArrowsSetting,
-        explosiveCount: 0
+        explosiveCount: 0,
+        counts: {
+            ammo_pack: 0,
+            movespeed: 0,
+            speed: 0,
+            damage: 0,
+            pierce: 0,
+            heal_and_health: 0,
+            multishot: 0,
+            helper_monster: 0,
+            max_hp_boost: 0,
+            luck: 0,
+            explosive_touch: 0,
+            rising_heart: 0,
+            mechanical_boss: 0
+        }
     };
     score = 0;
     scoreDisplay.innerText = isTestMode ? '0 (בדיקה 🧪)' : 0;
@@ -5353,7 +5481,7 @@ function executeChatCommand(cmdText, isUser = false) {
     if (lower.includes('לירות') || lower.includes('shoot') || lower.includes('ירה') || lower.includes('fire')) {
         if (player && player.shootTimer <= 0) {
             player.shoot();
-            player.shootTimer = upgrades.fireDelay;
+            player.shootTimer = getPlayerFireDelay();
         }
     }
 
@@ -5521,7 +5649,7 @@ function updateChatPlaysAI() {
 
         if (player.shootTimer <= 0) {
             player.shoot();
-            player.shootTimer = upgrades.fireDelay;
+            player.shootTimer = getPlayerFireDelay();
         }
     }
 
@@ -5661,7 +5789,7 @@ canvas.addEventListener('touchstart', e => {
             player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
             if (player.shootTimer <= 0) {
                 player.shoot();
-                player.shootTimer = upgrades.fireDelay;
+                player.shootTimer = getPlayerFireDelay();
             }
         }
     }
