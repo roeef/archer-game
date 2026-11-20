@@ -175,16 +175,16 @@
             transform: translate(-50%, -50%);
             background: #0f172a;
             border: 2px solid #3b82f6;
-            border-radius: 16px;
-            padding: 14px 18px;
+            border-radius: 14px;
+            padding: 8px 12px;
             z-index: 45;
             display: flex;
             flex-direction: column;
             align-items: center;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.95), 0 0 30px rgba(59, 130, 246, 0.35);
-            width: 900px;
-            max-width: 96%;
-            max-height: 92%;
+            width: 920px;
+            max-width: 97%;
+            max-height: 94%;
             overflow-y: auto;
             box-sizing: border-box;
         }
@@ -194,7 +194,7 @@
         }
 
         #upgrade-modal::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         #upgrade-modal::-webkit-scrollbar-track {
             background: rgba(15, 23, 42, 0.6);
@@ -210,31 +210,33 @@
 
         .upgrade-cards {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 4px;
         }
 
         .upgrade-card {
             background: #1e263d;
-            border: 2px solid #2d385b;
-            border-radius: 12px;
-            padding: 10px 8px;
+            border: 1.5px solid #2d385b;
+            border-radius: 8px;
+            padding: 5px 4px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             position: relative;
             box-sizing: border-box;
+            min-height: 112px;
+            justify-content: space-between;
         }
 
         .upgrade-card:hover {
             border-color: #60a5fa;
             background: #253150;
-            transform: translateY(-4px);
+            transform: translateY(-2px);
         }
 
         .upgrade-card.locked {
@@ -253,13 +255,13 @@
 
         .upgrade-card.legendary {
             border-color: #f59e0b;
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
             background: linear-gradient(180deg, #1e263d, #272138);
         }
 
         .upgrade-card.legendary:hover {
             border-color: #fbbf24;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.45);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.45);
         }
 
         .upgrade-card.legendary .upgrade-name {
@@ -267,11 +269,12 @@
         }
 
         .upgrade-badge {
-            font-size: 10px;
-            padding: 2px 7px;
-            border-radius: 10px;
-            margin-bottom: 6px;
+            font-size: 8px;
+            padding: 1px 5px;
+            border-radius: 5px;
+            margin-bottom: 2px;
             font-weight: bold;
+            line-height: 1.2;
         }
         .badge-basic { background: #334155; color: #cbd5e1; }
         .badge-good { background: #1e3a8a; color: #93c5fd; }
@@ -279,32 +282,43 @@
         .badge-legendary { background: #78350f; color: #fde68a; border: 1px solid #f59e0b; }
 
         .upgrade-lock-badge {
-            margin-top: 8px;
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 6px;
+            margin-top: 3px;
+            font-size: 8.5px;
+            padding: 2px 4px;
+            border-radius: 4px;
             background: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
             border: 1px solid rgba(239, 68, 68, 0.4);
             font-weight: bold;
+            width: 90%;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .upgrade-icon {
-            font-size: 30px;
-            margin-bottom: 6px;
+            font-size: 19px;
+            margin-bottom: 1px;
+            line-height: 1.1;
         }
 
         .upgrade-name {
             font-weight: bold;
-            font-size: 15px;
+            font-size: 11px;
             color: #93c5fd;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            line-height: 1.15;
         }
 
         .upgrade-desc {
-            font-size: 11.5px;
+            font-size: 9px;
             color: #cbd5e1;
-            line-height: 1.4;
+            line-height: 1.2;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Tier display in corner */
@@ -1245,8 +1259,8 @@
 
     <!-- Upgrade Screen -->
     <div id="upgrade-modal" class="hidden">
-        <h2 id="upgrade-title" style="color: #60a5fa; margin-top: 2px; margin-bottom: 4px; font-size: 22px;">🎉 עלית דרגה!</h2>
-        <p id="upgrade-subtitle" style="font-size: 13px; margin-bottom: 10px; color: #cbd5e1; text-align: center;">בחר שדרוג עבור הקשת שלך (כל השדרוגים מוצגים כאן, גלול לצפייה בכולם):</p>
+        <h2 id="upgrade-title" style="color: #60a5fa; margin-top: 0; margin-bottom: 2px; font-size: 18px;">🎉 עלית דרגה!</h2>
+        <p id="upgrade-subtitle" style="font-size: 11.5px; margin-bottom: 5px; color: #cbd5e1; text-align: center;">בחר שדרוג עבור הקשת שלך (כל השדרוגים מוצגים כאן):</p>
         <div class="upgrade-cards" id="upgrade-options">
             <!-- Dynamically populated -->
         </div>
@@ -4805,7 +4819,7 @@ function triggerUpgradeChoice() {
     const titleEl = document.getElementById('upgrade-title');
     const subEl = document.getElementById('upgrade-subtitle');
     if (titleEl) titleEl.innerText = `🎉 עלית לדרגה ${upgrades.level}!`;
-    if (subEl) subEl.innerHTML = `בחר שדרוג עבור הקשת שלך (<b>${openCount} פתוחים לבחירה</b> מתוך ${list.length} סה"כ — גלול לצפייה בכולם):`;
+    if (subEl) subEl.innerHTML = `בחר שדרוג עבור הקשת שלך (<b>${openCount} פתוחים לבחירה</b> מתוך ${list.length} סה"כ):`;
 
     list.forEach(upg => {
         const isLocked = upg.unlockWave ? (currentWave < upg.unlockWave) : (upgrades.level < upg.unlockLevel);
@@ -4820,7 +4834,7 @@ function triggerUpgradeChoice() {
             <div class="upgrade-desc">${upg.getDesc()}</div>
             ${isLocked ? 
                 `<div class="upgrade-lock-badge">${lockText}</div>` : 
-                `<div style="font-size: 11px; color: #4ade80; margin-top: 6px; font-weight: bold; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; border-radius: 6px; padding: 3px 8px; width: 85%;">✓ לחץ לבחירה!</div>`
+                `<div style="font-size: 9.5px; color: #4ade80; margin-top: 3px; font-weight: bold; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; border-radius: 4px; padding: 2px 4px; width: 90%; box-sizing: border-box;">✓ בחר!</div>`
             }
         `;
         card.onclick = () => {
