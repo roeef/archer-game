@@ -1169,6 +1169,10 @@
             <span id="explosive-hud-badge" style="font-weight: bold; color: #fb923c; background: rgba(249, 115, 22, 0.15); border: 1px solid #f97316; padding: 2px 8px; border-radius: 12px; font-size: 13px;">💣 פיצוצי מגע: <span id="explosive-count-display">0</span></span>
         </div>
 
+        <div class="hud-item" id="arrows-hud-container">
+            <span id="arrows-hud-badge" style="font-weight: bold; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1.5px solid #38bdf8; padding: 2px 8px; border-radius: 12px; font-size: 13px;">🏹 חצים: <span id="arrows-count-display">100</span></span>
+        </div>
+
         <div class="hud-item" style="pointer-events: auto; display: flex; gap: 8px;">
             <button id="toggle-chat-btn" class="hud-action-btn">💬 צ'אט משחק [כבוי]</button>
             <button id="in-game-wave-btn" class="hud-action-btn">⏩ בחר גל</button>
@@ -1360,21 +1364,21 @@
                 🎚️ התאמת מדדי משחק (קשת ומפלצות)
             </h2>
             <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-bottom: 12px; line-height: 1.4;">
-                כוונן באופן מדויק 11 מדדים שונים של הקשת ושל המפלצות:
+                כוונן באופן מדויק 13 מדדים שונים של הקשת ושל המפלצות:
             </p>
 
             <!-- לשוניות סינון מדדים לפי קטגוריה -->
             <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; flex-wrap: wrap;">
-                <button type="button" class="slider-tab-btn active" data-tab="all" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1.5px solid #38bdf8; background: rgba(56, 189, 248, 0.25); color: #38bdf8;">🌟 כל המדדים (11)</button>
-                <button type="button" class="slider-tab-btn" data-tab="player" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid #64748b; background: rgba(30, 41, 59, 0.6); color: #cbd5e1;">🏹 הקשת שלי (5)</button>
+                <button type="button" class="slider-tab-btn active" data-tab="all" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1.5px solid #38bdf8; background: rgba(56, 189, 248, 0.25); color: #38bdf8;">🌟 כל המדדים (13)</button>
+                <button type="button" class="slider-tab-btn" data-tab="player" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid #64748b; background: rgba(30, 41, 59, 0.6); color: #cbd5e1;">🏹 הקשת שלי (7)</button>
                 <button type="button" class="slider-tab-btn" data-tab="monsters" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid #64748b; background: rgba(30, 41, 59, 0.6); color: #cbd5e1;">👾 המפלצות (6)</button>
             </div>
 
-            <!-- ================= קבוצת מדדי הקשת שלי (5 מדדים) ================= -->
+            <!-- ================= קבוצת מדדי הקשת שלי (7 מדדים) ================= -->
             <div class="slider-section-player">
                 <div style="font-size: 13px; font-weight: bold; color: #38bdf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                     <span>🏹 מדדי הקשת והחצים שלי (טווח 1/3 עד 3)</span>
-                    <span style="font-size: 10.5px; color: #64748b; font-weight: normal;">(5 מדדים)</span>
+                    <span style="font-size: 10.5px; color: #64748b; font-weight: normal;">(7 מדדים)</span>
                 </div>
 
                 <!-- 1. מדד חיים התחלתיים (1/3 עד 3: 33 עד 300 חיים) -->
@@ -1466,7 +1470,7 @@
                 </div>
 
                 <!-- 5. מדד נזק חצי הקשת (1/3 עד 3) -->
-                <div style="margin-bottom: 14px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(234, 179, 8, 0.35);">
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(234, 179, 8, 0.35);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
                         <label style="font-size: 12.5px; font-weight: bold; color: #facc15;">
                             🎯 נזק חצי הקשת (1/3 עד 3):
@@ -1484,6 +1488,50 @@
                         <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn active" data-damage="1.0">רגיל (1.00)</button>
                         <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn" data-damage="2.0">⚡ כפול (2.00)</button>
                         <button type="button" class="generic-slider-preset-btn player-arrow-damage-preset-btn" data-damage="3.0">💥 פי 3 (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 6. מדד חצים התחלתיים (1/3 עד 3: מ-33 עד 300 חצים) -->
+                <div style="margin-bottom: 12px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #38bdf8;">
+                            🏹 חצים התחלתיים (1/3 עד 3: 33-300):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input initial-arrows-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge initial-arrows-badge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">🏹 100 חצים (פי 1.00)</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider initial-arrows-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-slider-preset-btn initial-arrows-preset-btn" data-arrows="0.33">33 חצים (0.33)</button>
+                        <button type="button" class="generic-slider-preset-btn initial-arrows-preset-btn" data-arrows="0.5">50 חצים (0.50)</button>
+                        <button type="button" class="generic-slider-preset-btn initial-arrows-preset-btn active" data-arrows="1.0">100 חצים (1.00)</button>
+                        <button type="button" class="generic-slider-preset-btn initial-arrows-preset-btn" data-arrows="2.0">200 חצים (2.00)</button>
+                        <button type="button" class="generic-slider-preset-btn initial-arrows-preset-btn" data-arrows="3.0">300 חצים (3.00)</button>
+                    </div>
+                </div>
+
+                <!-- 7. מדד חצים משדרוג (1/3 עד 3: מ-33 עד 300 חצים לכל שדרוג) -->
+                <div style="margin-bottom: 14px; background: rgba(30, 41, 59, 0.75); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.35);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                        <label style="font-size: 12.5px; font-weight: bold; color: #34d399;">
+                            📦 חצים משדרוג אספקה (1/3 עד 3: 33-300):
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 11px; color: #94a3b8;">הקלד:</span>
+                            <input type="number" class="slider-num-input arrow-upgrade-gain-input" min="0.33" max="3.0" step="0.01" value="1.00">
+                            <span class="slider-val-badge arrow-upgrade-gain-badge" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; font-weight: bold;">📦 +100 חצים (פי 1.00)</span>
+                        </div>
+                    </div>
+                    <input type="range" class="styled-slider arrow-upgrade-gain-slider" min="0.33" max="3.0" step="0.01" value="1.0">
+                    <div style="display: flex; gap: 5px; justify-content: center; margin-top: 6px; flex-wrap: wrap;">
+                        <button type="button" class="generic-slider-preset-btn arrow-upgrade-gain-preset-btn" data-gain="0.33">33 חצים (0.33)</button>
+                        <button type="button" class="generic-slider-preset-btn arrow-upgrade-gain-preset-btn" data-gain="0.5">50 חצים (0.50)</button>
+                        <button type="button" class="generic-slider-preset-btn arrow-upgrade-gain-preset-btn active" data-gain="1.0">+100 חצים (1.00)</button>
+                        <button type="button" class="generic-slider-preset-btn arrow-upgrade-gain-preset-btn" data-gain="2.0">+200 חצים (2.00)</button>
+                        <button type="button" class="generic-slider-preset-btn arrow-upgrade-gain-preset-btn" data-gain="3.0">+300 חצים (3.00)</button>
                     </div>
                 </div>
             </div>
@@ -2515,12 +2563,72 @@ function setPlayerArrowDamageMultiplier(val) {
     updateScoreMultiplierPreview();
 }
 
+/* התאמת כמות חצים התחלתית (1/3 עד 3: מ-33 עד 300 חצים) */
+let initialArrowsSetting = 100;
+let initialArrowsMultiplierSetting = 1.0;
+
+function setInitialArrows(val) {
+    const raw = parseFloat(val) || 1.0;
+    const mult = raw > 10 ? (raw / 100.0) : raw;
+    initialArrowsMultiplierSetting = Math.max(0.33, Math.min(3.0, mult));
+    initialArrowsSetting = Math.round(100 * initialArrowsMultiplierSetting);
+
+    document.querySelectorAll('.initial-arrows-slider').forEach(s => s.value = initialArrowsMultiplierSetting);
+    document.querySelectorAll('.initial-arrows-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = initialArrowsMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.initial-arrows-badge').forEach(b => {
+        b.innerText = `🏹 ${initialArrowsSetting} חצים (פי ${initialArrowsMultiplierSetting.toFixed(2)})`;
+    });
+
+    document.querySelectorAll('.initial-arrows-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.arrows);
+        if (Math.abs(pVal - initialArrowsMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
+/* התאמת כמות חצים משדרוג אספקה (1/3 עד 3: מ-33 עד 300 חצים לכל שדרוג) */
+let arrowUpgradeGainSetting = 100;
+let arrowUpgradeGainMultiplierSetting = 1.0;
+
+function setArrowUpgradeGain(val) {
+    const raw = parseFloat(val) || 1.0;
+    const mult = raw > 10 ? (raw / 100.0) : raw;
+    arrowUpgradeGainMultiplierSetting = Math.max(0.33, Math.min(3.0, mult));
+    arrowUpgradeGainSetting = Math.round(100 * arrowUpgradeGainMultiplierSetting);
+
+    document.querySelectorAll('.arrow-upgrade-gain-slider').forEach(s => s.value = arrowUpgradeGainMultiplierSetting);
+    document.querySelectorAll('.arrow-upgrade-gain-input').forEach(inp => {
+        if (document.activeElement !== inp) inp.value = arrowUpgradeGainMultiplierSetting.toFixed(2);
+    });
+    document.querySelectorAll('.arrow-upgrade-gain-badge').forEach(b => {
+        b.innerText = `📦 +${arrowUpgradeGainSetting} חצים (פי ${arrowUpgradeGainMultiplierSetting.toFixed(2)})`;
+    });
+
+    document.querySelectorAll('.arrow-upgrade-gain-preset-btn').forEach(btn => {
+        const pVal = parseFloat(btn.dataset.gain);
+        if (Math.abs(pVal - arrowUpgradeGainMultiplierSetting) < 0.06) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    updateScoreMultiplierPreview();
+}
+
 function getPlayerFireDelay() {
     return Math.max(3, Math.round(upgrades.fireDelay / playerFireRateMultiplierSetting));
 }
 
 /* -------------------------------------------------------------
-   חישוב מכפיל ניקוד כולל (לפי כל 11 המדדים המשפיעים)
+   חישוב מכפיל ניקוד כולל (לפי כל 13 המדדים המשפיעים)
 ------------------------------------------------------------- */
 function getScoreMultiplier() {
     // מפלצות: יותר מהר / יותר חיים / יותר נזק / יותר קצב ירי = יותר ניקוד
@@ -2578,7 +2686,7 @@ function updateScoreMultiplierPreview() {
 
     breakdownEl.innerHTML = `
         <div style="margin-bottom: 2px;"><b>מפלצות:</b> חיים: ${monsterHpMultiplierSetting.toFixed(1)}x | מהירות: ${monsterSpeedMultiplierSetting.toFixed(1)}x | ירי: ${monsterFireRateMultiplierSetting.toFixed(1)}x | כדורים: ${monsterBulletSpeedMultiplierSetting.toFixed(1)}x / ${monsterBulletDamageMultiplierSetting.toFixed(1)}x | מגע: ${monsterTouchDamageMultiplierSetting.toFixed(1)}x</div>
-        <div><b>קשת:</b> חיים: ${hpText} | מהירות: ${playerSpeedMultiplierSetting.toFixed(1)}x | קצב ירי: ${playerFireRateMultiplierSetting.toFixed(1)}x | חצים: ${playerArrowSpeedMultiplierSetting.toFixed(1)}x / ${playerArrowDamageMultiplierSetting.toFixed(1)}x | קושי: ${diffText}</div>
+        <div><b>קשת:</b> חיים: ${hpText} | חצים: ${initialArrowsSetting} | מהירות: ${playerSpeedMultiplierSetting.toFixed(1)}x | קצב ירי: ${playerFireRateMultiplierSetting.toFixed(1)}x | חצים: ${playerArrowSpeedMultiplierSetting.toFixed(1)}x / ${playerArrowDamageMultiplierSetting.toFixed(1)}x | קושי: ${diffText}</div>
     `;
 }
 
@@ -2595,7 +2703,9 @@ let upgrades = {
     xp: 0,
     level: 1,
     xpToNext: 80,
-    luck: 0              // שדרוג מזל (סיכוי של שליש להפיל עוד עיגול ניקוד)
+    luck: 0,             // שדרוג מזל (סיכוי של שליש להפיל עוד עיגול ניקוד)
+    arrowsLeft: 100,     // מלאי חצים מוגבל התחלתי (100)
+    explosiveCount: 0
 };
 
 /* -------------------------------------------------------------
@@ -2663,8 +2773,14 @@ class Player {
         if (this.shootTimer > 0) this.shootTimer--;
         const isShooting = (mouse.isDown || keys['Control'] || keys['ControlLeft'] || keys['ControlRight']) && !chatPlaysActive;
         if (isShooting && this.shootTimer <= 0) {
-            this.shoot();
-            this.shootTimer = getPlayerFireDelay();
+            if ((upgrades.arrowsLeft || 0) <= 0) {
+                addFloatingText(this.x, this.y - 25, "נגמרו החצים! 🏹❌", "#ef4444");
+                sfx.playHit();
+                this.shootTimer = 30; // מניעת הצפת הודעות בלחיצה רצופה
+            } else {
+                this.shoot();
+                this.shootTimer = getPlayerFireDelay();
+            }
         }
 
         // Invulnerability
@@ -2672,16 +2788,26 @@ class Player {
     }
 
     shoot() {
+        if ((upgrades.arrowsLeft || 0) <= 0) {
+            addFloatingText(this.x, this.y - 25, "נגמרו החצים! 🏹❌", "#ef4444");
+            sfx.playHit();
+            return;
+        }
+
         sfx.playShoot();
         const baseAngle = this.angle;
-        const count = upgrades.multiShot;
-        const spread = 0.16; // radians
+        const requestedCount = upgrades.multiShot || 1;
+        // יורה לכל היותר את כמות החצים שנותרה במלאי
+        const count = Math.min(requestedCount, upgrades.arrowsLeft);
+        upgrades.arrowsLeft -= count;
+        updateHUD();
 
+        const spread = 0.16; // radians
         const arrowSpd = upgrades.arrowSpeed * playerArrowSpeedMultiplierSetting;
         const arrowDmg = Math.max(1, Math.round(upgrades.arrowDamage * playerArrowDamageMultiplierSetting));
 
         for (let i = 0; i < count; i++) {
-            const offset = (i - (count - 1) / 2) * spread;
+            const offset = (count > 1) ? (i - (count - 1) / 2) * spread : 0;
             const arrowAngle = baseAngle + offset;
             arrows.push(new Arrow(
                 this.x + Math.cos(arrowAngle) * 20,
@@ -4288,6 +4414,24 @@ function gainXP(amount) {
 }
 
 const UPGRADE_POOL = [
+    // 0. אספקת חצים (פתוח תמיד מדרגה 1 ללא הגבלה!)
+    {
+        id: 'ammo_pack',
+        name: 'אספקת חצים 🏹',
+        unlockLevel: 1,
+        tierName: '🏹 פתוח תמיד!',
+        badgeClass: 'badge-basic',
+        getDesc: () => `מוסיף מיידית <b>+${arrowUpgradeGainSetting} חצים</b> למלאי! (כרגע נותרו: <b>${upgrades.arrowsLeft || 0}</b>)`,
+        icon: '📦',
+        apply: () => {
+            upgrades.arrowsLeft = (upgrades.arrowsLeft || 0) + arrowUpgradeGainSetting;
+            const px = player ? player.x : canvas.width / 2;
+            const py = player ? player.y : canvas.height / 2;
+            addFloatingText(px, py - 35, `+${arrowUpgradeGainSetting} חצים נוספו! 🏹📦`, "#38bdf8");
+            sfx.playLevelUp();
+            updateHUD();
+        }
+    },
     // 1. הדבר הכי בסיסי (נפתח בדרגה 1)
     { 
         id: 'movespeed', 
@@ -4760,6 +4904,29 @@ function updateHUD() {
     xpFill.style.width = `${xpPct}%`;
     xpText.innerText = `${Math.floor(xpPct)}%`;
 
+    // עדכון כמות חצים ב-HUD העליון
+    const arrowsDisplay = document.getElementById('arrows-count-display');
+    const arrowsBadge = document.getElementById('arrows-hud-badge');
+    if (arrowsDisplay) {
+        const count = (upgrades.arrowsLeft !== undefined) ? upgrades.arrowsLeft : 100;
+        arrowsDisplay.innerText = count;
+        if (arrowsBadge) {
+            if (count <= 20) {
+                arrowsBadge.style.color = '#ef4444';
+                arrowsBadge.style.borderColor = '#ef4444';
+                arrowsBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+            } else if (count <= 50) {
+                arrowsBadge.style.color = '#f59e0b';
+                arrowsBadge.style.borderColor = '#f59e0b';
+                arrowsBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+            } else {
+                arrowsBadge.style.color = '#38bdf8';
+                arrowsBadge.style.borderColor = '#38bdf8';
+                arrowsBadge.style.background = 'rgba(56, 189, 248, 0.15)';
+            }
+        }
+    }
+
     // עדכון תגית כמות הפיצוצים ב-HUD העליון
     const expContainer = document.getElementById('explosive-hud-container');
     const expCountDisplay = document.getElementById('explosive-count-display');
@@ -4822,6 +4989,7 @@ function resetGame() {
         level: 1,
         xpToNext: 80,
         luck: 0,
+        arrowsLeft: initialArrowsSetting,
         explosiveCount: 0
     };
     score = 0;
@@ -5398,12 +5566,14 @@ function bindSliderControl(sliderClass, inputClass, presetClass, dataAttr, sette
     }
 }
 
-// 1-5: מדדי הקשת
+// 1-7: מדדי הקשת
 bindSliderControl('.starting-hp-slider', '.starting-hp-input', '.starting-hp-preset-btn', 'hp', setStartingHp);
 bindSliderControl('.player-speed-slider', '.player-speed-input', '.player-speed-preset-btn', 'speed', setPlayerSpeedMultiplier);
 bindSliderControl('.player-fire-rate-slider', '.player-fire-rate-input', '.player-fire-rate-preset-btn', 'rate', setPlayerFireRateMultiplier);
 bindSliderControl('.player-arrow-speed-slider', '.player-arrow-speed-input', '.player-arrow-speed-preset-btn', 'speed', setPlayerArrowSpeedMultiplier);
 bindSliderControl('.player-arrow-damage-slider', '.player-arrow-damage-input', '.player-arrow-damage-preset-btn', 'damage', setPlayerArrowDamageMultiplier);
+bindSliderControl('.initial-arrows-slider', '.initial-arrows-input', '.initial-arrows-preset-btn', 'arrows', setInitialArrows);
+bindSliderControl('.arrow-upgrade-gain-slider', '.arrow-upgrade-gain-input', '.arrow-upgrade-gain-preset-btn', 'gain', setArrowUpgradeGain);
 
 // 6-11: מדדי המפלצות
 bindSliderControl('.monster-hp-slider', '.monster-hp-input', '.monster-hp-preset-btn', 'hp', setMonsterHpMultiplier);
