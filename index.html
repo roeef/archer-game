@@ -4544,7 +4544,7 @@ function gainXP(amount) {
 
         // הודעות חגיגיות בעלייה לדרגות (2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25)
         if (upgrades.level === 2) {
-            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "⚡ עלית לדרגה 2: נפתח שדרוג 'קשת מהירה'!", "#38bdf8");
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 2: בחר שדרוג נוסף!", "#38bdf8");
         } else if (upgrades.level === 3) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🗡️ עלית לדרגה 3: נפתח שדרוג 'חיצים חדים'!", "#a78bfa");
         } else if (upgrades.level === 4) {
@@ -4621,12 +4621,12 @@ const UPGRADE_POOL = [
             upgrades.counts.movespeed = (upgrades.counts.movespeed || 0) + 1;
         }
     },
-    // 2. קצת יותר טוב (נפתח ברמה 2)
+    // 2. קשת מהירה (נפתח בדרגה 1!)
     { 
         id: 'speed', 
         name: 'קשת מהירה', 
-        unlockLevel: 2,
-        tierName: 'דרגה 2 (טוב)',
+        unlockLevel: 1,
+        tierName: 'דרגה 1 (טוב)',
         badgeClass: 'badge-good',
         getDesc: () => {
             const cnt = (upgrades.counts && upgrades.counts.speed) || 0;
@@ -4922,7 +4922,7 @@ function triggerUpgradeChoice() {
     const openCount = list.filter(u => !(u.unlockWave ? (currentWave < u.unlockWave) : (upgrades.level < u.unlockLevel))).length;
     const titleEl = document.getElementById('upgrade-title');
     const subEl = document.getElementById('upgrade-subtitle');
-    if (titleEl) titleEl.innerText = `🎉 עלית לדרגה ${upgrades.level}!`;
+    if (titleEl) titleEl.innerText = upgrades.level === 1 ? '🎉 בחר שדרוג ראשון לקשת שלך!' : `🎉 עלית לדרגה ${upgrades.level}!`;
     if (subEl) subEl.innerHTML = `בחר שדרוג עבור הקשת שלך (<b>${openCount} פתוחים לבחירה</b> מתוך ${list.length} סה"כ):`;
 
     list.forEach(upg => {
@@ -5369,6 +5369,11 @@ function jumpToWave(waveNum, activateChat = false, asTestMode = false) {
     }
 
     gameState = 'playing';
+
+    // שדרוג ראשון בתחילת המשחק (דרגה 1)!
+    if (waveNum === 1 && upgrades.level === 1) {
+        triggerUpgradeChoice();
+    }
 }
 
 /* -------------------------------------------------------------
@@ -6057,10 +6062,12 @@ if (inGameJumpConfirmBtn && inGameWaveSelect) {
 
 document.getElementById('restart-btn').onclick = () => {
     resetGame();
+    triggerUpgradeChoice();
 };
 
 document.getElementById('victory-restart-btn').onclick = () => {
     resetGame();
+    triggerUpgradeChoice();
 };
 
 /* -------------------------------------------------------------
