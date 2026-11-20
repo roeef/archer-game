@@ -1185,7 +1185,7 @@
         </div>
 
         <div class="hud-item">
-            <span>🌟 ניסיון (דרגה <span id="level-display">1</span>):</span>
+            <span>🌟 ניסיון (דרגה <span id="level-display">0</span>):</span>
             <div class="bar-container">
                 <div id="xp-fill" class="bar-fill"></div>
                 <div id="xp-text" class="bar-text">0%</div>
@@ -2850,7 +2850,7 @@ let upgrades = {
     maxHp: 100,
     hp: 100,
     xp: 0,
-    level: 1,
+    level: 0,
     xpToNext: 80,
     luck: 0,             // שדרוג מזל (סיכוי של שליש להפיל עוד עיגול ניקוד)
     arrowsLeft: 100,     // מלאי חצים מוגבל התחלתי (100)
@@ -4542,8 +4542,10 @@ function gainXP(amount) {
             scoreDisplay.innerText = '0 (בדיקה 🧪)';
         }
 
-        // הודעות חגיגיות בעלייה לדרגות (2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25)
-        if (upgrades.level === 2) {
+        // הודעות חגיגיות בעלייה לדרגות (1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25)
+        if (upgrades.level === 1) {
+            addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "⚡ עלית לדרגה 1: נפתח שדרוג 'קשת מהירה'!", "#38bdf8");
+        } else if (upgrades.level === 2) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🎉 עלית לדרגה 2: בחר שדרוג נוסף!", "#38bdf8");
         } else if (upgrades.level === 3) {
             addFloatingText(canvas.width / 2, canvas.height / 2 - 80, "🗡️ עלית לדרגה 3: נפתח שדרוג 'חיצים חדים'!", "#a78bfa");
@@ -4578,12 +4580,12 @@ function gainXP(amount) {
 }
 
 const UPGRADE_POOL = [
-    // 0. אספקת חצים (פתוח תמיד מדרגה 1 ללא הגבלה!)
+    // 0. אספקת חצים (פתוח תמיד מדרגה 0 ללא הגבלה!)
     {
         id: 'ammo_pack',
         name: 'אספקת חצים 🏹',
-        unlockLevel: 1,
-        tierName: '🏹 פתוח תמיד!',
+        unlockLevel: 0,
+        tierName: 'דרגה 0 (פתוח תמיד)',
         badgeClass: 'badge-basic',
         getDesc: () => {
             const cnt = (upgrades.counts && upgrades.counts.ammo_pack) || 0;
@@ -4602,12 +4604,12 @@ const UPGRADE_POOL = [
             updateHUD();
         }
     },
-    // 1. הדבר הכי בסיסי (נפתח בדרגה 1)
+    // 1. הדבר הכי בסיסי (נפתח בדרגה 0)
     { 
         id: 'movespeed', 
         name: 'מגפי קלות', 
-        unlockLevel: 1,
-        tierName: 'דרגה 1 (בסיסי)',
+        unlockLevel: 0,
+        tierName: 'דרגה 0 (בסיסי)',
         badgeClass: 'badge-basic',
         getDesc: () => {
             const cnt = (upgrades.counts && upgrades.counts.movespeed) || 0;
@@ -5250,7 +5252,7 @@ function resetGame() {
         maxHp: startingHpSetting,
         hp: startingHpSetting,
         xp: 0,
-        level: 1,
+        level: 0,
         xpToNext: 80,
         luck: 0,
         arrowsLeft: initialArrowsSetting,
@@ -5273,7 +5275,7 @@ function resetGame() {
     };
     score = 0;
     scoreDisplay.innerText = isTestMode ? '0 (בדיקה 🧪)' : 0;
-    levelDisplay.innerText = 1;
+    levelDisplay.innerText = 0;
     discoveredSpeciesIds.clear();
 
     arrows = [];
@@ -5369,11 +5371,6 @@ function jumpToWave(waveNum, activateChat = false, asTestMode = false) {
     }
 
     gameState = 'playing';
-
-    // שדרוג ראשון בתחילת המשחק (דרגה 1)!
-    if (waveNum === 1 && upgrades.level === 1) {
-        triggerUpgradeChoice();
-    }
 }
 
 /* -------------------------------------------------------------
@@ -6062,12 +6059,10 @@ if (inGameJumpConfirmBtn && inGameWaveSelect) {
 
 document.getElementById('restart-btn').onclick = () => {
     resetGame();
-    triggerUpgradeChoice();
 };
 
 document.getElementById('victory-restart-btn').onclick = () => {
     resetGame();
-    triggerUpgradeChoice();
 };
 
 /* -------------------------------------------------------------
