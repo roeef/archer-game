@@ -1198,6 +1198,8 @@
 
         <div class="hud-item">
             <span>🎯 ניקוד: <span id="score-display" style="color: #38bdf8;">0</span></span>
+            <span style="color: #64748b; font-size: 14px;">|</span>
+            <span>👑 שיא: <span id="high-score-display" style="color: #facc15;">0</span></span>
         </div>
 
         <div class="hud-item">
@@ -1246,6 +1248,9 @@
                 <button class="diff-pill" data-diff="easy" title="חצי מכמות המפלצות בכל גל">🌱 קל (חצי מפלצות)</button>
                 <button class="diff-pill active" data-diff="normal" title="כמות מפלצות רגילה">⚔️ רגיל</button>
                 <button class="diff-pill" data-diff="hard" title="כפול מפלצות בכל גל!">🔥 קשה (כפול מפלצות)</button>
+            </div>
+            <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);">
+                👑 שיא נקודות נוכחי: <span id="start-high-score">0</span>
             </div>
         </div>
 
@@ -1350,7 +1355,8 @@
     <div id="game-over-screen" class="overlay hidden">
         <h1 style="color: #ef4444;">💀 המשחק נגמר!</h1>
         <p>נפלת בקרב... אך הקשת תמיד מוכן למבחן הבא!</p>
-        <p style="font-size: 20px; color: #f59e0b;">הגעת לגל: <span id="final-wave">1</span> | ניקוד: <span id="final-score">0</span></p>
+        <p style="font-size: 20px; color: #f59e0b;">הגעת לגל: <span id="final-wave">1</span> | ניקוד: <span id="final-score">0</span> | 👑 שיא: <span id="final-high-score">0</span></p>
+        <p id="new-high-score-msg" style="display: none; font-size: 18px; color: #4ade80; font-weight: bold; margin-top: 4px;">🎉 שברת שיא נקודות חדש!</p>
         <button id="restart-btn" class="btn">נסה שוב</button>
     </div>
 
@@ -1358,7 +1364,8 @@
     <div id="victory-screen" class="overlay hidden">
         <h1 style="color: #10b981;">🏆 ניצחון מוחץ!</h1>
         <p>הבסת את כל 30 סוגי המפלצות והצלת את הממלכה כולה! אתה אלוף הקשתים!</p>
-        <p style="font-size: 22px; color: #f59e0b;">ניקוד סופי: <span id="victory-score">0</span></p>
+        <p style="font-size: 22px; color: #f59e0b;">ניקוד סופי: <span id="victory-score">0</span> | 👑 שיא: <span id="victory-high-score">0</span></p>
+        <p id="victory-new-high-score-msg" style="display: none; font-size: 18px; color: #4ade80; font-weight: bold; margin-top: 4px;">🎉 שברת שיא נקודות חדש!</p>
         <button id="victory-restart-btn" class="btn">שחק שוב מהתחלה</button>
     </div>
 
@@ -2154,6 +2161,7 @@ const xpText = document.getElementById('xp-text');
 const levelDisplay = document.getElementById('level-display');
 const waveDisplay = document.getElementById('wave-display');
 const scoreDisplay = document.getElementById('score-display');
+const highScoreDisplay = document.getElementById('high-score-display');
 const discoveredTypesEl = document.getElementById('discovered-types');
 
 const startScreen = document.getElementById('start-screen');
@@ -2230,6 +2238,35 @@ const MAX_WAVES = 30;
 let waveKillsNeeded = 0;
 let waveKillsCurrent = 0;
 let score = 0;
+let highScore = 0;
+try {
+    const savedHighScore = localStorage.getItem('archer_game_high_score');
+    if (savedHighScore !== null) {
+        const parsed = parseInt(savedHighScore, 10);
+        if (!isNaN(parsed) && parsed >= 0) highScore = parsed;
+    }
+} catch (e) {}
+
+function updateHighScore() {
+    if (isTestMode) return; // בדיקת משחק אינה נחשבת לשיא!
+    if (score > highScore) {
+        highScore = score;
+        try {
+            localStorage.setItem('archer_game_high_score', highScore.toString());
+        } catch (e) {}
+    }
+    updateHighScoreDisplays();
+}
+
+function updateHighScoreDisplays() {
+    if (highScoreDisplay) highScoreDisplay.innerText = highScore;
+    const startHighEl = document.getElementById('start-high-score');
+    if (startHighEl) startHighEl.innerText = highScore;
+    const finalHighEl = document.getElementById('final-high-score');
+    if (finalHighEl) finalHighEl.innerText = highScore;
+    const victoryHighEl = document.getElementById('victory-high-score');
+    if (victoryHighEl) victoryHighEl.innerText = highScore;
+}
 let frameCount = 0;
 
 /* רמת קושי של המשחק (קל = חצי מפלצות, רגיל = רגיל, קשה = כפול מפלצות) */
@@ -4012,6 +4049,7 @@ class Monster {
             const scoreMultiplier = getScoreMultiplier();
             const killScore = Math.max(1, Math.round(baseMonsterScore * scoreMultiplier));
             score += killScore;
+            updateHighScore();
             scoreDisplay.innerText = score;
         } else {
             scoreDisplay.innerText = '0 (בדיקה 🧪)';
@@ -4534,6 +4572,7 @@ function gainXP(amount) {
             const scoreMultiplier = getScoreMultiplier();
             const levelPoints = Math.max(1, Math.round(upgrades.level * 250 * scoreMultiplier));
             score += levelPoints;
+            updateHighScore();
             scoreDisplay.innerText = score;
             const px = player ? player.x : canvas.width / 2;
             const py = player ? player.y : canvas.height / 2;
@@ -5227,18 +5266,31 @@ function updateHUD() {
 
     // הצגת ניקוד - אם במצב בדיקה, תמיד מוצג 0 עם סימון בדיקה
     scoreDisplay.innerText = isTestMode ? '0 (בדיקה 🧪)' : score;
+    if (highScoreDisplay) highScoreDisplay.innerText = highScore;
 }
 
 function triggerGameOver() {
     gameState = 'gameover';
     document.getElementById('final-wave').innerText = currentWave;
     document.getElementById('final-score').innerText = isTestMode ? '0 (מצב בדיקה 🧪)' : score;
+    const finalHighEl = document.getElementById('final-high-score');
+    if (finalHighEl) finalHighEl.innerText = highScore;
+    const newHighMsg = document.getElementById('new-high-score-msg');
+    if (newHighMsg) {
+        newHighMsg.style.display = (!isTestMode && score > 0 && score >= highScore) ? 'block' : 'none';
+    }
     gameOverScreen.classList.remove('hidden');
 }
 
 function triggerVictory() {
     gameState = 'victory';
     document.getElementById('victory-score').innerText = isTestMode ? '0 (מצב בדיקה 🧪)' : score;
+    const victoryHighEl = document.getElementById('victory-high-score');
+    if (victoryHighEl) victoryHighEl.innerText = highScore;
+    const victoryNewHighMsg = document.getElementById('victory-new-high-score-msg');
+    if (victoryNewHighMsg) {
+        victoryNewHighMsg.style.display = (!isTestMode && score > 0 && score >= highScore) ? 'block' : 'none';
+    }
     victoryScreen.classList.remove('hidden');
 }
 
@@ -5276,6 +5328,7 @@ function resetGame() {
     };
     score = 0;
     scoreDisplay.innerText = isTestMode ? '0 (בדיקה 🧪)' : 0;
+    updateHighScoreDisplays();
     levelDisplay.innerText = 0;
     discoveredSpeciesIds.clear();
 
@@ -6332,6 +6385,7 @@ populateWaveDropdowns();
 setDifficulty('normal');
 setStartingHp(100);
 setMonsterSpeedMultiplier(1.0);
+updateHighScoreDisplays();
 
 // Start loop
 gameLoop();
