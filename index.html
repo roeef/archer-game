@@ -5478,8 +5478,16 @@ class XpOrb {
             const dy = player.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            // איסוף קריסטל איזמרגד אך ורק במגע ישיר של השחקן (ללא שאיבה/מגנט)
-            if (dist < player.radius + this.radius + 2) {
+            // משיכה מגנטית במרחק 3 סנטימטרים או פחות (כ-115 פיקסלים)
+            const MAGNET_RANGE = 115;
+            if (dist <= MAGNET_RANGE && dist > 0) {
+                const pullSpeed = Math.min(8.5, Math.max(3.8, (MAGNET_RANGE - dist) * 0.1 + 4.0));
+                this.x += (dx / dist) * pullSpeed;
+                this.y += (dy / dist) * pullSpeed;
+            }
+
+            // איסוף קריסטל איזמרגד במגע עם השחקן
+            if (dist < player.radius + this.radius + 3) {
                 this.alive = false;
                 if (typeof sfx.playPickup === 'function') {
                     sfx.playPickup();
@@ -5608,7 +5616,15 @@ class Coin {
             const dy = player.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            // איסוף כסף במגע ישיר של השחקן
+            // משיכה מגנטית במרחק 3 סנטימטרים או פחות (כ-115 פיקסלים)
+            const MAGNET_RANGE = 115;
+            if (dist <= MAGNET_RANGE && dist > 0) {
+                const pullSpeed = Math.min(8.5, Math.max(3.8, (MAGNET_RANGE - dist) * 0.1 + 4.0));
+                this.x += (dx / dist) * pullSpeed;
+                this.y += (dy / dist) * pullSpeed;
+            }
+
+            // איסוף כסף במגע עם השחקן
             if (dist < player.radius + this.radius + 3) {
                 playerCoins += this.value;
                 updateHUD();
