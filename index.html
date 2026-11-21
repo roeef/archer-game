@@ -4345,7 +4345,7 @@ class XpOrb {
         this.x = x;
         this.y = y;
         this.value = value;
-        this.radius = 9.5;
+        this.radius = 7.5;
         this.alive = true;
         this.isLucky = isLucky;
         this.pulse = Math.random() * Math.PI * 2;
@@ -4366,7 +4366,7 @@ class XpOrb {
 
         if (dist < player.radius + this.radius) {
             gainXP(this.value);
-            // איסוף קריסטלי איזמרגד מרובעים מעניק ניסיון
+            // איסוף קריסטלי איזמרגד מעניק ניסיון
             this.alive = false;
         }
     }
@@ -4374,119 +4374,78 @@ class XpOrb {
     draw() {
         ctx.save();
         const bob = Math.sin(this.pulse * 1.5) * 1.8;
-        const x = this.x;
-        const y = this.y + bob;
-        const s = 9.5;
-        const c = s * 0.3; // חיתוך פינות קטומות (חיתוך אמרלד מרובע קלאסי)
+        const cx = this.x;
+        const cy = this.y + bob;
+        const w = 7.5;
+        const h = 12.5;
+        const glow = 7 + Math.sin(this.pulse * 1.8) * 3.5;
 
-        // יצירת 8 נקודות המתומן/המרובע הקטום לפי קנה מידה
-        const getOct = (scale) => {
-            const r = s * scale;
-            const cr = c * scale;
-            return [
-                { x: x - r + cr, y: y - r },       // 0: שמאל קו עליון
-                { x: x + r - cr, y: y - r },       // 1: ימין קו עליון
-                { x: x + r, y: y - r + cr },       // 2: עליון קו ימני
-                { x: x + r, y: y + r - cr },       // 3: תחתון קו ימני
-                { x: x + r - cr, y: y + r },       // 4: ימין קו תחתון
-                { x: x - r + cr, y: y + r },       // 5: שמאל קו תחתון
-                { x: x - r, y: y + r - cr },       // 6: תחתון קו שמאלי
-                { x: x - r, y: y - r + cr }        // 7: עליון קו שמאלי
-            ];
-        };
-
-        const outer = getOct(1.0);  // גבול חיצוני
-        const table = getOct(0.66); // מדרגת לוח אמצעית (Table)
-        const inner = getOct(0.33); // מדרגת עומק פנימית
-
-        // זוהר אמרלד ירוק סביב הקריסטל
+        // הילת זוהר ירוקה של קריסטל איזמרגד
         ctx.shadowColor = this.isLucky ? '#6ee7b7' : '#10b981';
-        ctx.shadowBlur = 8 + Math.sin(this.pulse * 1.8) * 3.5;
+        ctx.shadowBlur = glow;
 
-        const fillPoly = (pts, color) => {
-            ctx.fillStyle = color;
+        // קודקודי פאות קריסטל האיזמרגד
+        const pTop = [cx, cy - h];
+        const pTL = [cx - w * 0.85, cy - h * 0.35];
+        const pBL = [cx - w * 0.75, cy + h * 0.35];
+        const pBot = [cx, cy + h];
+        const pBR = [cx + w * 0.75, cy + h * 0.35];
+        const pTR = [cx + w * 0.85, cy - h * 0.35];
+        const cTop = [cx, cy - h * 0.3];
+        const cBot = [cx, cy + h * 0.3];
+        const cL = [cx - w * 0.35, cy];
+        const cR = [cx + w * 0.35, cy];
+
+        const drawPoly = (pts, fill) => {
+            ctx.fillStyle = fill;
             ctx.beginPath();
-            ctx.moveTo(pts[0].x, pts[0].y);
-            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+            ctx.moveTo(pts[0][0], pts[0][1]);
+            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
             ctx.closePath();
             ctx.fill();
         };
 
-        // 1. פאות כתר עליונות (Crown Facets) - גווני ירוק איזמרגד מבריקים עם החזר אור
-        const crownColors = this.isLucky ? 
-            ['#d1fae5', '#a7f3d0', '#6ee7b7', '#34d399', '#10b981', '#059669', '#34d399', '#a7f3d0'] :
-            ['#a7f3d0', '#6ee7b7', '#34d399', '#059669', '#047857', '#064e3b', '#059669', '#6ee7b7'];
+        // פאה עליונה-שמאלית (החזר אור עדין)
+        drawPoly([pTop, pTL, cL, cTop], this.isLucky ? '#a7f3d0' : '#6ee7b7');
+        // פאה עליונה-ימנית (איזמרגד זוהר)
+        drawPoly([pTop, cTop, cR, pTR], this.isLucky ? '#34d399' : '#059669');
+        // פאה מרכזית - לוח הקריסטל (ירוק איזמרגד בוהק)
+        drawPoly([cTop, cR, cBot, cL], this.isLucky ? '#6ee7b7' : '#10b981');
+        // פאה תחתונה-שמאלית (עומק וצל איזמרגד)
+        drawPoly([cL, pBL, pBot, cBot], this.isLucky ? '#059669' : '#047857');
+        // פאה תחתונה-ימנית (עומק כהה)
+        drawPoly([cBot, pBot, pBR, cR], this.isLucky ? '#047857' : '#065f46');
 
-        for (let i = 0; i < 8; i++) {
-            const next = (i + 1) % 8;
-            fillPoly([outer[i], outer[next], table[next], table[i]], crownColors[i]);
-        }
-
-        // 2. פאות מדרגה אמצעית (Table Step Facets)
-        const tableColors = this.isLucky ?
-            ['#6ee7b7', '#34d399', '#10b981', '#059669', '#047857', '#065f46', '#10b981', '#34d399'] :
-            ['#34d399', '#10b981', '#059669', '#047857', '#064e3b', '#022c22', '#047857', '#10b981'];
-
-        for (let i = 0; i < 8; i++) {
-            const next = (i + 1) % 8;
-            fillPoly([table[i], table[next], inner[next], inner[i]], tableColors[i]);
-        }
-
-        // 3. פאות פירמידת עומק מרכזית (Pavilion) המתכנסות למרכז
-        const centerColors = this.isLucky ?
-            ['#34d399', '#10b981', '#059669', '#047857', '#064e3b', '#022c22', '#059669', '#10b981'] :
-            ['#10b981', '#059669', '#047857', '#064e3b', '#022c22', '#064e3b', '#047857', '#059669'];
-
-        for (let i = 0; i < 8; i++) {
-            const next = (i + 1) % 8;
-            fillPoly([inner[i], inner[next], { x, y }], centerColors[i]);
-        }
-
-        // 4. קווי חיתוך הפאות (Facet Cut Lines) - קווים דקים מנטה/לבן
-        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.85)' : 'rgba(167, 243, 208, 0.75)';
-        ctx.lineWidth = 0.75;
-
-        const strokeRing = (pts) => {
-            ctx.beginPath();
-            ctx.moveTo(pts[0].x, pts[0].y);
-            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-            ctx.closePath();
-            ctx.stroke();
-        };
-
-        strokeRing(outer);
-        strokeRing(table);
-        strokeRing(inner);
-
-        // קווי פאות רדיאליים מפינות החוץ למרכז
+        // קווי מתאר חיצוניים של הקריסטל
+        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.95)' : 'rgba(167, 243, 208, 0.85)';
+        ctx.lineWidth = 0.9;
         ctx.beginPath();
-        for (let i = 0; i < 8; i++) {
-            ctx.moveTo(outer[i].x, outer[i].y);
-            ctx.lineTo(table[i].x, table[i].y);
-            ctx.lineTo(inner[i].x, inner[i].y);
-            ctx.lineTo(x, y);
-        }
+        ctx.moveTo(pTop[0], pTop[1]);
+        ctx.lineTo(pTL[0], pTL[1]);
+        ctx.lineTo(pBL[0], pBL[1]);
+        ctx.lineTo(pBot[0], pBot[1]);
+        ctx.lineTo(pBR[0], pBR[1]);
+        ctx.lineTo(pTR[0], pTR[1]);
+        ctx.closePath();
         ctx.stroke();
 
-        // 5. פס השתקפות אור לבן זוהר בראש הקריסטל (כמו בתמונה המקורית!)
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.lineWidth = 1.2;
+        // קווי פאות פנימיים (Faceted Cut Lines)
+        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.7)' : 'rgba(110, 231, 183, 0.6)';
+        ctx.lineWidth = 0.6;
         ctx.beginPath();
-        ctx.moveTo(table[0].x, table[0].y);
-        ctx.lineTo(table[1].x, table[1].y);
+        ctx.moveTo(pTop[0], pTop[1]); ctx.lineTo(cTop[0], cTop[1]);
+        ctx.moveTo(pBot[0], pBot[1]); ctx.lineTo(cBot[0], cBot[1]);
+        ctx.moveTo(pTL[0], pTL[1]); ctx.lineTo(cL[0], cL[1]);
+        ctx.moveTo(pTR[0], pTR[1]); ctx.lineTo(cR[0], cR[1]);
+        ctx.moveTo(pBL[0], pBL[1]); ctx.lineTo(cL[0], cL[1]);
+        ctx.moveTo(pBR[0], pBR[1]); ctx.lineTo(cR[0], cR[1]);
+        ctx.moveTo(cTop[0], cTop[1]); ctx.lineTo(cR[0], cR[1]); ctx.lineTo(cBot[0], cBot[1]); ctx.lineTo(cL[0], cL[1]); ctx.closePath();
         ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
-        ctx.lineWidth = 1.0;
-        ctx.beginPath();
-        ctx.moveTo(outer[0].x, outer[0].y);
-        ctx.lineTo(outer[1].x, outer[1].y);
-        ctx.stroke();
-
-        // ניצוץ אור לבן זוהר
+        // ניצוץ אור לבן זוהר בקצה הפאה
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(table[0].x + 1, table[0].y + 1, 1.2, 0, Math.PI * 2);
+        ctx.arc(cx - w * 0.25, cy - h * 0.35, 1.4, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
