@@ -2722,27 +2722,27 @@ const WEAPONS_CATALOG = [
     },
     {
         id: 'gun',
-        name: 'אקדח כדורי אש',
+        name: 'אקדח להבות',
         icon: '🔫',
         price: 250,
         type: 'ranged',
-        typeLabel: 'אקדח כדורי אש',
+        typeLabel: 'אקדח להבות',
         typeColor: '#f97316',
-        desc: 'יורה כדורי אש מהירים (40 נזק). המפלצת עולה באש ל-5 שניות (בכל שנייה מאבדת חצי מהחיים + לב!). כדור באוויר מעל 2 שניות נופל לרצפה.',
+        desc: 'יורה כדורי אש שמציתים מפלצות ל-5 שניות (ללא נזק פגיעה ישיר). בכל שנייה שהיא בוערת יורד לה חצי מהחיים + לב! כדור מעל 2 שניות נופל לרצפה.',
         basePassiveDmg: 0,
-        baseSwingDmg: 40
+        baseSwingDmg: 0
     },
     {
         id: 'rifle',
-        name: 'רובה אש חודר',
+        name: 'רובה כדורים חודר',
         icon: '🎯',
         price: 450,
         type: 'ranged',
-        typeLabel: 'רובה כדורים חודרים',
-        typeColor: '#ef4444',
-        desc: 'יורה כדורי אש ענקיים ברדיוס מוגדל (25 נזק) שחודרים דרך כל המפלצות ושורפים אותן ל-5 שניות! כדור באוויר מעל 2 שניות נופל לרצפה.',
+        typeLabel: 'רובה קליעים חודר',
+        typeColor: '#38bdf8',
+        desc: 'יורה קליעים חודרים (20 נזק) שעוברים דרך כל המפלצות ללא שריפה! משתמש באותם כדורי תחמושת של האקדח. כדור מעל 2 שניות נופל לרצפה.',
         basePassiveDmg: 0,
-        baseSwingDmg: 25
+        baseSwingDmg: 20
     }
 ];
 
@@ -3637,8 +3637,8 @@ class Player {
 
         sfx.playGunshot();
 
-        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
-        const bulletDmg = Math.max(1, Math.round(40 * dmgMult));
+        // אקדח אינו מוריד נזק ישיר בפגיעה - הוא רק מעלה את המפלצת באש ל-5 שניות!
+        const bulletDmg = 0;
         const bulletSpeed = 10.5 * playerArrowSpeedMultiplierSetting;
 
         gunFireballs.push(new GunFireball(
@@ -3666,7 +3666,7 @@ class Player {
 
     shootRifle(speedMult = 1.0) {
         if ((upgrades.gunAmmo || 0) <= 0) {
-            addFloatingText(this.x, this.y - 25, "נגמרו כדורי האש! קנה מאגר ברווח 🎯❌", "#ef4444");
+            addFloatingText(this.x, this.y - 25, "נגמרו הכדורים! קנה מאגר ברווח 🎯❌", "#ef4444");
             sfx.playHit();
             this.shootTimer = 25;
             return;
@@ -3677,10 +3677,10 @@ class Player {
 
         sfx.playGunshot();
 
-        // מדד נזק הקשת ושדרוגי חיצים מכפילים גם את נזק הרובה!
+        // רובה: 20 נזק, חודר דרך כל המפלצות, ללא שריפה
         const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
-        const bulletDmg = Math.max(1, Math.round(25 * dmgMult)); // 25 נזק כפי שהוגדר
-        const bulletSpeed = 11.5 * playerArrowSpeedMultiplierSetting;
+        const bulletDmg = Math.max(1, Math.round(20 * dmgMult)); // 20 נזק בסיס
+        const bulletSpeed = 12.0 * playerArrowSpeedMultiplierSetting;
 
         gunFireballs.push(new GunFireball(
             this.x + Math.cos(this.angle) * (this.radius + 24),
@@ -3688,7 +3688,7 @@ class Player {
             this.angle,
             bulletSpeed,
             bulletDmg,
-            true // isRifle = true (רדיוס מוגדל, חודר אינסוף מפלצות)
+            true // isRifle = true (קליע חודר דרך מפלצות, לא שורף, 20 נזק)
         ));
 
         // רתע לאחור
@@ -3870,17 +3870,17 @@ class Player {
             ctx.fillRect(34, -3, 20, 6);
             ctx.strokeRect(34, -3, 20, 6);
 
-            // פיית אש ולהבה כפולה וזוהרת
-            ctx.fillStyle = '#ef4444';
-            ctx.shadowColor = '#dc2626';
+            // פיית קנה זוהרת (קליעים חודרים ממתכת מואצת, ללא שריפה)
+            ctx.fillStyle = '#0ea5e9';
+            ctx.shadowColor = '#38bdf8';
             ctx.shadowBlur = 12;
             ctx.beginPath();
-            ctx.arc(55, 0, 4.5, 0, Math.PI * 2);
+            ctx.arc(55, 0, 4, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#fbbf24';
+            ctx.fillStyle = '#f8fafc';
             ctx.beginPath();
-            ctx.arc(56, 0, 2.5, 0, Math.PI * 2);
+            ctx.arc(55.5, 0, 2, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.restore();
@@ -5675,14 +5675,23 @@ class GunFireball {
         this.x += this.vx;
         this.y += this.vy;
 
-        // שובל חלקיקי אש בוערים
-        if (Math.random() < (this.isRifle ? 0.9 : 0.7)) {
-            particles.push(new Particle(
-                this.x + (Math.random() - 0.5) * (this.isRifle ? 8 : 4),
-                this.y + (Math.random() - 0.5) * (this.isRifle ? 8 : 4),
-                Math.random() < 0.6 ? (this.isRifle ? '#ef4444' : '#f97316') : '#fbbf24',
-                this.isRifle ? 4.5 : 3, 0.8, 14
-            ));
+        // שובל חלקיקים בזמן מעוף
+        if (Math.random() < (this.isRifle ? 0.8 : 0.7)) {
+            if (this.isRifle) {
+                particles.push(new Particle(
+                    this.x + (Math.random() - 0.5) * 6,
+                    this.y + (Math.random() - 0.5) * 6,
+                    Math.random() < 0.6 ? '#38bdf8' : '#e0f2fe',
+                    3.5, 0.8, 12
+                ));
+            } else {
+                particles.push(new Particle(
+                    this.x + (Math.random() - 0.5) * 4,
+                    this.y + (Math.random() - 0.5) * 4,
+                    Math.random() < 0.6 ? '#f97316' : '#fbbf24',
+                    3, 0.8, 14
+                ));
+            }
         }
 
         // פגיעה במפלצות
@@ -5694,23 +5703,36 @@ class GunFireball {
             const d = Math.hypot(m.x - this.x, m.y - this.y);
             if (d < m.radius + this.radius) {
                 this.hitTargets.add(m);
-                m.takeDamage(this.damage);
-                m.ignite(300); // בעירה למשך 5 שניות (300 פריימים ב-60fps)
-                sfx.playFlame();
-                addFloatingText(m.x, m.y - 18, `${this.damage} ${this.isRifle ? '🎯🔥' : '🔫🔥'}`, "#f97316");
 
-                const pCount = this.isRifle ? 16 : 12;
-                for (let p = 0; p < pCount; p++) {
-                    particles.push(new Particle(this.x, this.y, '#f97316', 4, 3, 20));
-                    particles.push(new Particle(this.x, this.y, '#facc15', 3, 2, 16));
-                }
+                if (this.isRifle) {
+                    // רובה: מוריד 20 נזק בלבד ועובר דרך כל המפלצות (ללא שריפה / הצתה!)
+                    m.takeDamage(this.damage);
+                    sfx.playHit();
+                    addFloatingText(m.x, m.y - 18, `-${this.damage} 🎯`, "#38bdf8");
 
-                if (!this.isRifle) {
+                    const pCount = 10;
+                    for (let p = 0; p < pCount; p++) {
+                        particles.push(new Particle(this.x, this.y, '#38bdf8', 3.5, 2.5, 14));
+                        particles.push(new Particle(this.x, this.y, '#f8fafc', 2.5, 1.5, 12));
+                    }
+                    // ממשיך לעוף דרך שאר המפלצות!
+                } else {
+                    // אקדח: לא מוריד נזק ישיר! רק מעלה מפלצת באש ל-5 שניות
+                    // כל שנייה שהיא בוערת יורד לה חצי מהחיים שלה פלוס לב
+                    m.ignite(300); // בעירה ל-5 שניות בדיוק (300 פריימים ב-60fps)
+                    sfx.playFlame();
+                    addFloatingText(m.x, m.y - 18, "🔥 עולה באש!", "#f97316");
+
+                    const pCount = 12;
+                    for (let p = 0; p < pCount; p++) {
+                        particles.push(new Particle(this.x, this.y, '#f97316', 4, 3, 20));
+                        particles.push(new Particle(this.x, this.y, '#facc15', 3, 2, 16));
+                    }
+
                     // אקדח: פוגע במפלצת ונעלם
                     this.alive = false;
                     break;
                 }
-                // רובה: כדור חודר אינסוף מפלצות!
             }
         }
 
@@ -5730,29 +5752,40 @@ class GunFireball {
 
     draw() {
         ctx.save();
-        ctx.shadowColor = this.isRifle ? '#dc2626' : '#ea580c';
-        ctx.shadowBlur = this.isRifle ? 20 : 14;
-
-        // הילת להבה חיצונית
-        ctx.fillStyle = this.isRifle ? '#ef4444' : '#f97316';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // שכבת ביניים כתומה לרובה
         if (this.isRifle) {
+            // קליע רובה חודר ונוצץ (כחול-ציאן / פלדה זוהרת, לא שורף)
+            ctx.shadowColor = '#0ea5e9';
+            ctx.shadowBlur = 16;
+
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            // כדור אש של אקדח (להבות חמות)
+            ctx.shadowColor = '#ea580c';
+            ctx.shadowBlur = 14;
+
             ctx.fillStyle = '#f97316';
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius * 0.72, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#fef08a';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 0.45, 0, Math.PI * 2);
             ctx.fill();
         }
-
-        // ליבה בוהקת חמה
-        ctx.fillStyle = '#fef08a';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 0.45, 0, Math.PI * 2);
-        ctx.fill();
-
         ctx.restore();
     }
 }
@@ -7710,6 +7743,10 @@ function renderWeaponsShop() {
         const effectivePassive = Math.max(0, Math.round(basePassive * dmgMult));
         const effectiveSwing = Math.max(1, Math.round(baseSwing * dmgMult));
 
+        const attackDisplay = (weapon.id === 'gun') 
+            ? '🔥 הצתה (חצי חיים + לב לשנייה)' 
+            : `<b>${effectiveSwing}</b> (בסיס: ${baseSwing})`;
+
         card.innerHTML = `
             <div class="weapon-badge-tag">${weapon.typeLabel || weapon.range || 'נשק'}</div>
             <div class="weapon-icon">${weapon.icon}</div>
@@ -7717,7 +7754,7 @@ function renderWeaponsShop() {
             <div class="weapon-desc">${weapon.desc}</div>
             <div class="weapon-stats">
                 <span class="weapon-stat">💥 פסיבי: <b>${effectivePassive}</b> (בסיס: ${basePassive})</span>
-                <span class="weapon-stat">⚡ תקיפה: <b>${effectiveSwing}</b> (בסיס: ${baseSwing})</span>
+                <span class="weapon-stat">⚡ תקיפה: ${attackDisplay}</span>
                 <span class="weapon-stat">🪙 מחיר: <b>${weapon.price > 0 ? weapon.price + ' 🪙' : 'חינם'}</b></span>
             </div>
             ${actionBtnHtml}
@@ -7752,9 +7789,9 @@ function renderWeaponsShop() {
                 <div class="supply-info">
                     <div class="supply-icon">🔋</div>
                     <div class="supply-details">
-                        <div class="supply-title">מאגר יריות לאקדח (+20 כדורי אש)</div>
-                        <div class="supply-desc">מאגר כדורי אש ששורפים מפלצות ל-5 שניות!</div>
-                        <div class="supply-stock">מלאי נוכחי: 🔫 ${gunAmmoCount} כדורי אש</div>
+                        <div class="supply-title">מאגר כדורים לאקדח ולרובה (+20 כדורים)</div>
+                        <div class="supply-desc">מאגר כדורים משותף לאקדח (מצית מפלצות) ולרובה (קליעים חודרים 20 נזק)!</div>
+                        <div class="supply-stock">מלאי נוכחי: 🔋 ${gunAmmoCount} כדורים (משותף לאקדח ולרובה)</div>
                     </div>
                 </div>
                 <button class="supply-action-btn" onclick="buyGunAmmoPack()" ${!canAffordGunAmmo ? 'disabled' : ''}>קנה ב-100 🪙</button>
@@ -7802,7 +7839,7 @@ function buyGunAmmoPack() {
         upgrades.gunAmmo = (upgrades.gunAmmo || 0) + gain;
         sfx.playLevelUp();
         if (player) {
-            addFloatingText(player.x, player.y - 30, `+${gain} כדורי אש לאקדח! 🔫🔥`, "#f97316");
+            addFloatingText(player.x, player.y - 30, `+${gain} כדורים לאקדח ולרובה! 🔋`, "#f97316");
         }
         updateHUD();
         renderWeaponsShop();
