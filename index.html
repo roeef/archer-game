@@ -4040,20 +4040,42 @@ class Monster {
                 this.x += (dx / dist) * Math.max(1.8, this.speed);
                 this.y += (dy / dist) * Math.max(1.8, this.speed);
             } else {
-                // Keep medium distance from target
-                const idealDist = 220;
-                if (dist > idealDist + 20) {
-                    this.x += (dx / dist) * this.speed;
-                    this.y += (dy / dist) * this.speed;
-                } else if (dist < idealDist - 40) {
-                    const nextX = this.x - (dx / dist) * (this.speed * 0.5);
-                    const nextY = this.y - (dy / dist) * (this.speed * 0.5);
-                    // נסוגה לאחור רק אם זה לא מוציא אותה אל מחוץ ללוח!
-                    if (nextX >= this.radius && nextX <= canvas.width - this.radius) {
-                        this.x = nextX;
+                // חיפוש קריסטל איזמרגד קרוב ביותר - מפלצות יורות הולכות אל האיזמרגד לקחת אותו!
+                let closestOrb = null;
+                let closestOrbDist = Infinity;
+                for (let o = 0; o < xpOrbs.length; o++) {
+                    const orb = xpOrbs[o];
+                    if (!orb.alive) continue;
+                    const od = Math.hypot(orb.x - this.x, orb.y - this.y);
+                    if (od < closestOrbDist) {
+                        closestOrbDist = od;
+                        closestOrb = orb;
                     }
-                    if (nextY >= this.radius && nextY <= canvas.height - this.radius) {
-                        this.y = nextY;
+                }
+
+                if (closestOrb) {
+                    // הליכה ישירה אל עבר קריסטל האיזמרגד
+                    const odx = closestOrb.x - this.x;
+                    const ody = closestOrb.y - this.y;
+                    const odist = Math.max(1, closestOrbDist);
+                    this.x += (odx / odist) * this.speed;
+                    this.y += (ody / odist) * this.speed;
+                } else {
+                    // אם אין קריסטלים בזירה - התנהגות רגילה של שמירת מרחק מהמטרה
+                    const idealDist = 220;
+                    if (dist > idealDist + 20) {
+                        this.x += (dx / dist) * this.speed;
+                        this.y += (dy / dist) * this.speed;
+                    } else if (dist < idealDist - 40) {
+                        const nextX = this.x - (dx / dist) * (this.speed * 0.5);
+                        const nextY = this.y - (dy / dist) * (this.speed * 0.5);
+                        // נסוגה לאחור רק אם זה לא מוציא אותה אל מחוץ ללוח!
+                        if (nextX >= this.radius && nextX <= canvas.width - this.radius) {
+                            this.x = nextX;
+                        }
+                        if (nextY >= this.radius && nextY <= canvas.height - this.radius) {
+                            this.y = nextY;
+                        }
                     }
                 }
             }
