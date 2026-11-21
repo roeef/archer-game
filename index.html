@@ -2714,9 +2714,9 @@ const WEAPONS_CATALOG = [
         icon: '⚔️',
         price: 150,
         type: 'melee',
-        typeLabel: 'קפא״פ ענק (כפול מהדמות!)',
+        typeLabel: 'קפא״פ ענק (מוארכת פי 2!)',
         typeColor: '#f43f5e',
-        desc: 'חרב ענקית באורך כפול מהדמות! מגע בלהב: 5 נזק פסיבי. הנפה בלחיצה: 20 נזק. מושפעת מכל מדדי ושדרוגי הקשת!',
+        desc: 'חרב ענקית מוארכת פי 2! טווח פגיעה עצום: מגע בלהב 5 נזק פסיבי, הנפה בלחיצה 20 נזק. מושפעת מכל מדדי ושדרוגי הקשת!',
         basePassiveDmg: 5,
         baseSwingDmg: 20
     },
@@ -3671,7 +3671,7 @@ class Player {
 
         // מדד נזק הקשת ושדרוגי חיצים מכפילים ישירות את נזק החרב!
         const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
-        const bladeLen = this.radius * 2.3; // חרב ענקית - אורך כפול מהדמות!
+        const bladeLen = this.radius * 4.6; // חרב ענקית - מוארכת פי 2 (טווח עצום פי 2)!
         const baseSwing = 20;
         const basePassive = 5;
 
@@ -3933,7 +3933,7 @@ class Player {
 
         // ציור הנשק הלבוש
         if (currentWeapon === 'sword') {
-            const bladeLen = this.radius * 2.3; // חרב ענקית - אורך כפול מהדמות!
+            const bladeLen = this.radius * 4.6; // חרב ענקית מוארכת פי 2!
             const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
 
             // שובל הנפה זוהר במהלך מכת החרב
@@ -3967,30 +3967,30 @@ class Player {
 
             // מגן שמירה זהוב (Crossguard)
             ctx.fillStyle = '#facc15';
-            ctx.fillRect(14, -11, 4.5, 22);
+            ctx.fillRect(14, -13, 5, 26);
 
-            // להב פלדה כסוף-בוהק ענק
+            // להב פלדה כסוף-בוהק ענק ומוארך פי 2
             ctx.fillStyle = '#e2e8f0';
             ctx.beginPath();
-            ctx.moveTo(18.5, -4.5);
-            ctx.lineTo(bladeLen - 8, -4);
-            ctx.lineTo(bladeLen, 0); // חוד החרב
-            ctx.lineTo(bladeLen - 8, 4);
-            ctx.lineTo(18.5, 4.5);
+            ctx.moveTo(19, -5);
+            ctx.lineTo(bladeLen - 12, -4.5);
+            ctx.lineTo(bladeLen, 0); // חוד החרב המוארך
+            ctx.lineTo(bladeLen - 12, 4.5);
+            ctx.lineTo(19, 5);
             ctx.closePath();
             ctx.fill();
 
             // חריץ להב מרכזי (Fuller)
             ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 1.2;
+            ctx.lineWidth = 1.4;
             ctx.beginPath();
             ctx.moveTo(20, 0);
-            ctx.lineTo(bladeLen - 10, 0);
+            ctx.lineTo(bladeLen - 14, 0);
             ctx.stroke();
 
             // קו מתאר זוהר
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 1.1;
             ctx.stroke();
 
             ctx.restore();
