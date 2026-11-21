@@ -86,18 +86,84 @@
         }
 
         #xp-fill {
-            background: linear-gradient(90deg, #38ef7d, #11998e);
+            background: linear-gradient(270deg, #38bdf8, #10b981);
             width: 0%;
+            height: 100%;
+            float: right;
+            transition: width 0.2s ease-out;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
         }
 
         .bar-text {
             position: absolute;
             width: 100%;
             text-align: center;
-            top: 1px;
+            top: 50%;
+            transform: translateY(-50%);
             font-size: 11px;
+            font-weight: bold;
             color: #fff;
-            text-shadow: 1px 1px 2px #000;
+            text-shadow: 1px 1px 2px #000, 0 0 4px #000;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Level Octagon & Connected XP Gauge Widget */
+        .level-xp-widget {
+            display: inline-flex;
+            align-items: center;
+            direction: rtl !important;
+            position: relative;
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.45));
+            user-select: none;
+        }
+
+        .level-octagon {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            z-index: 3;
+            cursor: default;
+        }
+
+        .octagon-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .octagon-level-num {
+            position: relative;
+            z-index: 4;
+            font-size: 16px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.9), 1px 1px 3px #000;
+            line-height: 1;
+        }
+
+        .xp-gauge-container {
+            width: 155px;
+            height: 18px;
+            background: rgba(15, 23, 42, 0.9);
+            /* שני קווים שמחוברים למתומן ונסגרים בצורה עגולה */
+            border-top: 2px solid #38bdf8;
+            border-bottom: 2px solid #38bdf8;
+            border-left: 2px solid #38bdf8;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            position: relative;
+            overflow: hidden;
+            margin-right: -4px; /* חיבור ישיר וצמוד לקצה השמאלי של המתומן */
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8), 0 0 6px rgba(56, 189, 248, 0.3);
+            z-index: 1;
         }
 
         /* Overlay Screens */
@@ -1184,11 +1250,26 @@
             </div>
         </div>
 
-        <div class="hud-item">
-            <span>🌟 ניסיון (דרגה <span id="level-display">0</span>):</span>
-            <div class="bar-container">
-                <div id="xp-fill" class="bar-fill"></div>
-                <div id="xp-text" class="bar-text">0%</div>
+        <div class="hud-item" style="padding: 0; background: transparent; border: none;">
+            <div class="level-xp-widget" title="דרגת הקשת ואחוזי התקדמות ניסיון">
+                <div class="level-octagon">
+                    <svg class="octagon-svg" viewBox="0 0 40 40">
+                        <polygon points="12,2 28,2 38,12 38,28 28,38 12,38 2,28 2,12" 
+                                 fill="rgba(15, 23, 42, 0.95)" 
+                                 stroke="#38bdf8" 
+                                 stroke-width="2.5" 
+                                 stroke-linejoin="round"/>
+                        <polygon points="13,5 27,5 35,13 35,27 27,35 13,35 5,27 5,13" 
+                                 fill="none" 
+                                 stroke="rgba(56, 189, 248, 0.35)" 
+                                 stroke-width="1" />
+                    </svg>
+                    <span id="level-display" class="octagon-level-num">0</span>
+                </div>
+                <div class="xp-gauge-container">
+                    <div id="xp-fill" class="bar-fill"></div>
+                    <div id="xp-text" class="bar-text">0%</div>
+                </div>
             </div>
         </div>
 
@@ -4264,7 +4345,7 @@ class XpOrb {
         this.x = x;
         this.y = y;
         this.value = value;
-        this.radius = 5.5;
+        this.radius = 7.5;
         this.alive = true;
         this.isLucky = isLucky;
         this.pulse = Math.random() * Math.PI * 2;
@@ -4285,27 +4366,86 @@ class XpOrb {
 
         if (dist < player.radius + this.radius) {
             gainXP(this.value);
-            // איסוף עיגולי XP מעניק רק ניסיון (נקודות מושגות אך ורק בהריגת מפלצות ובעליית דרגות)
+            // איסוף קריסטלי איזמרגד מעניק ניסיון
             this.alive = false;
         }
     }
 
     draw() {
         ctx.save();
-        const glow = 6 + Math.sin(this.pulse) * 3;
-        const r = this.radius + Math.sin(this.pulse) * 0.7;
+        const bob = Math.sin(this.pulse * 1.5) * 1.8;
+        const cx = this.x;
+        const cy = this.y + bob;
+        const w = 7.5;
+        const h = 12.5;
+        const glow = 7 + Math.sin(this.pulse * 1.8) * 3.5;
 
-        ctx.fillStyle = this.isLucky ? '#34d399' : '#10b981';
+        // הילת זוהר ירוקה של קריסטל איזמרגד
         ctx.shadowColor = this.isLucky ? '#6ee7b7' : '#10b981';
         ctx.shadowBlur = glow;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
-        ctx.fill();
 
-        // ליבה פנימית בהירה וברורה כך שכל עיגול ניקוד נראה חד, זוהר ומופרד
-        ctx.fillStyle = '#f0fdf4';
+        // קודקודי פאות קריסטל האיזמרגד
+        const pTop = [cx, cy - h];
+        const pTL = [cx - w * 0.85, cy - h * 0.35];
+        const pBL = [cx - w * 0.75, cy + h * 0.35];
+        const pBot = [cx, cy + h];
+        const pBR = [cx + w * 0.75, cy + h * 0.35];
+        const pTR = [cx + w * 0.85, cy - h * 0.35];
+        const cTop = [cx, cy - h * 0.3];
+        const cBot = [cx, cy + h * 0.3];
+        const cL = [cx - w * 0.35, cy];
+        const cR = [cx + w * 0.35, cy];
+
+        const drawPoly = (pts, fill) => {
+            ctx.fillStyle = fill;
+            ctx.beginPath();
+            ctx.moveTo(pts[0][0], pts[0][1]);
+            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        // פאה עליונה-שמאלית (החזר אור עדין)
+        drawPoly([pTop, pTL, cL, cTop], this.isLucky ? '#a7f3d0' : '#6ee7b7');
+        // פאה עליונה-ימנית (איזמרגד זוהר)
+        drawPoly([pTop, cTop, cR, pTR], this.isLucky ? '#34d399' : '#059669');
+        // פאה מרכזית - לוח הקריסטל (ירוק איזמרגד בוהק)
+        drawPoly([cTop, cR, cBot, cL], this.isLucky ? '#6ee7b7' : '#10b981');
+        // פאה תחתונה-שמאלית (עומק וצל איזמרגד)
+        drawPoly([cL, pBL, pBot, cBot], this.isLucky ? '#059669' : '#047857');
+        // פאה תחתונה-ימנית (עומק כהה)
+        drawPoly([cBot, pBot, pBR, cR], this.isLucky ? '#047857' : '#065f46');
+
+        // קווי מתאר חיצוניים של הקריסטל
+        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.95)' : 'rgba(167, 243, 208, 0.85)';
+        ctx.lineWidth = 0.9;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, r * 0.45, 0, Math.PI * 2);
+        ctx.moveTo(pTop[0], pTop[1]);
+        ctx.lineTo(pTL[0], pTL[1]);
+        ctx.lineTo(pBL[0], pBL[1]);
+        ctx.lineTo(pBot[0], pBot[1]);
+        ctx.lineTo(pBR[0], pBR[1]);
+        ctx.lineTo(pTR[0], pTR[1]);
+        ctx.closePath();
+        ctx.stroke();
+
+        // קווי פאות פנימיים (Faceted Cut Lines)
+        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.7)' : 'rgba(110, 231, 183, 0.6)';
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        ctx.moveTo(pTop[0], pTop[1]); ctx.lineTo(cTop[0], cTop[1]);
+        ctx.moveTo(pBot[0], pBot[1]); ctx.lineTo(cBot[0], cBot[1]);
+        ctx.moveTo(pTL[0], pTL[1]); ctx.lineTo(cL[0], cL[1]);
+        ctx.moveTo(pTR[0], pTR[1]); ctx.lineTo(cR[0], cR[1]);
+        ctx.moveTo(pBL[0], pBL[1]); ctx.lineTo(cL[0], cL[1]);
+        ctx.moveTo(pBR[0], pBR[1]); ctx.lineTo(cR[0], cR[1]);
+        ctx.moveTo(cTop[0], cTop[1]); ctx.lineTo(cR[0], cR[1]); ctx.lineTo(cBot[0], cBot[1]); ctx.lineTo(cL[0], cL[1]); ctx.closePath();
+        ctx.stroke();
+
+        // ניצוץ אור לבן זוהר בקצה הפאה
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(cx - w * 0.25, cy - h * 0.35, 1.4, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
