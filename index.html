@@ -4531,15 +4531,9 @@ class XpOrb {
             const dy = player.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            // Magnet attraction when close
-            if (dist < 140) {
-                this.x += (dx / dist) * 6.5;
-                this.y += (dy / dist) * 6.5;
-            }
-
-            if (dist < player.radius + this.radius) {
+            // איסוף קריסטל איזמרגד אך ורק במגע ישיר של השחקן (ללא שאיבה/מגנט)
+            if (dist < player.radius + this.radius + 2) {
                 gainXP(this.value);
-                // איסוף קריסטלי איזמרגד מעניק ניסיון
                 this.alive = false;
                 return;
             }
