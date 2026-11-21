@@ -659,6 +659,143 @@
             box-shadow: 0 0 12px rgba(217, 70, 239, 0.5);
         }
 
+        /* Weapons Shop Modal */
+        #weapons-modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 15, 30, 0.88);
+            backdrop-filter: blur(6px);
+            z-index: 950;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #weapons-modal-overlay.hidden {
+            display: none !important;
+        }
+
+        #weapons-modal {
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            border: 2px solid #38bdf8;
+            border-radius: 16px;
+            padding: 16px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.4), 0 0 90px rgba(0, 0, 0, 0.95);
+            width: 890px;
+            max-width: 96%;
+            max-height: 94%;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .weapons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .weapon-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .weapon-card:hover {
+            transform: translateY(-3px);
+            border-color: #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .weapon-card.equipped {
+            border-color: #22c55e;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(20, 83, 45, 0.4));
+            box-shadow: 0 0 22px rgba(34, 197, 94, 0.45);
+        }
+
+        .weapon-icon-box {
+            font-size: 38px;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+        }
+
+        .weapon-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #f8fafc;
+            margin-bottom: 2px;
+        }
+
+        .weapon-type-badge {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 7px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .weapon-desc {
+            font-size: 11.5px;
+            color: #cbd5e1;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            flex-grow: 1;
+            text-align: right;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+
+        .weapon-action-btn {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 13.5px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+        }
+
+        .btn-buy {
+            background: linear-gradient(135deg, #eab308, #ca8a04);
+            color: #000000;
+            box-shadow: 0 0 12px rgba(234, 179, 8, 0.35);
+        }
+        .btn-buy:hover {
+            background: linear-gradient(135deg, #facc15, #eab308);
+            transform: scale(1.02);
+        }
+
+        .btn-equip {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(2, 132, 199, 0.35);
+        }
+        .btn-equip:hover {
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            transform: scale(1.02);
+        }
+
+        .btn-equipped {
+            background: #15803d;
+            color: #dcfce7;
+            cursor: default;
+            border: 1px solid #4ade80;
+        }
+
         /* Wave Selection Card on Start Screen */
         .wave-select-box {
             background: rgba(15, 23, 42, 0.88);
@@ -1295,6 +1432,16 @@
             <span id="arrows-hud-badge" style="font-weight: bold; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1.5px solid #38bdf8; padding: 2px 8px; border-radius: 12px; font-size: 13px;">🏹 חצים: <span id="arrows-count-display">100</span></span>
         </div>
 
+        <div class="hud-item" id="coins-hud-container" style="background: rgba(234, 179, 8, 0.15); border: 1.5px solid #eab308; padding: 2px 9px; border-radius: 12px;">
+            <span style="font-weight: bold; color: #fde047; font-size: 13.5px;">🪙 כסף: <span id="coins-count-display">20</span></span>
+        </div>
+
+        <div class="hud-item" id="weapon-hud-container" style="pointer-events: auto; padding: 0; background: transparent; border: none;">
+            <button id="open-weapons-btn" class="hud-action-btn" style="background: linear-gradient(135deg, #0284c7, #2563eb); border: 1.5px solid #38bdf8; color: #ffffff;" title="פתח נשקייה לקנייה והחלפת נשקים (רווח)">
+                <span id="weapon-badge-icon">🏹</span> <span id="weapon-badge-name">קשת צלפים</span> <span style="font-size: 11px; opacity: 0.85; margin-right: 2px;">(רווח)</span>
+            </button>
+        </div>
+
         <div class="hud-item" style="pointer-events: auto; display: flex; gap: 8px;">
             <button id="toggle-chat-btn" class="hud-action-btn">💬 צ'אט משחק [כבוי]</button>
             <button id="in-game-wave-btn" class="hud-action-btn">⏩ בחר גל</button>
@@ -1313,8 +1460,8 @@
         <div class="controls-info">
             <strong>🎮 הוראות שליטה:</strong><br>
             • <b>W, A, S, D</b> או <b>חיצים</b> — תנועה במרחב.<br>
-            • <b>עכבר</b> או <b>👆 מסך מגע</b> — כיוון החץ וירי חצים בלחיצה/נגיעה במסך (אפשר להחזיק לחוץ או לגרור אצבע לירי רציף) | <b>Ctrl</b> — ירי חץ.<br>
-            • <b>רווח</b> — השהיית המשחק (Pause) | <b>C</b> / <b>T</b> — צ'אט משחק (במצב בדיקה).<br>
+            • <b>עכבר</b> או <b>👆 מסך מגע</b> — כיוון ותקיפה בנשק הלבוש (ירי חצים / הנפת חרב ענקית בלחיצה) | <b>Ctrl</b> — תקיפה.<br>
+            • <b>רווח</b> — פתיחת נשקייה (קנייה ולבישת חרב ענקית, גרזן ועוד!) | <b>C</b> / <b>T</b> — צ'אט משחק (במצב בדיקה).<br>
             • <b>🧙‍♂️ יכולות מכשף (נפתחות בדרגה 12):</b><br>
             &nbsp;&nbsp;💥 <b>יכולת חזקה</b>: מקש <b>W</b> (או <b>PgUp</b> / <b>Z</b> / <b>1</b>) — הפעלת היכולת החזקה (הדף אש / חומה קפואה / ריפוי טבעי).<br>
             &nbsp;&nbsp;☄️ <b>יכולת חלשה</b>: מקש <b>R</b> (או <b>PgDn</b> / <b>X</b> / <b>2</b>) — הפעלת היכולת החלשה (כדור אש מתביית / הקפאה כפולה / מלכודות קוצים).
@@ -1374,6 +1521,32 @@
             <div class="ability-info">
                 <div class="ability-name" id="weak-name">יכולת חלשה</div>
                 <div class="ability-timer" id="weak-timer">מוכן!</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weapons Shop Modal Overlay (נפתח ברווח) -->
+    <div id="weapons-modal-overlay" class="hidden">
+        <div id="weapons-modal">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2 style="font-size: 21px; color: #38bdf8; margin: 0;">⚔️ נשקיית הלוחם (רווח לפתיחה / סגירה)</h2>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="font-size: 15px; font-weight: bold; color: #fde047; background: rgba(234, 179, 8, 0.2); border: 1.5px solid #eab308; padding: 4px 12px; border-radius: 12px;">
+                        יתרת כסף: 🪙 <span id="modal-coins-display">20</span>
+                    </div>
+                    <button id="close-weapons-btn" class="btn" style="padding: 4px 12px; font-size: 14px; background: #334155; color: #e2e8f0; border: 1px solid #64748b; cursor: pointer;">✕ סגור (רווח)</button>
+                </div>
+            </div>
+
+            <div class="weapons-grid" id="weapons-grid-container">
+                <!-- 6 נשקים מוזנים דינמית -->
+            </div>
+
+            <div style="margin-top: 14px; width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #334155; padding-top: 8px;">
+                <span>💡 טיפ: מפלצות מפילות כסף בכל פעם שאתה מביס אותן! השדרוגים במדדים מחזקים גם את החרב!</span>
+                <button id="close-weapons-bottom-btn" class="btn" style="padding: 6px 18px; font-size: 14px; background: #2563eb; color: #ffffff; border: 1px solid #38bdf8; cursor: pointer;">חזור למשחק (רווח)</button>
             </div>
         </div>
     </div>
@@ -2150,6 +2323,51 @@ class SoundEffects {
         });
     }
 
+    playCoin() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(987, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(1318, this.ctx.currentTime + 0.07);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.28);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.28);
+    }
+
+    playSwordSwing() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(70, this.ctx.currentTime + 0.14);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.14);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.14);
+    }
+
+    playSwordHit() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+    }
+
     playFlame() {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
@@ -2331,6 +2549,98 @@ let particles = [];
 let floatingTexts = [];
 let xpOrbs = [];
 let discoveredSpeciesIds = new Set();
+
+// Weapons System & Coins (קנייה ולבישת נשקים)
+let playerCoins = 20; // 20 מטבעות כסף התחלתיים כדי לנסות את החרב הענקית מיד!
+let currentWeapon = 'bow'; // 'bow', 'sword', 'axe', 'spear', 'daggers', 'staff'
+let ownedWeapons = new Set(['bow']);
+let coins = [];
+let magicOrbs = [];
+
+const WEAPONS_CATALOG = [
+    {
+        id: 'bow',
+        name: 'קשת צלפים',
+        icon: '🏹',
+        price: 0,
+        type: 'ranged',
+        typeLabel: 'נשק טווח',
+        typeColor: '#38bdf8',
+        desc: 'הנשק הקלאסי: ירי חיצים מדויק מרחוק. מושפע מכל שדרוגי החצים והקשת.',
+        basePassiveDmg: 0,
+        baseSwingDmg: 0
+    },
+    {
+        id: 'sword',
+        name: 'חרב ענקית',
+        icon: '🗡️',
+        price: 15,
+        type: 'melee',
+        typeLabel: 'קפא״פ ענק (כפול מהדמות!)',
+        typeColor: '#f43f5e',
+        desc: 'חרב ענקית באורך כפול מהדמות! מגע בלהב: 5 נזק. הנפה בלחיצה: 20 נזק. מושפעת מכל מדדי ושדרוגי הקשת!',
+        basePassiveDmg: 5,
+        baseSwingDmg: 20
+    },
+    {
+        id: 'axe',
+        name: 'גרזן קרב כפול',
+        icon: '🪓',
+        price: 35,
+        type: 'melee',
+        typeLabel: 'נשק מחץ כבד',
+        typeColor: '#ea580c',
+        desc: 'מכת הנפה כבדה ורחבה: מגע: 6 נזק. הנפה: 28 נזק והדף מפלצות! מושפע ממדדי נזק ומהירות.',
+        basePassiveDmg: 6,
+        baseSwingDmg: 28
+    },
+    {
+        id: 'spear',
+        name: 'חנית פלדה ארוכה',
+        icon: '🔱',
+        price: 45,
+        type: 'melee',
+        typeLabel: 'נשק דקירה חודר',
+        typeColor: '#a855f7',
+        desc: 'חנית ארוכה פי 3: דקירה מהירה שחודרת דרך שורת מפלצות (25 נזק). מגע בלהב: 6 נזק.',
+        basePassiveDmg: 6,
+        baseSwingDmg: 25
+    },
+    {
+        id: 'daggers',
+        name: 'פגיונות תאומים',
+        icon: '⚔️',
+        price: 60,
+        type: 'melee',
+        typeLabel: 'נשק זריז כפול',
+        typeColor: '#10b981',
+        desc: 'זוג פגיונות מהירים במיוחד: קצב תקיפה מהיר פי 2! הנפה כפולה: 2x14 נזק. מגע: 4 נזק.',
+        basePassiveDmg: 4,
+        baseSwingDmg: 14
+    },
+    {
+        id: 'staff',
+        name: 'מטה אנרגיה קסום',
+        icon: '🔮',
+        price: 80,
+        type: 'ranged',
+        typeLabel: 'נשק קסם פלזמה',
+        typeColor: '#818cf8',
+        desc: 'יורה כדורי אנרגיה פלזמה ללא הגבלת חיצים! כל ירייה גורמת 25 נזק פיצוץ אזורי.',
+        basePassiveDmg: 0,
+        baseSwingDmg: 25
+    }
+];
+
+function distToSegment(a, b, p) {
+    const l2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2;
+    if (l2 === 0) return Math.hypot(p.x - a.x, p.y - a.y);
+    let t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
+    t = Math.max(0, Math.min(1, t));
+    const projX = a.x + t * (b.x - a.x);
+    const projY = a.y + t * (b.y - a.y);
+    return Math.hypot(p.x - projX, p.y - projY);
+}
 
 // Wizard Class & Abilities System (דרגה 12)
 let wizardClass = null; // null, 'fire', 'ice', 'plant'
@@ -3032,6 +3342,13 @@ class Player {
         this.angle = 0;
         this.invulnerableTimer = 0;
         this.shootTimer = 0;
+
+        // מערכת נשקי קפא״פ וחרב ענקית
+        this.swordSwingTimer = 0;
+        this.swordSwingDuration = 14;
+        this.currentSwordAngle = 0;
+        this.swordHitMonsters = new Set();
+        this.passiveTouchCd = 0;
     }
 
     update() {
@@ -3046,7 +3363,6 @@ class Player {
 
         if (movingDown) {
             dy += 1;
-            // תיקון באג: אם השחקן לוחץ לרדת והוא בקצה העליון, מנקים כל מקש עליון שנתקע ומבטיחים ירידה חלקה!
             if (this.y <= this.radius + 4) {
                 keys['w'] = false; keys['W'] = false; keys['KeyW'] = false;
                 keys['ArrowUp'] = false; keys['Up'] = false; keys['\''] = false; keys['ו'] = false;
@@ -3070,7 +3386,6 @@ class Player {
             dy *= 0.7071;
         }
 
-        // חישוב מהירות התנועה הכוללת (שדרוגי מהירות מוכפלים במדד מהירות שחקן שבחרת)
         const currentMoveSpeed = upgrades.moveSpeed * playerSpeedMultiplierSetting;
         this.x += dx * currentMoveSpeed;
         this.y += dy * currentMoveSpeed;
@@ -3082,22 +3397,182 @@ class Player {
         // Aim angle towards mouse
         this.angle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
 
-        // Shooting (mouse left click or Ctrl key)
+        // עדכון תנועת נשקי קפא״פ ובדיקת נזק מגע פסיבי
+        this.updateWeapons();
+
+        // Shooting / Attacking (mouse left click or Ctrl key)
         if (this.shootTimer > 0) this.shootTimer--;
         const isShooting = (mouse.isDown || keys['Control'] || keys['ControlLeft'] || keys['ControlRight']) && !chatPlaysActive;
         if (isShooting && this.shootTimer <= 0) {
+            this.attack();
+        }
+
+        // Invulnerability
+        if (this.invulnerableTimer > 0) this.invulnerableTimer--;
+    }
+
+    attack() {
+        // מדדי מהירות חצים וקצב ירייה משפיעים ישירות על מהירות וקצב הנפת החרב!
+        const speedMult = playerArrowSpeedMultiplierSetting * playerFireRateMultiplierSetting * (upgrades.arrowSpeed / 8.0) * (upgrades.fireRate || 1.0);
+
+        if (currentWeapon === 'sword') {
+            this.swingSword(speedMult);
+            this.shootTimer = Math.max(4, Math.round(16 / Math.max(0.3, speedMult)));
+        } else if (currentWeapon === 'axe') {
+            this.swingAxe(speedMult);
+            this.shootTimer = Math.max(5, Math.round(22 / Math.max(0.3, speedMult)));
+        } else if (currentWeapon === 'spear') {
+            this.thrustSpear(speedMult);
+            this.shootTimer = Math.max(4, Math.round(18 / Math.max(0.3, speedMult)));
+        } else if (currentWeapon === 'daggers') {
+            this.swingDaggers(speedMult);
+            this.shootTimer = Math.max(3, Math.round(10 / Math.max(0.3, speedMult)));
+        } else if (currentWeapon === 'staff') {
+            this.shootStaff();
+            this.shootTimer = Math.max(5, Math.round(20 / Math.max(0.3, speedMult)));
+        } else {
+            // Bow (קשת)
             if ((upgrades.arrowsLeft || 0) <= 0) {
                 addFloatingText(this.x, this.y - 25, "נגמרו החצים! 🏹❌", "#ef4444");
                 sfx.playHit();
-                this.shootTimer = 30; // מניעת הצפת הודעות בלחיצה רצופה
+                this.shootTimer = 30;
             } else {
                 this.shoot();
                 this.shootTimer = getPlayerFireDelay();
             }
         }
+    }
 
-        // Invulnerability
-        if (this.invulnerableTimer > 0) this.invulnerableTimer--;
+    swingSword(speedMult = 1.0) {
+        this.swordSwingDuration = Math.max(3, Math.round(14 / Math.max(0.3, speedMult)));
+        this.swordSwingTimer = this.swordSwingDuration;
+        this.swordHitMonsters.clear();
+        sfx.playSwordSwing();
+    }
+
+    swingAxe(speedMult = 1.0) {
+        this.swordSwingDuration = Math.max(4, Math.round(18 / Math.max(0.3, speedMult)));
+        this.swordSwingTimer = this.swordSwingDuration;
+        this.swordHitMonsters.clear();
+        sfx.playSwordSwing();
+    }
+
+    thrustSpear(speedMult = 1.0) {
+        this.swordSwingDuration = Math.max(3, Math.round(13 / Math.max(0.3, speedMult)));
+        this.swordSwingTimer = this.swordSwingDuration;
+        this.swordHitMonsters.clear();
+        sfx.playSwordSwing();
+    }
+
+    swingDaggers(speedMult = 1.0) {
+        this.swordSwingDuration = Math.max(2, Math.round(9 / Math.max(0.3, speedMult)));
+        this.swordSwingTimer = this.swordSwingDuration;
+        this.swordHitMonsters.clear();
+        sfx.playSwordSwing();
+    }
+
+    shootStaff() {
+        sfx.playLaser();
+        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
+        const dmg = Math.max(1, Math.round(25 * dmgMult));
+        const spd = 7.5 * playerArrowSpeedMultiplierSetting;
+        magicOrbs.push(new MagicOrb(
+            this.x + Math.cos(this.angle) * (this.radius + 15),
+            this.y + Math.sin(this.angle) * (this.radius + 15),
+            this.angle,
+            spd,
+            dmg
+        ));
+    }
+
+    updateWeapons() {
+        const isMelee = (currentWeapon === 'sword' || currentWeapon === 'axe' || currentWeapon === 'spear' || currentWeapon === 'daggers');
+        if (!isMelee) return;
+
+        // מדד נזק הקשת במדדים ושדרוגי חיצים מכפילים ישירות את נזק החרב!
+        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
+
+        let bladeLen = this.radius * 2.3; // חרב ענקית - אורך כפול מהדמות!
+        let baseSwing = 20;
+        let basePassive = 5;
+
+        if (currentWeapon === 'axe') {
+            bladeLen = this.radius * 2.1;
+            baseSwing = 28;
+            basePassive = 6;
+        } else if (currentWeapon === 'spear') {
+            bladeLen = (this.swordSwingTimer > 0) ? this.radius * 3.4 : this.radius * 2.7;
+            baseSwing = 25;
+            basePassive = 6;
+        } else if (currentWeapon === 'daggers') {
+            bladeLen = this.radius * 1.5;
+            baseSwing = 14;
+            basePassive = 4;
+        }
+
+        const swingDmg = Math.max(1, Math.round(baseSwing * dmgMult));
+        const passiveDmg = Math.max(1, Math.round(basePassive * dmgMult));
+
+        if (this.swordSwingTimer > 0) {
+            this.swordSwingTimer--;
+            const progress = 1 - (this.swordSwingTimer / Math.max(1, this.swordSwingDuration));
+            const swingArc = (currentWeapon === 'spear') ? 0.35 : Math.PI * 0.82;
+            this.currentSwordAngle = this.angle - (swingArc / 2) + (progress * swingArc);
+
+            const tipX = this.x + Math.cos(this.currentSwordAngle) * bladeLen;
+            const tipY = this.y + Math.sin(this.currentSwordAngle) * bladeLen;
+
+            // פגיעה במפלצות במהלך ההנפה (הנזק מוכפל בכל מדדי ושדרוגי הקשת!)
+            for (let j = 0; j < monsters.length; j++) {
+                const m = monsters[j];
+                if (!m.alive || this.swordHitMonsters.has(m)) continue;
+                const d = distToSegment({ x: this.x, y: this.y }, { x: tipX, y: tipY }, { x: m.x, y: m.y });
+                if (d <= m.radius + 8) {
+                    this.swordHitMonsters.add(m);
+                    m.takeDamage(swingDmg);
+                    sfx.playSwordHit();
+                    addFloatingText(m.x, m.y - 18, `${swingDmg} ⚔️`, "#f87171");
+
+                    // הדף מפלצת לאחור
+                    m.x += Math.cos(this.currentSwordAngle) * 9;
+                    m.y += Math.sin(this.currentSwordAngle) * 9;
+
+                    for (let p = 0; p < 7; p++) {
+                        particles.push(new Particle(m.x, m.y, '#f87171', 3.5, 2.5, 16));
+                        particles.push(new Particle(m.x, m.y, '#fde047', 2.5, 1.8, 12));
+                    }
+                }
+            }
+        } else {
+            this.currentSwordAngle = this.angle;
+
+            // בדיקת נזק מגע פסיבי בלהב: "רק שנוגעים בחרב הוא מוריד חיים ... אם לא מניפים זה מוריד רק 5 חיים"
+            const tipX = this.x + Math.cos(this.currentSwordAngle) * bladeLen;
+            const tipY = this.y + Math.sin(this.currentSwordAngle) * bladeLen;
+
+            if (this.passiveTouchCd > 0) {
+                this.passiveTouchCd--;
+            } else {
+                let hitAny = false;
+                for (let j = 0; j < monsters.length; j++) {
+                    const m = monsters[j];
+                    if (!m.alive) continue;
+                    const d = distToSegment({ x: this.x, y: this.y }, { x: tipX, y: tipY }, { x: m.x, y: m.y });
+                    if (d <= m.radius + 4) {
+                        m.takeDamage(passiveDmg);
+                        sfx.playHit();
+                        addFloatingText(m.x, m.y - 14, `${passiveDmg} 🗡️`, "#cbd5e1");
+                        for (let p = 0; p < 4; p++) {
+                            particles.push(new Particle(m.x, m.y, '#cbd5e1', 2.5, 1.5, 12));
+                        }
+                        hitAny = true;
+                    }
+                }
+                if (hitAny) {
+                    this.passiveTouchCd = 12; // פעימת נזק מגע כל 12 פריימים
+                }
+            }
+        }
     }
 
     shoot() {
@@ -3110,12 +3585,11 @@ class Player {
         sfx.playShoot();
         const baseAngle = this.angle;
         const requestedCount = upgrades.multiShot || 1;
-        // יורה לכל היותר את כמות החצים שנותרה במלאי
         const count = Math.min(requestedCount, upgrades.arrowsLeft);
         upgrades.arrowsLeft -= count;
         updateHUD();
 
-        const spread = 0.16; // radians
+        const spread = 0.16;
         const arrowSpd = upgrades.arrowSpeed * playerArrowSpeedMultiplierSetting;
         const arrowDmg = Math.max(1, Math.round(upgrades.arrowDamage * playerArrowDamageMultiplierSetting));
 
@@ -3136,16 +3610,14 @@ class Player {
     takeDamage(amount, source = null) {
         if (this.invulnerableTimer > 0) return;
         upgrades.hp -= amount;
-        this.invulnerableTimer = 35; // frames of blinking invulnerability
+        this.invulnerableTimer = 35;
         sfx.playPlayerHurt();
         addFloatingText(this.x, this.y - 20, `-${amount}`, "#ef4444");
 
-        // אם נרכש שדרוג פיצוץ (דרגה 15+): כל פעם שנוגעת בך מפלצת - מתרחש פיצוץ הגנה סביבך!
         if (source && source instanceof Monster && (upgrades.explosiveCount || 0) > 0) {
             triggerPlayerTouchExplosion(source);
         }
 
-        // Screen Shake effect
         screenShake = 6;
 
         if (upgrades.hp <= 0) {
@@ -3159,12 +3631,10 @@ class Player {
         ctx.save();
         ctx.translate(this.x, this.y);
 
-        // Blinking if invulnerable
         if (this.invulnerableTimer > 0 && Math.floor(this.invulnerableTimer / 4) % 2 === 0) {
             ctx.globalAlpha = 0.35;
         }
 
-        // צבעי גלימה והילה לפי מחלקת המכשף או מצב קשה
         let bodyColor = '#2563eb';
         let strokeColor = '#60a5fa';
         let hatColor = '#1e3a8a';
@@ -3191,7 +3661,6 @@ class Player {
             wizardLabel = '🌿 מכשף צמחים';
         }
 
-        // תג מכשף מעל השחקן
         if (wizardLabel) {
             ctx.save();
             ctx.fillStyle = strokeColor;
@@ -3203,7 +3672,7 @@ class Player {
 
         ctx.rotate(this.angle);
 
-        // Archer / Wizard Body (Cloak & Body)
+        // גוף הדמות
         ctx.fillStyle = bodyColor;
         ctx.beginPath();
         ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
@@ -3212,35 +3681,145 @@ class Player {
         ctx.lineWidth = 2.5;
         ctx.stroke();
 
-        // Hat / Hood / Quiver
         ctx.fillStyle = hatColor;
         ctx.beginPath();
         ctx.arc(-6, 0, 7, 0, Math.PI * 2);
         ctx.fill();
 
-        // Hands & Bow / Magic Focus
-        ctx.strokeStyle = bowColor;
-        ctx.lineWidth = 3.5;
-        ctx.beginPath();
-        ctx.arc(14, 0, 15, -Math.PI / 3, Math.PI / 3);
-        ctx.stroke();
+        // ציור הנשק הלבוש
+        if (currentWeapon === 'sword') {
+            const bladeLen = this.radius * 2.3; // חרב ענקית - אורך כפול מהדמות!
+            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
 
-        // Bowstring
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(14 + 15 * Math.cos(-Math.PI / 3), 15 * Math.sin(-Math.PI / 3));
-        ctx.lineTo(8, 0); // drawn string
-        ctx.lineTo(14 + 15 * Math.cos(Math.PI / 3), 15 * Math.sin(Math.PI / 3));
-        ctx.stroke();
+            // שובל הנפה זוהר במהלך מכת החרב
+            if (this.swordSwingTimer > 0) {
+                const progress = 1 - (this.swordSwingTimer / Math.max(1, this.swordSwingDuration));
+                ctx.save();
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 14;
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                const arcStart = -Math.PI * 0.45;
+                const arcEnd = -Math.PI * 0.45 + progress * (Math.PI * 0.9);
+                ctx.arc(0, 0, bladeLen + 6, arcStart, arcEnd);
+                ctx.stroke();
+                ctx.restore();
+            }
 
-        // Arrow nocked in bow
-        ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(8, 0);
-        ctx.lineTo(26, 0);
-        ctx.stroke();
+            ctx.save();
+            ctx.rotate(relAngle);
+
+            // ידית אחיזה מעץ/עור חום
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(4, -2.5, 10, 5);
+
+            // גולת ניצב זהובה (Pommel)
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(3, 0, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // מגן שמירה זהוב (Crossguard)
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(14, -11, 4.5, 22);
+
+            // להב פלדה כסוף-בוהק ענק
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.moveTo(18.5, -4.5);
+            ctx.lineTo(bladeLen - 8, -4);
+            ctx.lineTo(bladeLen, 0); // חוד החרב
+            ctx.lineTo(bladeLen - 8, 4);
+            ctx.lineTo(18.5, 4.5);
+            ctx.closePath();
+            ctx.fill();
+
+            // חריץ להב מרכזי (Fuller)
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(20, 0);
+            ctx.lineTo(bladeLen - 10, 0);
+            ctx.stroke();
+
+            // קו מתאר זוהר
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.restore();
+        } else if (currentWeapon === 'axe') {
+            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
+            ctx.save();
+            ctx.rotate(relAngle);
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(6, -3, 30, 6);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.arc(28, -12, 11, 0, Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(28, 12, 11, Math.PI, 0);
+            ctx.fill();
+            ctx.restore();
+        } else if (currentWeapon === 'spear') {
+            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
+            const sLen = (this.swordSwingTimer > 0) ? this.radius * 3.4 : this.radius * 2.7;
+            ctx.save();
+            ctx.rotate(relAngle);
+            ctx.fillStyle = '#92400e';
+            ctx.fillRect(5, -2, sLen - 12, 4);
+            ctx.fillStyle = '#f1f5f9';
+            ctx.beginPath();
+            ctx.moveTo(sLen - 12, -5);
+            ctx.lineTo(sLen, 0);
+            ctx.lineTo(sLen - 12, 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        } else if (currentWeapon === 'daggers') {
+            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
+            ctx.save();
+            ctx.rotate(relAngle);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(10, -10, 16, 3);
+            ctx.fillRect(10, 8, 16, 3);
+            ctx.restore();
+        } else if (currentWeapon === 'staff') {
+            ctx.save();
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(6, -2.5, 26, 5);
+            ctx.fillStyle = '#c084fc';
+            ctx.shadowColor = '#a855f7';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(32, 0, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        } else {
+            // Default Bow
+            ctx.strokeStyle = bowColor;
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.arc(14, 0, 15, -Math.PI / 3, Math.PI / 3);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(14 + 15 * Math.cos(-Math.PI / 3), 15 * Math.sin(-Math.PI / 3));
+            ctx.lineTo(8, 0);
+            ctx.lineTo(14 + 15 * Math.cos(Math.PI / 3), 15 * Math.sin(Math.PI / 3));
+            ctx.stroke();
+
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(8, 0);
+            ctx.lineTo(26, 0);
+            ctx.stroke();
+        }
 
         ctx.restore();
     }
@@ -4245,6 +4824,20 @@ class Monster {
         } else {
             xpOrbs.push(new XpOrb(this.x, this.y, baseValue, false));
         }
+
+        // הפלת מטבעות כסף מהמפלצת (נאספים אוטומטית או בנגיעה)
+        const speciesId = (this.species && typeof this.species.id === 'number') ? this.species.id : 1;
+        const baseCoinVal = Math.max(1, Math.round(2 + speciesId * 0.7));
+        const coinDropCount = 1 + (upgrades.luck > 0 && Math.random() < 0.4 ? 1 : 0);
+        for (let c = 0; c < coinDropCount; c++) {
+            const cox = (c === 0) ? 0 : (Math.random() - 0.5) * 22;
+            const coy = (c === 0) ? 0 : (Math.random() - 0.5) * 22;
+            coins.push(new Coin(
+                Math.max(20, Math.min(canvas.width - 20, this.x + cox)),
+                Math.max(20, Math.min(canvas.height - 20, this.y + coy)),
+                baseCoinVal
+            ));
+        }
     }
 
     absorbXpOrb(orb) {
@@ -4631,6 +5224,132 @@ class XpOrb {
         ctx.arc(cx - w * 0.25, cy - h * 0.35, 1.4, 0, Math.PI * 2);
         ctx.fill();
 
+        ctx.restore();
+    }
+}
+
+class Coin {
+    constructor(x, y, value = 1) {
+        this.x = x;
+        this.y = y;
+        this.value = value;
+        this.radius = 8;
+        this.alive = true;
+        this.pulse = Math.random() * Math.PI * 2;
+        this.bobOffset = Math.random() * Math.PI * 2;
+    }
+
+    update() {
+        this.pulse += 0.08;
+
+        if (player) {
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const dist = Math.hypot(dx, dy);
+
+            // איסוף כסף במגע ישיר של השחקן
+            if (dist < player.radius + this.radius + 3) {
+                playerCoins += this.value;
+                updateHUD();
+                sfx.playCoin();
+                addFloatingText(this.x, this.y - 18, `+${this.value} 🪙`, "#fde047");
+                this.alive = false;
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        const bob = Math.sin(this.pulse * 1.5 + this.bobOffset) * 2;
+        const cy = this.y + bob;
+        const cx = this.x;
+
+        ctx.shadowColor = '#facc15';
+        ctx.shadowBlur = 9;
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(cx, cy, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath();
+        ctx.arc(cx, cy, this.radius * 0.75, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#b45309';
+        ctx.font = 'bold 9px Tahoma';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('$', cx, cy);
+
+        ctx.restore();
+    }
+}
+
+class MagicOrb {
+    constructor(x, y, angle, speed, damage) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = speed;
+        this.damage = damage;
+        this.radius = 8;
+        this.alive = true;
+    }
+
+    update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+
+        if (Math.random() < 0.4) {
+            particles.push(new Particle(this.x, this.y, '#a855f7', 3, 0.5, 12));
+        }
+
+        // פגיעה במפלצות
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const d = Math.hypot(m.x - this.x, m.y - this.y);
+            if (d < m.radius + this.radius) {
+                this.alive = false;
+                sfx.playExplosion();
+                // נזק אזורי ברדיוס 55px
+                for (let k = 0; k < monsters.length; k++) {
+                    const om = monsters[k];
+                    if (!om.alive) continue;
+                    const od = Math.hypot(om.x - this.x, om.y - this.y);
+                    if (od < 55) {
+                        om.takeDamage(this.damage);
+                        addFloatingText(om.x, om.y - 15, `${this.damage} 🔮💥`, "#c084fc");
+                    }
+                }
+                for (let p = 0; p < 12; p++) {
+                    particles.push(new Particle(this.x, this.y, '#c084fc', 4, 3, 20));
+                    particles.push(new Particle(this.x, this.y, '#38bdf8', 3, 2, 16));
+                }
+                break;
+            }
+        }
+
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            this.alive = false;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.fillStyle = '#c084fc';
+        ctx.shadowColor = '#a855f7';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * 0.5, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
     }
 }
@@ -5590,6 +6309,17 @@ function updateHUD() {
     // הצגת ניקוד - אם במצב בדיקה, תמיד מוצג 0 עם סימון בדיקה
     scoreDisplay.innerText = isTestMode ? '0 (בדיקה 🧪)' : score;
     if (highScoreDisplay) highScoreDisplay.innerText = highScore;
+
+    // עדכון כמות מטבעות כסף ב-HUD העליון
+    const coinsDisp = document.getElementById('coins-count-display');
+    if (coinsDisp) coinsDisp.innerText = playerCoins;
+
+    // עדכון תגית נשק נוכחי ב-HUD העליון
+    const curW = WEAPONS_CATALOG.find(w => w.id === currentWeapon) || WEAPONS_CATALOG[0];
+    const wIcon = document.getElementById('weapon-badge-icon');
+    const wName = document.getElementById('weapon-badge-name');
+    if (wIcon) wIcon.innerText = curW.icon;
+    if (wName) wName.innerText = curW.name;
 }
 
 function triggerGameOver() {
@@ -5663,7 +6393,11 @@ function resetGame() {
     particles = [];
     floatingTexts = [];
     xpOrbs = [];
+    coins = [];
+    magicOrbs = [];
     visualExplosions = [];
+    const weaponsModalEl = document.getElementById('weapons-modal-overlay');
+    if (weaponsModalEl) weaponsModalEl.classList.add('hidden');
 
     // איפוס מחלקת מכשף ויכולות
     pendingWaveNext = null;
@@ -6054,8 +6788,21 @@ window.addEventListener('keydown', e => {
         }
     }
 
-    if (e.code === 'Space' && gameState === 'playing') {
-        isPaused = !isPaused;
+    // לחיצה על מקש רווח (Space) פותחת וסוגרת את חלון קניית והחלפת 6 הנשקים
+    if (e.code === 'Space') {
+        const weaponsModal = document.getElementById('weapons-modal-overlay');
+        const isWeaponsOpen = weaponsModal && !weaponsModal.classList.contains('hidden');
+        if (gameState === 'playing' || isWeaponsOpen) {
+            e.preventDefault();
+            toggleWeaponsModal();
+        }
+    }
+
+    if (e.code === 'Escape') {
+        const weaponsModal = document.getElementById('weapons-modal-overlay');
+        if (weaponsModal && !weaponsModal.classList.contains('hidden')) {
+            toggleWeaponsModal();
+        }
     }
 
     // הדלקת/כיבוי מצב צ'אט משחק באמצעות מקש T או C - זמין אך ורק במצב בדיקת משחק (isTestMode)
@@ -6443,6 +7190,137 @@ document.getElementById('victory-restart-btn').onclick = () => {
 };
 
 /* -------------------------------------------------------------
+   WEAPONS SHOP & ARSENAL SYSTEM (רווח / SPACE)
+------------------------------------------------------------- */
+function toggleWeaponsModal() {
+    const overlay = document.getElementById('weapons-modal-overlay');
+    if (!overlay) return;
+    if (overlay.classList.contains('hidden')) {
+        renderWeaponsShop();
+        overlay.classList.remove('hidden');
+        isPaused = true;
+    } else {
+        overlay.classList.add('hidden');
+        if (gameState === 'playing') {
+            isPaused = false;
+        }
+    }
+}
+
+function renderWeaponsShop() {
+    const coinsDisp = document.getElementById('shop-coins-display');
+    if (coinsDisp) coinsDisp.innerText = playerCoins;
+
+    const grid = document.getElementById('weapons-grid-container');
+    if (!grid) return;
+
+    // חישוב מכפילי נזק ומהירות נוכחיים לפי המדדים והשדרוגים
+    const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
+    const speedMult = playerArrowSpeedMultiplierSetting * playerFireRateMultiplierSetting * (upgrades.arrowSpeed / 8.0) * (upgrades.fireRate || 1.0);
+
+    grid.innerHTML = '';
+    WEAPONS_CATALOG.forEach(weapon => {
+        const isOwned = ownedWeapons.has(weapon.id);
+        const isEquipped = currentWeapon === weapon.id;
+
+        const card = document.createElement('div');
+        card.className = `weapon-card ${isEquipped ? 'equipped' : (isOwned ? 'owned' : '')}`;
+
+        let actionBtnHtml = '';
+        if (isEquipped) {
+            actionBtnHtml = `<button class="weapon-action-btn equip-btn" disabled style="opacity:0.7; cursor:default;">לובש כעת ✅</button>`;
+        } else if (isOwned) {
+            actionBtnHtml = `<button class="weapon-action-btn equip-btn" onclick="equipWeapon('${weapon.id}')">לובש 🛡️</button>`;
+        } else {
+            const canAfford = playerCoins >= weapon.price;
+            actionBtnHtml = `<button class="weapon-action-btn buy-btn" onclick="buyWeapon('${weapon.id}')" ${!canAfford ? 'disabled' : ''}>קנה ב-${weapon.price} 🪙</button>`;
+        }
+
+        const basePassive = (weapon.basePassiveDmg !== undefined) ? weapon.basePassiveDmg : (weapon.passiveDamage || 0);
+        const baseSwing = (weapon.baseSwingDmg !== undefined) ? weapon.baseSwingDmg : (weapon.swingDamage || 0);
+        const effectivePassive = Math.max(0, Math.round(basePassive * dmgMult));
+        const effectiveSwing = Math.max(1, Math.round(baseSwing * dmgMult));
+
+        card.innerHTML = `
+            <div class="weapon-badge-tag">${weapon.typeLabel || weapon.range || 'נשק'}</div>
+            <div class="weapon-icon">${weapon.icon}</div>
+            <div class="weapon-name">${weapon.name}</div>
+            <div class="weapon-desc">${weapon.desc}</div>
+            <div class="weapon-stats">
+                <span class="weapon-stat">💥 פסיבי: <b>${effectivePassive}</b> (בסיס: ${basePassive})</span>
+                <span class="weapon-stat">⚡ תקיפה: <b>${effectiveSwing}</b> (בסיס: ${baseSwing})</span>
+                <span class="weapon-stat">🪙 מחיר: <b>${weapon.price > 0 ? weapon.price + ' 🪙' : 'חינם'}</b></span>
+            </div>
+            ${actionBtnHtml}
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function buyWeapon(id) {
+    const weapon = WEAPONS_CATALOG.find(w => w.id === id);
+    if (!weapon) return;
+    if (playerCoins >= weapon.price) {
+        playerCoins -= weapon.price;
+        ownedWeapons.add(id);
+        currentWeapon = id;
+        sfx.playLevelUp();
+        if (player) {
+            addFloatingText(player.x, player.y - 30, `רכשת ולבשת: ${weapon.name}! ⚔️`, "#38bdf8");
+        }
+        updateHUD();
+        renderWeaponsShop();
+    } else {
+        sfx.playHit();
+        if (player) {
+            addFloatingText(player.x, player.y - 30, `חסר לך כסף! דרוש: ${weapon.price} 🪙`, "#ef4444");
+        }
+    }
+}
+
+function equipWeapon(id) {
+    if (!ownedWeapons.has(id)) return;
+    currentWeapon = id;
+    sfx.playSwordSwing();
+    const weapon = WEAPONS_CATALOG.find(w => w.id === id);
+    if (player && weapon) {
+        addFloatingText(player.x, player.y - 30, `לובש: ${weapon.name}! 🛡️`, "#38bdf8");
+    }
+    updateHUD();
+    renderWeaponsShop();
+}
+
+// חיבור כפתורי מודל הנשקים
+const openWeaponsBtn = document.getElementById('open-weapons-btn');
+const closeWeaponsBtn = document.getElementById('close-weapons-btn');
+const closeWeaponsBottomBtn = document.getElementById('close-weapons-bottom-btn');
+const weaponsModalOverlay = document.getElementById('weapons-modal-overlay');
+
+if (openWeaponsBtn) {
+    openWeaponsBtn.onclick = () => {
+        toggleWeaponsModal();
+        sfx.init();
+    };
+}
+if (closeWeaponsBtn) {
+    closeWeaponsBtn.onclick = () => {
+        toggleWeaponsModal();
+    };
+}
+if (closeWeaponsBottomBtn) {
+    closeWeaponsBottomBtn.onclick = () => {
+        toggleWeaponsModal();
+    };
+}
+if (weaponsModalOverlay) {
+    weaponsModalOverlay.addEventListener('click', (e) => {
+        if (e.target === weaponsModalOverlay) {
+            toggleWeaponsModal();
+        }
+    });
+}
+
+/* -------------------------------------------------------------
    MAIN GAME LOOP
 ------------------------------------------------------------- */
 function gameLoop() {
@@ -6534,6 +7412,22 @@ function gameLoop() {
         orb.update();
         orb.draw();
         if (!orb.alive) xpOrbs.splice(i, 1);
+    }
+
+    // 2.2. Update & Draw Coins (מטבעות כסף מהמפלצות)
+    for (let i = coins.length - 1; i >= 0; i--) {
+        const coin = coins[i];
+        coin.update();
+        coin.draw();
+        if (!coin.alive) coins.splice(i, 1);
+    }
+
+    // 2.3. Update & Draw Magic Orbs (מטה אנרגיה קסום)
+    for (let i = magicOrbs.length - 1; i >= 0; i--) {
+        const orb = magicOrbs[i];
+        orb.update();
+        orb.draw();
+        if (!orb.alive) magicOrbs.splice(i, 1);
     }
 
     // 3. Update & Draw Arrows
