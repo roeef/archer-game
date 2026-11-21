@@ -1520,6 +1520,10 @@
             <span id="arrows-hud-badge" style="font-weight: bold; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1.5px solid #38bdf8; padding: 2px 8px; border-radius: 12px; font-size: 13px;">🏹 חצים: <span id="arrows-count-display">100</span></span>
         </div>
 
+        <div class="hud-item" id="dagger-quick-hud-container" style="display: none; background: rgba(148, 163, 184, 0.15); border: 1.5px solid #94a3b8; padding: 2px 8px; border-radius: 12px;">
+            <span id="dagger-quick-hud-badge" style="font-weight: bold; color: #e2e8f0; font-size: 13px;" title="לחיצה ימנית, כפתור צד או מקש F להטלת פגיון בכל עת">🖱️ ימני: 🗡️x0</span>
+        </div>
+
         <div class="hud-item" id="coins-hud-container" style="background: rgba(234, 179, 8, 0.15); border: 1.5px solid #eab308; padding: 2px 9px; border-radius: 12px;">
             <span style="font-weight: bold; color: #fde047; font-size: 13.5px;">🪙 כסף: <span id="coins-count-display">20</span></span>
         </div>
@@ -1548,11 +1552,13 @@
         <div class="controls-info">
             <strong>🎮 הוראות שליטה:</strong><br>
             • <b>W, A, S, D</b> או <b>חיצים</b> — תנועה במרחב.<br>
-            • <b>עכבר</b> או <b>👆 מסך מגע</b> — כיוון ותקיפה בנשק הלבוש (ירי חצים / הנפת חרב ענקית בלחיצה) | <b>Ctrl</b> — תקיפה.<br>
-            • <b>רווח</b> — פתיחת נשקייה (קנייה ולבישת חרב ענקית, גרזן ועוד!) | <b>C</b> / <b>T</b> — צ'אט משחק (במצב בדיקה).<br>
+            • <b>עכבר שמאלי</b> או <b>👆 מסך מגע</b> — כיוון ותקיפה בנשק הלבוש (קשת / פגיון / אקדח / רובה) | <b>Ctrl</b> — תקיפה.<br>
+            • <b>🖱️ לחיצה בצד (מקש ימני / כפתורי צד / F)</b> — הטלת פגיון מהירה בכל עת (גם כשהפגיון אינו לבוש!).<br>
+            • <b>מקשים 1, 2, 3, 4</b> — החלפת נשק מיידית (1: קשת, 2: פגיון, 3: אקדח, 4: רובה).<br>
+            • <b>רווח</b> — פתיחת נשקייה (קנייה והחלפה של קשת, פגיון, אקדח ורובה) | <b>C</b> / <b>T</b> — צ'אט משחק.<br>
             • <b>🧙‍♂️ יכולות מכשף (נפתחות בדרגה 12):</b><br>
-            &nbsp;&nbsp;💥 <b>יכולת חזקה</b>: מקש <b>W</b> (או <b>PgUp</b> / <b>Z</b> / <b>1</b>) — הפעלת היכולת החזקה (הדף אש / חומה קפואה / ריפוי טבעי).<br>
-            &nbsp;&nbsp;☄️ <b>יכולת חלשה</b>: מקש <b>R</b> (או <b>PgDn</b> / <b>X</b> / <b>2</b>) — הפעלת היכולת החלשה (כדור אש מתביית / הקפאה כפולה / מלכודות קוצים).
+            &nbsp;&nbsp;💥 <b>יכולת חזקה</b>: מקש <b>W</b> (או <b>PgUp</b> / <b>Z</b>) — הדף אש / חומה קפואה / ריפוי טבעי.<br>
+            &nbsp;&nbsp;☄️ <b>יכולת חלשה</b>: מקש <b>R</b> (או <b>PgDn</b> / <b>X</b>) — כדור אש מתביית / הקפאה כפולה / מלכודות קוצים.
         </div>
 
         <!-- Difficulty Selection -->
@@ -2682,11 +2688,12 @@ let xpOrbs = [];
 let discoveredSpeciesIds = new Set();
 
 // Weapons System & Coins (קנייה ולבישת נשקים)
-let playerCoins = 20; // 20 מטבעות כסף התחלתיים כדי לנסות את החרב הענקית מיד!
-let currentWeapon = 'bow'; // 'bow', 'gun', 'rifle'
+let playerCoins = 20; // 20 מטבעות כסף התחלתיים (מאפשר לקנות פגיון מיד ב-10 🪙!)
+let currentWeapon = 'bow'; // 'bow', 'dagger', 'gun', 'rifle'
 let ownedWeapons = new Set(['bow']);
 let coins = [];
 let gunFireballs = [];
+let thrownDaggers = [];
 
 const WEAPONS_CATALOG = [
     {
@@ -2702,10 +2709,22 @@ const WEAPONS_CATALOG = [
         baseSwingDmg: 25
     },
     {
+        id: 'dagger',
+        name: 'פגיון קרב',
+        icon: '🗡️',
+        price: 10,
+        type: 'melee_throw',
+        typeLabel: 'פגיון (דקירה והטלה)',
+        typeColor: '#94a3b8',
+        desc: 'פגיון רב-תכליתי: מקרוב דוקר ודוחף בכוח (40 נזק)! מרחוק נזרק באוויר (30 נזק) ונועץ ברצפה - ניתן לאסוף חזרה. בלחיצה בצד (מקש ימני / כפתורי צד / F) מטילים פגיון מידית גם כשלא לובשים אותו!',
+        basePassiveDmg: 0,
+        baseSwingDmg: 40
+    },
+    {
         id: 'gun',
         name: 'אקדח כדורי אש',
         icon: '🔫',
-        price: 25,
+        price: 250,
         type: 'ranged',
         typeLabel: 'אקדח כדורי אש',
         typeColor: '#f97316',
@@ -2717,7 +2736,7 @@ const WEAPONS_CATALOG = [
         id: 'rifle',
         name: 'רובה אש חודר',
         icon: '🎯',
-        price: 45,
+        price: 450,
         type: 'ranged',
         typeLabel: 'רובה כדורים חודרים',
         typeColor: '#ef4444',
@@ -3427,6 +3446,7 @@ class Player {
         this.angle = 0;
         this.invulnerableTimer = 0;
         this.shootTimer = 0;
+        this.stabTimer = 0;
     }
 
     update() {
@@ -3477,6 +3497,7 @@ class Player {
 
         // Shooting / Attacking (mouse left click or Ctrl key)
         if (this.shootTimer > 0) this.shootTimer--;
+        if (this.stabTimer > 0) this.stabTimer--;
         const isShooting = (mouse.isDown || keys['Control'] || keys['ControlLeft'] || keys['ControlRight']) && !chatPlaysActive;
         if (isShooting && this.shootTimer <= 0) {
             this.attack();
@@ -3495,6 +3516,9 @@ class Player {
         } else if (currentWeapon === 'rifle') {
             this.shootRifle(speedMult);
             this.shootTimer = Math.max(4, Math.round(20 / Math.max(0.3, speedMult)));
+        } else if (currentWeapon === 'dagger') {
+            this.attackDagger(speedMult);
+            this.shootTimer = Math.max(5, Math.round(16 / Math.max(0.3, speedMult)));
         } else {
             // Bow (קשת רגילה שמתחילים איתה)
             if ((upgrades.arrowsLeft || 0) <= 0) {
@@ -3506,6 +3530,98 @@ class Player {
                 this.shootTimer = getPlayerFireDelay();
             }
         }
+    }
+
+    attackDagger(speedMult = 1.0) {
+        // בדיקת מפלצת קרובה ביותר לדקירה ודחיפה בכוח
+        let nearestM = null;
+        let nearestDist = Infinity;
+        for (let i = 0; i < monsters.length; i++) {
+            const m = monsters[i];
+            if (!m.alive) continue;
+            const d = Math.hypot(m.x - this.x, m.y - this.y);
+            if (d < nearestDist) {
+                nearestDist = d;
+                nearestM = m;
+            }
+        }
+
+        // טווח דקירה במגע קרוב (40 נזק בסיס ודחיפה חזקה אחורה! לא צורך פגיון)
+        if (nearestM && nearestDist <= this.radius + nearestM.radius + 32) {
+            this.stabTimer = 10;
+            const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
+            const stabDmg = Math.max(1, Math.round(40 * dmgMult));
+            nearestM.takeDamage(stabDmg);
+            sfx.playSwordSwing();
+
+            // דחיפה בכוח לאחור של המפלצת
+            const pushAngle = Math.atan2(nearestM.y - this.y, nearestM.x - this.x);
+            const pushDist = 48;
+            nearestM.x += Math.cos(pushAngle) * pushDist;
+            nearestM.y += Math.sin(pushAngle) * pushDist;
+            nearestM.x = Math.max(nearestM.radius, Math.min(canvas.width - nearestM.radius, nearestM.x));
+            nearestM.y = Math.max(nearestM.radius, Math.min(canvas.height - nearestM.radius, nearestM.y));
+
+            addFloatingText(nearestM.x, nearestM.y - 22, `${stabDmg} 🗡️ דקירה והדף!`, "#f8fafc");
+
+            for (let p = 0; p < 10; p++) {
+                particles.push(new Particle(nearestM.x, nearestM.y, '#e2e8f0', 3, 2, 14));
+                particles.push(new Particle(nearestM.x, nearestM.y, '#94a3b8', 2.5, 1.5, 12));
+            }
+            return;
+        }
+
+        // אם אין מפלצת בטווח קרוב - הטלת הפגיון באוויר (30 נזק בסיס, צורך פגיון מהמלאי)
+        if ((upgrades.daggers || 0) <= 0) {
+            addFloatingText(this.x, this.y - 25, "אין לך פגיונות במלאי! אסוף מהרצפה או עבור לקשת 🗡️❌", "#ef4444");
+            sfx.playHit();
+            this.shootTimer = 25;
+            return;
+        }
+
+        upgrades.daggers--;
+        updateHUD();
+
+        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
+        const throwDmg = Math.max(1, Math.round(30 * dmgMult));
+        const throwSpeed = 13.5 * playerArrowSpeedMultiplierSetting;
+
+        thrownDaggers.push(new ThrownDagger(
+            this.x + Math.cos(this.angle) * (this.radius + 12),
+            this.y + Math.sin(this.angle) * (this.radius + 12),
+            this.angle,
+            throwSpeed,
+            throwDmg
+        ));
+
+        sfx.playSwordSwing();
+    }
+
+    throwDaggerQuick(targetX, targetY) {
+        if ((upgrades.daggers || 0) <= 0) {
+            addFloatingText(this.x, this.y - 25, "אין לך פגיונות להטלה! קנה ברווח 🗡️❌", "#ef4444");
+            sfx.playHit();
+            return;
+        }
+
+        upgrades.daggers--;
+        updateHUD();
+
+        const angle = Math.atan2(targetY - this.y, targetX - this.x);
+        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
+        const throwDmg = Math.max(1, Math.round(30 * dmgMult));
+        const throwSpeed = 13.5 * playerArrowSpeedMultiplierSetting;
+
+        thrownDaggers.push(new ThrownDagger(
+            this.x + Math.cos(angle) * (this.radius + 12),
+            this.y + Math.sin(angle) * (this.radius + 12),
+            angle,
+            throwSpeed,
+            throwDmg
+        ));
+
+        sfx.playSwordSwing();
+        addFloatingText(this.x, this.y - 30, "הטלת פגיון! 🗡️💨", "#38bdf8");
     }
 
     shootGun(speedMult = 1.0) {
@@ -3765,6 +3881,52 @@ class Player {
             ctx.fillStyle = '#fbbf24';
             ctx.beginPath();
             ctx.arc(56, 0, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        } else if (currentWeapon === 'dagger') {
+            // ציור פגיון קרב מהודר וחד ביד השחקן עם אפקט דקירה קדימה (Thrust)
+            ctx.save();
+            const thrustOffset = (this.stabTimer > 0) ? (this.stabTimer * 1.8) : 0;
+
+            // להב פגיון מחודד כסוף ונוצץ
+            ctx.fillStyle = '#f8fafc';
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.3;
+            ctx.shadowColor = '#e2e8f0';
+            ctx.shadowBlur = (this.stabTimer > 0) ? 12 : 6;
+
+            ctx.beginPath();
+            ctx.moveTo(34 + thrustOffset, 0); // שפיץ הלהב
+            ctx.lineTo(16 + thrustOffset, -4);
+            ctx.lineTo(16 + thrustOffset, 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // חריץ מרכזי בלהב
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(18 + thrustOffset, 0);
+            ctx.lineTo(29 + thrustOffset, 0);
+            ctx.stroke();
+
+            // מגן ידית (Crossguard) זהוב
+            ctx.fillStyle = '#f59e0b';
+            ctx.strokeStyle = '#b45309';
+            ctx.lineWidth = 1;
+            ctx.fillRect(13 + thrustOffset, -7, 3.5, 14);
+            ctx.strokeRect(13 + thrustOffset, -7, 3.5, 14);
+
+            // קת עץ חומה
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(6 + thrustOffset, -2.5, 7, 5);
+
+            // גולת קת (Pommel) מוזהבת
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(5 + thrustOffset, 0, 3, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.restore();
@@ -5309,6 +5471,181 @@ class Coin {
     }
 }
 
+class ThrownDagger {
+    constructor(x, y, angle, speed, damage) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = speed;
+        this.damage = damage;
+        this.radius = 8;
+        this.alive = true;
+        this.stuckInGround = false;
+        this.stuckTimer = 0;
+        this.spin = 0;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.flightTimer = 0;
+    }
+
+    update() {
+        if (this.stuckInGround) {
+            this.stuckTimer++;
+            // בדיקת איסוף הפגיון חזרה בידי השחקן כאשר הוא דורך או עובר לידו
+            if (player) {
+                const distToPlayer = Math.hypot(player.x - this.x, player.y - this.y);
+                if (distToPlayer < player.radius + 20) {
+                    upgrades.daggers = (upgrades.daggers || 0) + 1;
+                    sfx.playPickup();
+                    addFloatingText(this.x, this.y - 20, "+1 פגיון נאסף! 🗡️", "#38bdf8");
+                    for (let p = 0; p < 8; p++) {
+                        particles.push(new Particle(this.x, this.y, '#38bdf8', 2.5, 1.5, 12));
+                    }
+                    this.alive = false;
+                    updateHUD();
+                }
+            }
+            return;
+        }
+
+        // תעופה באוויר עם סיבוב ושובל ניצוצות
+        this.flightTimer++;
+        this.spin += 0.35;
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (Math.random() < 0.65) {
+            particles.push(new Particle(this.x, this.y, Math.random() < 0.5 ? '#e2e8f0' : '#94a3b8', 2.5, 1.0, 10));
+        }
+
+        // פגיעה במפלצות (30 נזק בסיס, המפלצת יכולה למות מזה, והפגיון ננעץ ברצפה)
+        for (let j = 0; j < monsters.length; j++) {
+            const m = monsters[j];
+            if (!m.alive) continue;
+            const d = Math.hypot(m.x - this.x, m.y - this.y);
+            if (d < m.radius + this.radius) {
+                m.takeDamage(this.damage);
+                sfx.playHit();
+                addFloatingText(m.x, m.y - 18, `${this.damage} 🗡️!`, "#cbd5e1");
+                for (let p = 0; p < 10; p++) {
+                    particles.push(new Particle(this.x, this.y, '#e2e8f0', 3, 2, 14));
+                    particles.push(new Particle(this.x, this.y, '#ef4444', 2.5, 1.5, 12));
+                }
+                // הפגיון פוגע וננעץ ברצפה באותה נקודה
+                this.stuckInGround = true;
+                this.vx = 0;
+                this.vy = 0;
+                break;
+            }
+        }
+
+        // אם הפגיון פוגע בקירות המבוך או טס מעל 2.2 שניות (135 פריימים) - הוא נוחת וננעץ ברצפה
+        if (!this.stuckInGround) {
+            if (this.x <= 16 || this.x >= canvas.width - 16 || this.y <= 16 || this.y >= canvas.height - 16 || this.flightTimer > 135) {
+                this.stuckInGround = true;
+                this.x = Math.max(16, Math.min(canvas.width - 16, this.x));
+                this.y = Math.max(16, Math.min(canvas.height - 16, this.y));
+                this.vx = 0;
+                this.vy = 0;
+                for (let p = 0; p < 6; p++) {
+                    particles.push(new Particle(this.x, this.y, '#94a3b8', 2, 1, 10));
+                }
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        if (this.stuckInGround) {
+            // ציור פגיון נעוץ ברצפה בזווית עם הילה כחולה/כסופה זוהרת
+            const pulse = 1 + 0.12 * Math.sin(this.stuckTimer * 0.12);
+            ctx.shadowColor = '#38bdf8';
+            ctx.shadowBlur = 10;
+
+            // צל קל על הרצפה
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            ctx.beginPath();
+            ctx.ellipse(0, 3, 8, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.rotate(this.angle + Math.PI / 4);
+
+            // להב תקוע באדמה
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.moveTo(0, -13 * pulse);
+            ctx.lineTo(4, 2);
+            ctx.lineTo(-4, 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // מגן ידית
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(-6, 2, 12, 2.5);
+
+            // קת
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(-2, 4.5, 4, 6);
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, 11.5, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // אייקון קטן מעל הפגיון לרמז איסוף מהיר
+            ctx.shadowBlur = 4;
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 11px Tahoma';
+            ctx.textAlign = 'center';
+            ctx.fillText('🗡️', 0, -18);
+        } else {
+            // ציור פגיון עף ומסתחרר באוויר
+            ctx.rotate(this.spin);
+            ctx.shadowColor = '#cbd5e1';
+            ctx.shadowBlur = 8;
+
+            // להב
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.moveTo(0, -14);
+            ctx.lineTo(4, 2);
+            ctx.lineTo(-4, 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // חריץ מרכזי
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.moveTo(0, -11);
+            ctx.lineTo(0, 1);
+            ctx.stroke();
+
+            // מגן ידית
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(-6, 2, 12, 3);
+
+            // קת
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(-2.5, 5, 5, 7);
+
+            // גולת קת
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, 13, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
+    }
+}
+
 class GunFireball {
     constructor(x, y, angle, speed, damage, isRifle = false) {
         this.x = x;
@@ -6298,12 +6635,13 @@ function updateHUD() {
     xpFill.style.width = `${xpPct}%`;
     xpText.innerText = `${Math.floor(xpPct)}%`;
 
-    // עדכון כמות תחמושת (חצים לקשת / כדורי אש לאקדח) ב-HUD העליון
+    // עדכון כמות תחמושת (חצים לקשת / כדורי אש לאקדח ורובה / פגיונות לפגיון) ב-HUD העליון
     const arrowsBadge = document.getElementById('arrows-hud-badge');
     if (arrowsBadge) {
-        if (currentWeapon === 'gun') {
+        if (currentWeapon === 'gun' || currentWeapon === 'rifle') {
             const count = (upgrades.gunAmmo !== undefined) ? upgrades.gunAmmo : 30;
-            arrowsBadge.innerHTML = `🔫 כדורי אש: <span id="gun-ammo-display">${count}</span>`;
+            const wIcon = currentWeapon === 'rifle' ? '🎯' : '🔫';
+            arrowsBadge.innerHTML = `${wIcon} כדורי אש: <span id="gun-ammo-display">${count}</span>`;
             if (count <= 5) {
                 arrowsBadge.style.color = '#ef4444';
                 arrowsBadge.style.borderColor = '#ef4444';
@@ -6316,6 +6654,18 @@ function updateHUD() {
                 arrowsBadge.style.color = '#f97316';
                 arrowsBadge.style.borderColor = '#ea580c';
                 arrowsBadge.style.background = 'rgba(249, 115, 22, 0.15)';
+            }
+        } else if (currentWeapon === 'dagger') {
+            const count = (upgrades.daggers !== undefined) ? upgrades.daggers : 0;
+            arrowsBadge.innerHTML = `🗡️ פגיונות: <span id="daggers-count-display">${count}</span> (דקירה מקרוב / הטלה מרחוק)`;
+            if (count === 0) {
+                arrowsBadge.style.color = '#ef4444';
+                arrowsBadge.style.borderColor = '#ef4444';
+                arrowsBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+            } else {
+                arrowsBadge.style.color = '#e2e8f0';
+                arrowsBadge.style.borderColor = '#94a3b8';
+                arrowsBadge.style.background = 'rgba(148, 163, 184, 0.15)';
             }
         } else if (currentWeapon === 'bow') {
             const count = (upgrades.arrowsLeft !== undefined) ? upgrades.arrowsLeft : 100;
@@ -6335,10 +6685,23 @@ function updateHUD() {
             }
         } else {
             const curW = WEAPONS_CATALOG.find(w => w.id === currentWeapon);
-            arrowsBadge.innerHTML = `${curW ? curW.icon : '⚔️'} ${curW ? curW.typeLabel : 'קפא"פ'}: ללא הגבלת תחמושת`;
+            arrowsBadge.innerHTML = `${curW ? curW.icon : '⚔️'} ${curW ? curW.typeLabel : 'נשק'}`;
             arrowsBadge.style.color = '#a855f7';
             arrowsBadge.style.borderColor = '#a855f7';
             arrowsBadge.style.background = 'rgba(168, 85, 247, 0.15)';
+        }
+    }
+
+    // תגית הטלת פגיון מהירה (מקש ימני) כשלובשים נשק אחר
+    const daggerQuickContainer = document.getElementById('dagger-quick-hud-container');
+    const daggerQuickBadge = document.getElementById('dagger-quick-hud-badge');
+    if (daggerQuickContainer && daggerQuickBadge) {
+        const dCount = upgrades.daggers || 0;
+        if (dCount > 0 && currentWeapon !== 'dagger') {
+            daggerQuickContainer.style.display = 'block';
+            daggerQuickBadge.innerHTML = `🖱️ ימני: 🗡️x${dCount}`;
+        } else {
+            daggerQuickContainer.style.display = 'none';
         }
     }
 
@@ -6432,6 +6795,7 @@ function resetGame() {
         luck: 0,
         arrowsLeft: initialArrowsSetting,
         gunAmmo: 30,
+        daggers: 0,
         explosiveCount: 0,
         counts: {
             ammo_pack: 0,
@@ -6465,6 +6829,7 @@ function resetGame() {
     xpOrbs = [];
     coins = [];
     gunFireballs = [];
+    thrownDaggers = [];
     visualExplosions = [];
     const weaponsModalEl = document.getElementById('weapons-modal-overlay');
     if (weaponsModalEl) weaponsModalEl.classList.add('hidden');
@@ -6880,6 +7245,25 @@ window.addEventListener('keydown', e => {
         setChatPlaysMode(!chatPlaysActive, true);
     }
 
+    // הטלת פגיון מהירה במקלדת באמצעות מקש F
+    if ((e.code === 'KeyF' || e.key === 'f' || e.key === 'F' || e.key === 'כ') && gameState === 'playing' && !isPaused && !chatPlaysActive && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        if (player) player.throwDaggerQuick(mouse.x, mouse.y);
+    }
+
+    // החלפת נשקים מיידית בין הנשקים שנרכשו (1: קשת, 2: פגיון, 3: אקדח, 4: רובה)
+    if (gameState === 'playing' && !isPaused && !chatPlaysActive && !e.target.matches('input, textarea')) {
+        if (e.key === '1' && ownedWeapons.has('bow') && !wizardClass) {
+            equipWeapon('bow');
+        } else if (e.key === '2' && ownedWeapons.has('dagger') && !wizardClass) {
+            equipWeapon('dagger');
+        } else if (e.key === '3' && ownedWeapons.has('gun')) {
+            equipWeapon('gun');
+        } else if (e.key === '4' && ownedWeapons.has('rifle')) {
+            equipWeapon('rifle');
+        }
+    }
+
     // בחירת מכשף באמצעות מקשי המספרים 1, 2, 3 כאשר חלון ההתפתחות פתוח
     if (gameState === 'wizard_select') {
         if (e.key === '1') selectWizardClass('fire');
@@ -6936,6 +7320,13 @@ window.addEventListener('focus', () => {
     for (let k in keys) keys[k] = false;
 });
 
+// מניעת פתיחת תפריט הדפדפן בלחיצה ימנית על המשחק
+window.addEventListener('contextmenu', e => {
+    if (e.target === canvas || e.target.closest('#game-container')) {
+        e.preventDefault();
+    }
+});
+
 canvas.addEventListener('mousemove', e => {
     if (chatPlaysActive) return;
     const rect = canvas.getBoundingClientRect();
@@ -6946,8 +7337,16 @@ canvas.addEventListener('mousemove', e => {
 });
 
 canvas.addEventListener('mousedown', e => {
-    if (e.button === 0) mouse.isDown = true;
     sfx.init();
+    if (e.button === 0) {
+        mouse.isDown = true;
+    } else if (e.button === 2 || e.button === 3 || e.button === 4) {
+        // לחיצה בצד (מקש ימני או כפתורי צד של העכבר) - הטלת פגיון מהירה בכל עת!
+        e.preventDefault();
+        if (player && gameState === 'playing' && !isPaused && !chatPlaysActive) {
+            player.throwDaggerQuick(mouse.x, mouse.y);
+        }
+    }
 });
 
 window.addEventListener('mouseup', e => {
@@ -7331,9 +7730,11 @@ function renderWeaponsShop() {
     if (suppliesContainer) {
         const arrowsCount = (upgrades.arrowsLeft !== undefined) ? upgrades.arrowsLeft : 100;
         const gunAmmoCount = (upgrades.gunAmmo !== undefined) ? upgrades.gunAmmo : 30;
+        const daggersCount = (upgrades.daggers !== undefined) ? upgrades.daggers : 0;
         const arrowsGain = arrowUpgradeGainSetting || 30;
-        const canAffordArrows = playerCoins >= 8;
-        const canAffordGunAmmo = playerCoins >= 10;
+        const canAffordArrows = playerCoins >= 80;
+        const canAffordGunAmmo = playerCoins >= 100;
+        const canAffordDagger = playerCoins >= 10;
 
         suppliesContainer.innerHTML = `
             <div class="supply-card">
@@ -7345,7 +7746,7 @@ function renderWeaponsShop() {
                         <div class="supply-stock">מלאי נוכחי: 🏹 ${arrowsCount} חצים</div>
                     </div>
                 </div>
-                <button class="supply-action-btn" onclick="buyArrowsPack()" ${!canAffordArrows ? 'disabled' : ''}>קנה ב-8 🪙</button>
+                <button class="supply-action-btn" onclick="buyArrowsPack()" ${!canAffordArrows ? 'disabled' : ''}>קנה ב-80 🪙</button>
             </div>
             <div class="supply-card">
                 <div class="supply-info">
@@ -7356,14 +7757,25 @@ function renderWeaponsShop() {
                         <div class="supply-stock">מלאי נוכחי: 🔫 ${gunAmmoCount} כדורי אש</div>
                     </div>
                 </div>
-                <button class="supply-action-btn" onclick="buyGunAmmoPack()" ${!canAffordGunAmmo ? 'disabled' : ''}>קנה ב-10 🪙</button>
+                <button class="supply-action-btn" onclick="buyGunAmmoPack()" ${!canAffordGunAmmo ? 'disabled' : ''}>קנה ב-100 🪙</button>
+            </div>
+            <div class="supply-card">
+                <div class="supply-info">
+                    <div class="supply-icon">🗡️</div>
+                    <div class="supply-details">
+                        <div class="supply-title">פגיון קרב נוסף (+1 פגיון)</div>
+                        <div class="supply-desc">להטלה מרחוק או מקש ימני בכל עת. ניתן לאסוף חזרה מהרצפה!</div>
+                        <div class="supply-stock">מלאי נוכחי: 🗡️ ${daggersCount} פגיונות</div>
+                    </div>
+                </div>
+                <button class="supply-action-btn" onclick="buyDaggerPack()" ${!canAffordDagger ? 'disabled' : ''}>קנה ב-10 🪙</button>
             </div>
         `;
     }
 }
 
 function buyArrowsPack() {
-    const cost = 8;
+    const cost = 80;
     const gain = arrowUpgradeGainSetting || 30;
     if (playerCoins >= cost) {
         playerCoins -= cost;
@@ -7383,7 +7795,7 @@ function buyArrowsPack() {
 }
 
 function buyGunAmmoPack() {
-    const cost = 10;
+    const cost = 100;
     const gain = 20;
     if (playerCoins >= cost) {
         playerCoins -= cost;
@@ -7391,6 +7803,25 @@ function buyGunAmmoPack() {
         sfx.playLevelUp();
         if (player) {
             addFloatingText(player.x, player.y - 30, `+${gain} כדורי אש לאקדח! 🔫🔥`, "#f97316");
+        }
+        updateHUD();
+        renderWeaponsShop();
+    } else {
+        sfx.playHit();
+        if (player) {
+            addFloatingText(player.x, player.y - 30, `חסר לך כסף! דרוש: ${cost} 🪙`, "#ef4444");
+        }
+    }
+}
+
+function buyDaggerPack() {
+    const cost = 10;
+    if (playerCoins >= cost) {
+        playerCoins -= cost;
+        upgrades.daggers = (upgrades.daggers || 0) + 1;
+        sfx.playLevelUp();
+        if (player) {
+            addFloatingText(player.x, player.y - 30, `+1 פגיון נרכש למלאי! 🗡️`, "#38bdf8");
         }
         updateHUD();
         renderWeaponsShop();
@@ -7411,6 +7842,9 @@ function buyWeapon(id) {
         currentWeapon = id;
         if (id === 'gun' && (upgrades.gunAmmo || 0) <= 0) {
             upgrades.gunAmmo = 30; // 30 כדורי אש התחלתיים עם קניית האקדח
+        }
+        if (id === 'dagger') {
+            upgrades.daggers = (upgrades.daggers || 0) + 1; // מקבל פגיון ראשון למלאי
         }
         sfx.playLevelUp();
         if (player) {
@@ -7440,6 +7874,7 @@ function equipWeapon(id) {
 
 window.buyArrowsPack = buyArrowsPack;
 window.buyGunAmmoPack = buyGunAmmoPack;
+window.buyDaggerPack = buyDaggerPack;
 window.buyWeapon = buyWeapon;
 window.equipWeapon = equipWeapon;
 
@@ -7576,6 +8011,14 @@ function gameLoop() {
         coin.update();
         coin.draw();
         if (!coin.alive) coins.splice(i, 1);
+    }
+
+    // 2.3. Update & Draw Thrown Daggers (פגיונות עפים באוויר ונעוצים ברצפה לאיסוף)
+    for (let i = thrownDaggers.length - 1; i >= 0; i--) {
+        const td = thrownDaggers[i];
+        td.update();
+        td.draw();
+        if (!td.alive) thrownDaggers.splice(i, 1);
     }
 
     // 2.4. Update & Draw Gun Fireballs (אקדח כדורי אש)
