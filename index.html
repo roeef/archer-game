@@ -2668,10 +2668,9 @@ let discoveredSpeciesIds = new Set();
 
 // Weapons System & Coins (קנייה ולבישת נשקים)
 let playerCoins = 20; // 20 מטבעות כסף התחלתיים כדי לנסות את החרב הענקית מיד!
-let currentWeapon = 'bow'; // 'bow', 'gun', 'sword', 'axe', 'spear', 'staff'
+let currentWeapon = 'bow'; // 'bow', 'gun', 'rifle'
 let ownedWeapons = new Set(['bow']);
 let coins = [];
-let magicOrbs = [];
 let gunFireballs = [];
 
 const WEAPONS_CATALOG = [
@@ -2681,9 +2680,9 @@ const WEAPONS_CATALOG = [
         icon: '🏹',
         price: 0,
         type: 'ranged',
-        typeLabel: 'נשק טווח',
+        typeLabel: 'קשת רגילה',
         typeColor: '#38bdf8',
-        desc: 'הנשק הקלאסי: ירי חיצים מדויק מרחוק. דורש חצים (ניתן לקנות אריזות חצים בחנות).',
+        desc: 'הנשק הקלאסי שמתחילים איתו: ירי חיצים מדויק מרחוק (25 נזק). דורש חצים (ניתן לקנות אריזות חצים בחנות).',
         basePassiveDmg: 0,
         baseSwingDmg: 25
     },
@@ -2693,71 +2692,25 @@ const WEAPONS_CATALOG = [
         icon: '🔫',
         price: 25,
         type: 'ranged',
-        typeLabel: 'אקדח כדורי אש בוערים',
+        typeLabel: 'אקדח כדורי אש',
         typeColor: '#f97316',
-        desc: 'יורה כדור אש עוצמתי (40 נזק)! המפלצת בוערת ל-5 שניות – ובכל שנייה היא יורדת לחצי מהחיים שלה + לב! דורש מאגר יריות (מגיע עם 30 קליעים).',
+        desc: 'יורה כדורי אש מהירים (40 נזק). המפלצת עולה באש ל-5 שניות (בכל שנייה מאבדת חצי מהחיים + לב!). כדור באוויר מעל 2 שניות נופל לרצפה.',
         basePassiveDmg: 0,
         baseSwingDmg: 40
     },
     {
-        id: 'sword',
-        name: 'חרב ענקית',
-        icon: '🗡️',
-        price: 15,
-        type: 'melee',
-        typeLabel: 'קפא״פ ענק (כפול מהדמות!)',
-        typeColor: '#f43f5e',
-        desc: 'חרב ענקית באורך כפול מהדמות! מגע בלהב: 5 נזק. הנפה בלחיצה: 20 נזק. מושפעת מכל מדדי ושדרוגי הקשת!',
-        basePassiveDmg: 5,
-        baseSwingDmg: 20
-    },
-    {
-        id: 'axe',
-        name: 'גרזן קרב כפול',
-        icon: '🪓',
-        price: 35,
-        type: 'melee',
-        typeLabel: 'נשק מחץ כבד',
-        typeColor: '#ea580c',
-        desc: 'מכת הנפה כבדה ורחבה: מגע: 6 נזק. הנפה: 28 נזק והדף מפלצות! מושפע ממדדי נזק ומהירות.',
-        basePassiveDmg: 6,
-        baseSwingDmg: 28
-    },
-    {
-        id: 'spear',
-        name: 'חנית פלדה ארוכה',
-        icon: '🔱',
+        id: 'rifle',
+        name: 'רובה אש חודר',
+        icon: '🎯',
         price: 45,
-        type: 'melee',
-        typeLabel: 'נשק דקירה חודר',
-        typeColor: '#a855f7',
-        desc: 'חנית ארוכה פי 3: דקירה מהירה שחודרת דרך שורת מפלצות (25 נזק). מגע בלהב: 6 נזק.',
-        basePassiveDmg: 6,
-        baseSwingDmg: 25
-    },
-    {
-        id: 'staff',
-        name: 'מטה אנרגיה קסום',
-        icon: '🔮',
-        price: 70,
         type: 'ranged',
-        typeLabel: 'נשק קסם פלזמה',
-        typeColor: '#818cf8',
-        desc: 'יורה כדורי אנרגיה פלזמה ללא הגבלת חיצים! כל ירייה גורמת 25 נזק פיצוץ אזורי.',
+        typeLabel: 'רובה כדורים חודרים',
+        typeColor: '#ef4444',
+        desc: 'יורה כדורי אש ענקיים ברדיוס מוגדל (25 נזק) שחודרים דרך כל המפלצות ושורפים אותן ל-5 שניות! כדור באוויר מעל 2 שניות נופל לרצפה.',
         basePassiveDmg: 0,
         baseSwingDmg: 25
     }
 ];
-
-function distToSegment(a, b, p) {
-    const l2 = (b.x - a.x) ** 2 + (b.y - a.y) ** 2;
-    if (l2 === 0) return Math.hypot(p.x - a.x, p.y - a.y);
-    let t = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
-    t = Math.max(0, Math.min(1, t));
-    const projX = a.x + t * (b.x - a.x);
-    const projY = a.y + t * (b.y - a.y);
-    return Math.hypot(p.x - projX, p.y - projY);
-}
 
 // Wizard Class & Abilities System (דרגה 12)
 let wizardClass = null; // null, 'fire', 'ice', 'plant'
@@ -3459,13 +3412,6 @@ class Player {
         this.angle = 0;
         this.invulnerableTimer = 0;
         this.shootTimer = 0;
-
-        // מערכת נשקי קפא״פ וחרב ענקית
-        this.swordSwingTimer = 0;
-        this.swordSwingDuration = 14;
-        this.currentSwordAngle = 0;
-        this.swordHitMonsters = new Set();
-        this.passiveTouchCd = 0;
     }
 
     update() {
@@ -3514,9 +3460,6 @@ class Player {
         // Aim angle towards mouse
         this.angle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
 
-        // עדכון תנועת נשקי קפא״פ ובדיקת נזק מגע פסיבי
-        this.updateWeapons();
-
         // Shooting / Attacking (mouse left click or Ctrl key)
         if (this.shootTimer > 0) this.shootTimer--;
         const isShooting = (mouse.isDown || keys['Control'] || keys['ControlLeft'] || keys['ControlRight']) && !chatPlaysActive;
@@ -3529,29 +3472,16 @@ class Player {
     }
 
     attack() {
-        // מדדי מהירות חצים וקצב ירייה משפיעים ישירות על מהירות וקצב הנפת החרב!
         const speedMult = playerArrowSpeedMultiplierSetting * playerFireRateMultiplierSetting * (upgrades.arrowSpeed / 8.0) * (upgrades.fireRate || 1.0);
 
         if (currentWeapon === 'gun') {
             this.shootGun(speedMult);
             this.shootTimer = Math.max(4, Math.round(18 / Math.max(0.3, speedMult)));
-        } else if (currentWeapon === 'sword') {
-            this.swingSword(speedMult);
-            this.shootTimer = Math.max(4, Math.round(16 / Math.max(0.3, speedMult)));
-        } else if (currentWeapon === 'axe') {
-            this.swingAxe(speedMult);
-            this.shootTimer = Math.max(5, Math.round(22 / Math.max(0.3, speedMult)));
-        } else if (currentWeapon === 'spear') {
-            this.thrustSpear(speedMult);
-            this.shootTimer = Math.max(4, Math.round(18 / Math.max(0.3, speedMult)));
-        } else if (currentWeapon === 'daggers') {
-            this.swingDaggers(speedMult);
-            this.shootTimer = Math.max(3, Math.round(10 / Math.max(0.3, speedMult)));
-        } else if (currentWeapon === 'staff') {
-            this.shootStaff();
-            this.shootTimer = Math.max(5, Math.round(20 / Math.max(0.3, speedMult)));
+        } else if (currentWeapon === 'rifle') {
+            this.shootRifle(speedMult);
+            this.shootTimer = Math.max(4, Math.round(20 / Math.max(0.3, speedMult)));
         } else {
-            // Bow (קשת)
+            // Bow (קשת רגילה שמתחילים איתה)
             if ((upgrades.arrowsLeft || 0) <= 0) {
                 addFloatingText(this.x, this.y - 25, "נגמרו החצים! 🏹❌", "#ef4444");
                 sfx.playHit();
@@ -3576,7 +3506,6 @@ class Player {
 
         sfx.playGunshot();
 
-        // מדד נזק הקשת ושדרוגי חיצים מכפילים גם את נזק האקדח!
         const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
         const bulletDmg = Math.max(1, Math.round(40 * dmgMult));
         const bulletSpeed = 10.5 * playerArrowSpeedMultiplierSetting;
@@ -3586,14 +3515,14 @@ class Player {
             this.y + Math.sin(this.angle) * (this.radius + 18),
             this.angle,
             bulletSpeed,
-            bulletDmg
+            bulletDmg,
+            false // isRifle = false
         ));
 
         // רתע קל לאחור
         this.x -= Math.cos(this.angle) * 2;
         this.y -= Math.sin(this.angle) * 2;
 
-        // רשף אש מהקנה
         for (let p = 0; p < 8; p++) {
             particles.push(new Particle(
                 this.x + Math.cos(this.angle) * (this.radius + 20),
@@ -3604,135 +3533,44 @@ class Player {
         }
     }
 
-    swingSword(speedMult = 1.0) {
-        this.swordSwingDuration = Math.max(3, Math.round(14 / Math.max(0.3, speedMult)));
-        this.swordSwingTimer = this.swordSwingDuration;
-        this.swordHitMonsters.clear();
-        sfx.playSwordSwing();
-    }
-
-    swingAxe(speedMult = 1.0) {
-        this.swordSwingDuration = Math.max(4, Math.round(18 / Math.max(0.3, speedMult)));
-        this.swordSwingTimer = this.swordSwingDuration;
-        this.swordHitMonsters.clear();
-        sfx.playSwordSwing();
-    }
-
-    thrustSpear(speedMult = 1.0) {
-        this.swordSwingDuration = Math.max(3, Math.round(13 / Math.max(0.3, speedMult)));
-        this.swordSwingTimer = this.swordSwingDuration;
-        this.swordHitMonsters.clear();
-        sfx.playSwordSwing();
-    }
-
-    swingDaggers(speedMult = 1.0) {
-        this.swordSwingDuration = Math.max(2, Math.round(9 / Math.max(0.3, speedMult)));
-        this.swordSwingTimer = this.swordSwingDuration;
-        this.swordHitMonsters.clear();
-        sfx.playSwordSwing();
-    }
-
-    shootStaff() {
-        sfx.playLaser();
-        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
-        const dmg = Math.max(1, Math.round(25 * dmgMult));
-        const spd = 7.5 * playerArrowSpeedMultiplierSetting;
-        magicOrbs.push(new MagicOrb(
-            this.x + Math.cos(this.angle) * (this.radius + 15),
-            this.y + Math.sin(this.angle) * (this.radius + 15),
-            this.angle,
-            spd,
-            dmg
-        ));
-    }
-
-    updateWeapons() {
-        const isMelee = (currentWeapon === 'sword' || currentWeapon === 'axe' || currentWeapon === 'spear' || currentWeapon === 'daggers');
-        if (!isMelee) return;
-
-        // מדד נזק הקשת במדדים ושדרוגי חיצים מכפילים ישירות את נזק החרב!
-        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
-
-        let bladeLen = this.radius * 2.3; // חרב ענקית - אורך כפול מהדמות!
-        let baseSwing = 20;
-        let basePassive = 5;
-
-        if (currentWeapon === 'axe') {
-            bladeLen = this.radius * 2.1;
-            baseSwing = 28;
-            basePassive = 6;
-        } else if (currentWeapon === 'spear') {
-            bladeLen = (this.swordSwingTimer > 0) ? this.radius * 3.4 : this.radius * 2.7;
-            baseSwing = 25;
-            basePassive = 6;
-        } else if (currentWeapon === 'daggers') {
-            bladeLen = this.radius * 1.5;
-            baseSwing = 14;
-            basePassive = 4;
+    shootRifle(speedMult = 1.0) {
+        if ((upgrades.gunAmmo || 0) <= 0) {
+            addFloatingText(this.x, this.y - 25, "נגמרו כדורי האש! קנה מאגר ברווח 🎯❌", "#ef4444");
+            sfx.playHit();
+            this.shootTimer = 25;
+            return;
         }
 
-        const swingDmg = Math.max(1, Math.round(baseSwing * dmgMult));
-        const passiveDmg = Math.max(1, Math.round(basePassive * dmgMult));
+        upgrades.gunAmmo--;
+        updateHUD();
 
-        if (this.swordSwingTimer > 0) {
-            this.swordSwingTimer--;
-            const progress = 1 - (this.swordSwingTimer / Math.max(1, this.swordSwingDuration));
-            const swingArc = (currentWeapon === 'spear') ? 0.35 : Math.PI * 0.82;
-            this.currentSwordAngle = this.angle - (swingArc / 2) + (progress * swingArc);
+        sfx.playGunshot();
 
-            const tipX = this.x + Math.cos(this.currentSwordAngle) * bladeLen;
-            const tipY = this.y + Math.sin(this.currentSwordAngle) * bladeLen;
+        // מדד נזק הקשת ושדרוגי חיצים מכפילים גם את נזק הרובה!
+        const dmgMult = playerArrowDamageMultiplierSetting * (upgrades.arrowDamage / 20.0);
+        const bulletDmg = Math.max(1, Math.round(25 * dmgMult)); // 25 נזק כפי שהוגדר
+        const bulletSpeed = 11.5 * playerArrowSpeedMultiplierSetting;
 
-            // פגיעה במפלצות במהלך ההנפה (הנזק מוכפל בכל מדדי ושדרוגי הקשת!)
-            for (let j = 0; j < monsters.length; j++) {
-                const m = monsters[j];
-                if (!m.alive || this.swordHitMonsters.has(m)) continue;
-                const d = distToSegment({ x: this.x, y: this.y }, { x: tipX, y: tipY }, { x: m.x, y: m.y });
-                if (d <= m.radius + 8) {
-                    this.swordHitMonsters.add(m);
-                    m.takeDamage(swingDmg);
-                    sfx.playSwordHit();
-                    addFloatingText(m.x, m.y - 18, `${swingDmg} ⚔️`, "#f87171");
+        gunFireballs.push(new GunFireball(
+            this.x + Math.cos(this.angle) * (this.radius + 24),
+            this.y + Math.sin(this.angle) * (this.radius + 24),
+            this.angle,
+            bulletSpeed,
+            bulletDmg,
+            true // isRifle = true (רדיוס מוגדל, חודר אינסוף מפלצות)
+        ));
 
-                    // הדף מפלצת לאחור
-                    m.x += Math.cos(this.currentSwordAngle) * 9;
-                    m.y += Math.sin(this.currentSwordAngle) * 9;
+        // רתע לאחור
+        this.x -= Math.cos(this.angle) * 3;
+        this.y -= Math.sin(this.angle) * 3;
 
-                    for (let p = 0; p < 7; p++) {
-                        particles.push(new Particle(m.x, m.y, '#f87171', 3.5, 2.5, 16));
-                        particles.push(new Particle(m.x, m.y, '#fde047', 2.5, 1.8, 12));
-                    }
-                }
-            }
-        } else {
-            this.currentSwordAngle = this.angle;
-
-            // בדיקת נזק מגע פסיבי בלהב: "רק שנוגעים בחרב הוא מוריד חיים ... אם לא מניפים זה מוריד רק 5 חיים"
-            const tipX = this.x + Math.cos(this.currentSwordAngle) * bladeLen;
-            const tipY = this.y + Math.sin(this.currentSwordAngle) * bladeLen;
-
-            if (this.passiveTouchCd > 0) {
-                this.passiveTouchCd--;
-            } else {
-                let hitAny = false;
-                for (let j = 0; j < monsters.length; j++) {
-                    const m = monsters[j];
-                    if (!m.alive) continue;
-                    const d = distToSegment({ x: this.x, y: this.y }, { x: tipX, y: tipY }, { x: m.x, y: m.y });
-                    if (d <= m.radius + 4) {
-                        m.takeDamage(passiveDmg);
-                        sfx.playHit();
-                        addFloatingText(m.x, m.y - 14, `${passiveDmg} 🗡️`, "#cbd5e1");
-                        for (let p = 0; p < 4; p++) {
-                            particles.push(new Particle(m.x, m.y, '#cbd5e1', 2.5, 1.5, 12));
-                        }
-                        hitAny = true;
-                    }
-                }
-                if (hitAny) {
-                    this.passiveTouchCd = 12; // פעימת נזק מגע כל 12 פריימים
-                }
-            }
+        for (let p = 0; p < 10; p++) {
+            particles.push(new Particle(
+                this.x + Math.cos(this.angle) * (this.radius + 26),
+                this.y + Math.sin(this.angle) * (this.radius + 26),
+                Math.random() < 0.6 ? '#ef4444' : '#facc15',
+                3.5, 2.2, 16
+            ));
         }
     }
 
@@ -3848,106 +3686,7 @@ class Player {
         ctx.fill();
 
         // ציור הנשק הלבוש
-        if (currentWeapon === 'sword') {
-            const bladeLen = this.radius * 2.3; // חרב ענקית - אורך כפול מהדמות!
-            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
-
-            // שובל הנפה זוהר במהלך מכת החרב
-            if (this.swordSwingTimer > 0) {
-                const progress = 1 - (this.swordSwingTimer / Math.max(1, this.swordSwingDuration));
-                ctx.save();
-                ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
-                ctx.shadowColor = '#38bdf8';
-                ctx.shadowBlur = 14;
-                ctx.lineWidth = 6;
-                ctx.beginPath();
-                const arcStart = -Math.PI * 0.45;
-                const arcEnd = -Math.PI * 0.45 + progress * (Math.PI * 0.9);
-                ctx.arc(0, 0, bladeLen + 6, arcStart, arcEnd);
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            ctx.save();
-            ctx.rotate(relAngle);
-
-            // ידית אחיזה מעץ/עור חום
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(4, -2.5, 10, 5);
-
-            // גולת ניצב זהובה (Pommel)
-            ctx.fillStyle = '#f59e0b';
-            ctx.beginPath();
-            ctx.arc(3, 0, 3.5, 0, Math.PI * 2);
-            ctx.fill();
-
-            // מגן שמירה זהוב (Crossguard)
-            ctx.fillStyle = '#facc15';
-            ctx.fillRect(14, -11, 4.5, 22);
-
-            // להב פלדה כסוף-בוהק ענק
-            ctx.fillStyle = '#e2e8f0';
-            ctx.beginPath();
-            ctx.moveTo(18.5, -4.5);
-            ctx.lineTo(bladeLen - 8, -4);
-            ctx.lineTo(bladeLen, 0); // חוד החרב
-            ctx.lineTo(bladeLen - 8, 4);
-            ctx.lineTo(18.5, 4.5);
-            ctx.closePath();
-            ctx.fill();
-
-            // חריץ להב מרכזי (Fuller)
-            ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.moveTo(20, 0);
-            ctx.lineTo(bladeLen - 10, 0);
-            ctx.stroke();
-
-            // קו מתאר זוהר
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            ctx.restore();
-        } else if (currentWeapon === 'axe') {
-            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
-            ctx.save();
-            ctx.rotate(relAngle);
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(6, -3, 30, 6);
-            ctx.fillStyle = '#cbd5e1';
-            ctx.beginPath();
-            ctx.arc(28, -12, 11, 0, Math.PI);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(28, 12, 11, Math.PI, 0);
-            ctx.fill();
-            ctx.restore();
-        } else if (currentWeapon === 'spear') {
-            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
-            const sLen = (this.swordSwingTimer > 0) ? this.radius * 3.4 : this.radius * 2.7;
-            ctx.save();
-            ctx.rotate(relAngle);
-            ctx.fillStyle = '#92400e';
-            ctx.fillRect(5, -2, sLen - 12, 4);
-            ctx.fillStyle = '#f1f5f9';
-            ctx.beginPath();
-            ctx.moveTo(sLen - 12, -5);
-            ctx.lineTo(sLen, 0);
-            ctx.lineTo(sLen - 12, 5);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-        } else if (currentWeapon === 'daggers') {
-            const relAngle = (this.currentSwordAngle !== undefined ? this.currentSwordAngle : this.angle) - this.angle;
-            ctx.save();
-            ctx.rotate(relAngle);
-            ctx.fillStyle = '#e2e8f0';
-            ctx.fillRect(10, -10, 16, 3);
-            ctx.fillRect(10, 8, 16, 3);
-            ctx.restore();
-        } else if (currentWeapon === 'gun') {
+        if (currentWeapon === 'gun') {
             // ציור אקדח כדורי אש
             ctx.save();
             // גוף האקדח הראשי
@@ -3976,16 +3715,43 @@ class Player {
             ctx.fill();
 
             ctx.restore();
-        } else if (currentWeapon === 'staff') {
+        } else if (currentWeapon === 'rifle') {
+            // ציור רובה אש חודר (ארוך ומאסיבי)
             ctx.save();
+            // קת אחיזה מעץ כהה
             ctx.fillStyle = '#78350f';
-            ctx.fillRect(6, -2.5, 26, 5);
-            ctx.fillStyle = '#c084fc';
-            ctx.shadowColor = '#a855f7';
-            ctx.shadowBlur = 10;
+            ctx.strokeStyle = '#451a03';
+            ctx.lineWidth = 1.5;
+            ctx.fillRect(2, 1, 14, 9);
+            ctx.strokeRect(2, 1, 14, 9);
+
+            // גוף הרובה ממתכת כהה
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(8, -4, 26, 8);
+            ctx.strokeRect(8, -4, 26, 8);
+
+            // כוונת עליונה זהובה
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillRect(18, -6.5, 8, 2.5);
+
+            // קנה ארוך
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(34, -3, 20, 6);
+            ctx.strokeRect(34, -3, 20, 6);
+
+            // פיית אש ולהבה כפולה וזוהרת
+            ctx.fillStyle = '#ef4444';
+            ctx.shadowColor = '#dc2626';
+            ctx.shadowBlur = 12;
             ctx.beginPath();
-            ctx.arc(32, 0, 7, 0, Math.PI * 2);
+            ctx.arc(55, 0, 4.5, 0, Math.PI * 2);
             ctx.fill();
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(56, 0, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
             ctx.restore();
         } else {
             // Default Bow
@@ -4987,17 +4753,22 @@ class Monster {
         }
         waveKillsCurrent++;
 
-        // Big death particle explosion
-        for (let i = 0; i < 14; i++) {
-            particles.push(new Particle(this.x, this.y, this.color, 4, 2.5, 25));
+        // נפילת עץ מפלצת: התפזרות שבבי גזע עץ ועלים נושרים
+        for (let i = 0; i < 9; i++) {
+            particles.push(new Particle(this.x, this.y, '#78350f', 3.5, 2.5, 24)); // שבבי גזע עץ
+        }
+        for (let i = 0; i < 11; i++) {
+            const leafColors = ['#22c55e', '#16a34a', '#84cc16', '#4ade80'];
+            const lc = leafColors[Math.floor(Math.random() * leafColors.length)];
+            particles.push(new Particle(this.x, this.y, lc, 3, 2, 26)); // עלי עץ נושרים
         }
 
-        // Drop XP Orbs (רק עיגולי XP ללא תוספת נקודות)
+        // הפלת עלי עץ (XP) שנשרו מעצי המפלצות שהובסו
         const baseValue = 10 + this.species.id * 3;
         const dropCount = getLuckDropCount(upgrades.luck || 0);
 
         if (dropCount > 1) {
-            // סידור עיגולי הניסיון במרחק ברור זה מזה כדי שלא יהיו זה על גבי זה
+            // סידור עלי העץ שנשרו במרחק ברור זה מזה
             if (dropCount === 2) {
                 const angle = Math.random() * Math.PI * 2;
                 const dist = 18;
@@ -5012,7 +4783,7 @@ class Monster {
                 xpOrbs.push(new XpOrb(x1, y1, baseValue, true));
                 xpOrbs.push(new XpOrb(x2, y2, baseValue, true));
             } else {
-                // 3 עיגולים ומעלה: פריסה מעגלית מרווחת וברורה
+                // 3 עלים ומעלה: פריסה מעגלית מרווחת
                 const ringRadius = 18 + (dropCount - 2) * 4;
                 const startAngle = Math.random() * Math.PI * 2;
                 for (let i = 0; i < dropCount; i++) {
@@ -5025,11 +4796,11 @@ class Monster {
                 }
             }
 
-            // אפקט חלקיקים זהובים של מזל והודעה מעל המפלצת
+            // אפקט עלי זהב של מזל והודעה מעל המפלצת
             for (let i = 0; i < 4 + dropCount * 2; i++) {
                 particles.push(new Particle(this.x, this.y, '#facc15', 3, 2, 20));
             }
-            addFloatingText(this.x, this.y - 25, `מזל! ${dropCount} עיגולי ניקוד! 🍀`, "#facc15");
+            addFloatingText(this.x, this.y - 25, `מזל! ${dropCount} עלי עץ נשרו! 🍃🍀`, "#facc15");
         } else {
             xpOrbs.push(new XpOrb(this.x, this.y, baseValue, false));
         }
@@ -5054,9 +4825,9 @@ class Monster {
 
         sfx.playMonsterAbsorb();
 
-        // אפקט חלקיקי איזמרגד
+        // אפקט חלקיקי עלים ירוקים
         for (let p = 0; p < 7; p++) {
-            particles.push(new Particle(orb.x, orb.y, orb.isLucky ? '#6ee7b7' : '#10b981', 3, 2, 14));
+            particles.push(new Particle(orb.x, orb.y, orb.isLucky ? '#facc15' : '#22c55e', 3, 2, 14));
         }
 
         // אם המפלצת בדרגת שיא סופית (30), היא מקבלת ריפוי במקום להתפתח
@@ -5066,7 +4837,7 @@ class Monster {
                 this.hp += healAmount;
                 addFloatingText(this.x, this.y - 20, `+${healAmount} חיים! 💚`, "#10b981");
             } else {
-                addFloatingText(this.x, this.y - 20, `איזמרגד נבלע! 💎`, "#10b981");
+                addFloatingText(this.x, this.y - 20, `עלה עץ נבלע! 🍃`, "#10b981");
             }
             return;
         }
@@ -5083,7 +4854,7 @@ class Monster {
 
         if (!leveledUp) {
             const currentPct = Math.min(99, Math.floor((this.xp / this.xpToNext) * 100));
-            addFloatingText(this.x, this.y - 22, `איזמרגד! ${currentPct}% 💎`, "#34d399");
+            addFloatingText(this.x, this.y - 22, `עלה נספג! ${currentPct}% 🍃`, "#34d399");
         }
     }
 
@@ -5134,44 +4905,145 @@ class Monster {
         ctx.save();
         ctx.translate(this.x, this.y);
 
-        // Monster Body
+        // אם למפלצת יש קרניים (כגון מפלצות chaser / orc / minotaur וכדומה)
+        // קרניים בגזע של העץ - ענפי עץ מסועפים הצומחים ישירות מגזע העץ עם עלעלים ירוקים
+        const hasTreeHorns = (this.type === 'chaser' || (this.species && (this.species.id === 11 || this.species.id === 18 || this.species.id === 30)));
+        if (hasTreeHorns) {
+            ctx.save();
+            const r = this.radius;
+
+            // ענפי קרן מעץ - צבע גזע עץ עשיר
+            ctx.fillStyle = '#5c2e0b';
+            ctx.strokeStyle = '#3e1a04';
+            ctx.lineWidth = 1.5;
+
+            // קרן ענף שמאלי עיקרי
+            ctx.beginPath();
+            ctx.moveTo(-r * 0.45, -r * 0.7);
+            ctx.quadraticCurveTo(-r * 0.95, -r * 1.05, -r * 1.35, -r * 1.45);
+            ctx.lineTo(-r * 1.25, -r * 1.55);
+            ctx.quadraticCurveTo(-r * 0.75, -r * 1.15, -r * 0.25, -r * 0.85);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // פיצול ענף משני שמאלי
+            ctx.beginPath();
+            ctx.moveTo(-r * 0.85, -r * 1.1);
+            ctx.quadraticCurveTo(-r * 0.8, -r * 1.45, -r * 0.6, -r * 1.65);
+            ctx.lineTo(-r * 0.5, -r * 1.6);
+            ctx.quadraticCurveTo(-r * 0.7, -r * 1.35, -r * 0.72, -r * 1.15);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // עלעלים ירוקים חיים בקצות הענפים השמאליים
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.ellipse(-r * 1.35, -r * 1.55, 3.5, 2, -Math.PI / 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#4ade80';
+            ctx.beginPath();
+            ctx.ellipse(-r * 0.55, -r * 1.7, 3, 1.8, Math.PI / 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // קרן ענף ימני עיקרי
+            ctx.fillStyle = '#5c2e0b';
+            ctx.beginPath();
+            ctx.moveTo(r * 0.45, -r * 0.7);
+            ctx.quadraticCurveTo(r * 0.95, -r * 1.05, r * 1.35, -r * 1.45);
+            ctx.lineTo(r * 1.25, -r * 1.55);
+            ctx.quadraticCurveTo(r * 0.75, -r * 1.15, r * 0.25, -r * 0.85);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // פיצול ענף משני ימני
+            ctx.beginPath();
+            ctx.moveTo(r * 0.85, -r * 1.1);
+            ctx.quadraticCurveTo(r * 0.8, -r * 1.45, r * 0.6, -r * 1.65);
+            ctx.lineTo(r * 0.5, -r * 1.6);
+            ctx.quadraticCurveTo(r * 0.7, -r * 1.35, r * 0.72, -r * 1.15);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // עלעלים ירוקים חיים בקצות הענפים הימניים
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.ellipse(r * 1.35, -r * 1.55, 3.5, 2, Math.PI / 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#4ade80';
+            ctx.beginPath();
+            ctx.ellipse(r * 0.55, -r * 1.7, 3, 1.8, -Math.PI / 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // גוף המפלצת: נראה כמו גזע עץ חי
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#ffffff33';
-        ctx.lineWidth = 2;
+
+        // מרקם קליפת עץ, טבעות שנתיות וצמרת טחב/עלים
+        ctx.save();
+        ctx.strokeStyle = 'rgba(69, 26, 3, 0.45)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius * 0.68, 0.2, Math.PI * 1.8);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius * 0.38, -0.4, Math.PI * 1.6);
+        ctx.stroke();
+        // חריצי קליפת עץ אנכיים
+        ctx.beginPath();
+        ctx.moveTo(-this.radius * 0.35, -this.radius * 0.5);
+        ctx.lineTo(-this.radius * 0.3, this.radius * 0.6);
+        ctx.moveTo(this.radius * 0.35, -this.radius * 0.5);
+        ctx.lineTo(this.radius * 0.3, this.radius * 0.6);
         ctx.stroke();
 
-        // Monster Details / Eyes / Spikes
-        ctx.fillStyle = '#ffffff';
-        const eyeOffset = this.radius * 0.35;
+        // צמרת טחב ועלווה ירוקה מעל הגזע
+        ctx.fillStyle = '#15803d';
         ctx.beginPath();
-        ctx.arc(-eyeOffset, -eyeOffset * 0.4, 3, 0, Math.PI * 2);
-        ctx.arc(eyeOffset, -eyeOffset * 0.4, 3, 0, Math.PI * 2);
+        ctx.arc(-this.radius * 0.35, -this.radius * 0.78, this.radius * 0.32, 0, Math.PI * 2);
+        ctx.arc(0, -this.radius * 0.88, this.radius * 0.36, 0, Math.PI * 2);
+        ctx.arc(this.radius * 0.35, -this.radius * 0.78, this.radius * 0.32, 0, Math.PI * 2);
         ctx.fill();
-
-        ctx.fillStyle = '#000000';
+        ctx.fillStyle = '#22c55e';
         ctx.beginPath();
-        ctx.arc(-eyeOffset, -eyeOffset * 0.4, 1.5, 0, Math.PI * 2);
-        ctx.arc(eyeOffset, -eyeOffset * 0.4, 1.5, 0, Math.PI * 2);
+        ctx.arc(0, -this.radius * 0.85, this.radius * 0.22, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
 
-        // If chaser, draw aggressive horns/spikes!
-        if (this.type === 'chaser') {
-            ctx.fillStyle = '#ff4444';
-            ctx.beginPath();
-            ctx.moveTo(-this.radius * 0.8, -this.radius * 0.6);
-            ctx.lineTo(-this.radius * 1.3, -this.radius * 1.2);
-            ctx.lineTo(-this.radius * 0.3, -this.radius * 0.8);
-            ctx.fill();
+        // קו מתאר חיצוני של גזע העץ
+        ctx.strokeStyle = '#2e1002';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.stroke();
 
-            ctx.beginPath();
-            ctx.moveTo(this.radius * 0.8, -this.radius * 0.6);
-            ctx.lineTo(this.radius * 1.3, -this.radius * 1.2);
-            ctx.lineTo(this.radius * 0.3, -this.radius * 0.8);
-            ctx.fill();
-        }
+        // עיני רוח יער קסומה הזוהרות בגזע העץ
+        ctx.save();
+        const eyeOffset = this.radius * 0.34;
+        ctx.fillStyle = '#fef08a';
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(-eyeOffset, -eyeOffset * 0.3, 3.2, 0, Math.PI * 2);
+        ctx.arc(eyeOffset, -eyeOffset * 0.3, 3.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // אישונים כהים של רוח עץ
+        ctx.fillStyle = '#1e1b4b';
+        ctx.beginPath();
+        ctx.arc(-eyeOffset, -eyeOffset * 0.3, 1.6, 0, Math.PI * 2);
+        ctx.arc(eyeOffset, -eyeOffset * 0.3, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
 
         // Floating Health Bar & Level Badge
         const barW = this.radius * 2.2;
@@ -5341,15 +5213,16 @@ class XpOrb {
         this.x = x;
         this.y = y;
         this.value = value;
-        this.radius = 7.5;
+        this.radius = 8;
         this.alive = true;
         this.isLucky = isLucky;
         this.pulse = Math.random() * Math.PI * 2;
+        this.rotation = (Math.random() - 0.5) * 1.4; // זווית נטייה טבעית של עלה שנשר
         this.pickupDelay = 12; // השהיה קצרה (0.2 שנ') לפני שמפלצות יכולות לקחת
     }
 
     update() {
-        this.pulse += 0.08;
+        this.pulse += 0.06;
         if (this.pickupDelay > 0) this.pickupDelay--;
 
         if (player) {
@@ -5357,15 +5230,20 @@ class XpOrb {
             const dy = player.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            // איסוף קריסטל איזמרגד אך ורק במגע ישיר של השחקן (ללא שאיבה/מגנט)
+            // איסוף עלה עץ אך ורק במגע ישיר של השחקן (ללא שאיבה/מגנט)
             if (dist < player.radius + this.radius + 2) {
                 gainXP(this.value);
                 this.alive = false;
+                sfx.playPickup();
+                addFloatingText(this.x, this.y - 12, `+${this.value} 🍃`, this.isLucky ? '#facc15' : '#4ade80');
+                for (let p = 0; p < 6; p++) {
+                    particles.push(new Particle(this.x, this.y, this.isLucky ? '#facc15' : '#22c55e', 2.5, 1.8, 16));
+                }
                 return;
             }
         }
 
-        // בדיקת מגע של מפלצות עוינות בקריסטל האיזמרגד
+        // בדיקת מגע של מפלצות עוינות בעלה שנשר מהעץ
         if (this.pickupDelay <= 0) {
             for (let i = 0; i < monsters.length; i++) {
                 const m = monsters[i];
@@ -5382,79 +5260,87 @@ class XpOrb {
 
     draw() {
         ctx.save();
-        const bob = Math.sin(this.pulse * 1.5) * 1.8;
+        const bob = Math.sin(this.pulse * 1.4) * 1.8;
+        const swayAngle = this.rotation + Math.sin(this.pulse) * 0.14;
         const cx = this.x;
         const cy = this.y + bob;
-        const w = 7.5;
-        const h = 12.5;
-        const glow = 7 + Math.sin(this.pulse * 1.8) * 3.5;
 
-        // הילת זוהר ירוקה של קריסטל איזמרגד
-        ctx.shadowColor = this.isLucky ? '#6ee7b7' : '#10b981';
+        // צל עדין של העלה על האדמה
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 9, 8, 3, swayAngle * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.translate(cx, cy);
+        ctx.rotate(swayAngle);
+
+        const glow = 6 + Math.sin(this.pulse * 1.8) * 3;
+        ctx.shadowColor = this.isLucky ? '#facc15' : '#22c55e';
         ctx.shadowBlur = glow;
 
-        // קודקודי פאות קריסטל האיזמרגד
-        const pTop = [cx, cy - h];
-        const pTL = [cx - w * 0.85, cy - h * 0.35];
-        const pBL = [cx - w * 0.75, cy + h * 0.35];
-        const pBot = [cx, cy + h];
-        const pBR = [cx + w * 0.75, cy + h * 0.35];
-        const pTR = [cx + w * 0.85, cy - h * 0.35];
-        const cTop = [cx, cy - h * 0.3];
-        const cBot = [cx, cy + h * 0.3];
-        const cL = [cx - w * 0.35, cy];
-        const cR = [cx + w * 0.35, cy];
+        // גבעול העלה (Petiole)
+        ctx.strokeStyle = this.isLucky ? '#b45309' : '#3f2208';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(0, 7);
+        ctx.quadraticCurveTo(-1.5, 9.5, -0.5, 12);
+        ctx.stroke();
 
-        const drawPoly = (pts, fill) => {
-            ctx.fillStyle = fill;
-            ctx.beginPath();
-            ctx.moveTo(pts[0][0], pts[0][1]);
-            for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-            ctx.closePath();
-            ctx.fill();
-        };
+        // חצי עלה שמאלי (גוון ירוק חי / בהיר)
+        ctx.fillStyle = this.isLucky ? '#fde047' : '#4ade80';
+        ctx.beginPath();
+        ctx.moveTo(0, 7.5);
+        ctx.bezierCurveTo(-8.5, 4.5, -9.5, -5.5, 0, -11.5);
+        ctx.lineTo(0, 7.5);
+        ctx.fill();
 
-        // פאה עליונה-שמאלית (החזר אור עדין)
-        drawPoly([pTop, pTL, cL, cTop], this.isLucky ? '#a7f3d0' : '#6ee7b7');
-        // פאה עליונה-ימנית (איזמרגד זוהר)
-        drawPoly([pTop, cTop, cR, pTR], this.isLucky ? '#34d399' : '#059669');
-        // פאה מרכזית - לוח הקריסטל (ירוק איזמרגד בוהק)
-        drawPoly([cTop, cR, cBot, cL], this.isLucky ? '#6ee7b7' : '#10b981');
-        // פאה תחתונה-שמאלית (עומק וצל איזמרגד)
-        drawPoly([cL, pBL, pBot, cBot], this.isLucky ? '#059669' : '#047857');
-        // פאה תחתונה-ימנית (עומק כהה)
-        drawPoly([cBot, pBot, pBR, cR], this.isLucky ? '#047857' : '#065f46');
+        // חצי עלה ימני (גוון ירוק עמוק של יער)
+        ctx.fillStyle = this.isLucky ? '#f59e0b' : '#16a34a';
+        ctx.beginPath();
+        ctx.moveTo(0, 7.5);
+        ctx.bezierCurveTo(8.5, 4.5, 9.5, -5.5, 0, -11.5);
+        ctx.lineTo(0, 7.5);
+        ctx.fill();
 
-        // קווי מתאר חיצוניים של הקריסטל
-        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.95)' : 'rgba(167, 243, 208, 0.85)';
+        // קו מתאר דק של העלה
+        ctx.strokeStyle = this.isLucky ? '#fef08a' : '#86efac';
         ctx.lineWidth = 0.9;
         ctx.beginPath();
-        ctx.moveTo(pTop[0], pTop[1]);
-        ctx.lineTo(pTL[0], pTL[1]);
-        ctx.lineTo(pBL[0], pBL[1]);
-        ctx.lineTo(pBot[0], pBot[1]);
-        ctx.lineTo(pBR[0], pBR[1]);
-        ctx.lineTo(pTR[0], pTR[1]);
-        ctx.closePath();
+        ctx.moveTo(0, 7.5);
+        ctx.bezierCurveTo(-8.5, 4.5, -9.5, -5.5, 0, -11.5);
+        ctx.bezierCurveTo(9.5, -5.5, 8.5, 4.5, 0, 7.5);
         ctx.stroke();
 
-        // קווי פאות פנימיים (Faceted Cut Lines)
-        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.7)' : 'rgba(110, 231, 183, 0.6)';
-        ctx.lineWidth = 0.6;
+        // עורק מרכזי (Main vein)
+        ctx.strokeStyle = this.isLucky ? '#fffbeb' : '#bbf7d0';
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.moveTo(pTop[0], pTop[1]); ctx.lineTo(cTop[0], cTop[1]);
-        ctx.moveTo(pBot[0], pBot[1]); ctx.lineTo(cBot[0], cBot[1]);
-        ctx.moveTo(pTL[0], pTL[1]); ctx.lineTo(cL[0], cL[1]);
-        ctx.moveTo(pTR[0], pTR[1]); ctx.lineTo(cR[0], cR[1]);
-        ctx.moveTo(pBL[0], pBL[1]); ctx.lineTo(cL[0], cL[1]);
-        ctx.moveTo(pBR[0], pBR[1]); ctx.lineTo(cR[0], cR[1]);
-        ctx.moveTo(cTop[0], cTop[1]); ctx.lineTo(cR[0], cR[1]); ctx.lineTo(cBot[0], cBot[1]); ctx.lineTo(cL[0], cL[1]); ctx.closePath();
+        ctx.moveTo(0, 7);
+        ctx.quadraticCurveTo(-0.5, -2, 0, -10.5);
         ctx.stroke();
 
-        // ניצוץ אור לבן זוהר בקצה הפאה
+        // עורקי משנה עדינים (Side veins)
+        ctx.strokeStyle = this.isLucky ? 'rgba(255, 255, 255, 0.7)' : 'rgba(187, 247, 208, 0.65)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        // עורק שמאל 1
+        ctx.moveTo(0, 4); ctx.lineTo(-4.5, 1.5);
+        // עורק ימין 1
+        ctx.moveTo(0, 3.5); ctx.lineTo(4.5, 1);
+        // עורק שמאל 2
+        ctx.moveTo(0, 0); ctx.lineTo(-5, -3);
+        // עורק ימין 2
+        ctx.moveTo(0, -0.5); ctx.lineTo(5, -3.5);
+        // עורק שמאל 3
+        ctx.moveTo(0, -4.5); ctx.lineTo(-4, -7.5);
+        // עורק ימין 3
+        ctx.moveTo(0, -5); ctx.lineTo(4, -8);
+        ctx.stroke();
+
+        // ניצוץ טל זוהר בקצה העלה
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(cx - w * 0.25, cy - h * 0.35, 1.4, 0, Math.PI * 2);
+        ctx.arc(-1.5, -3.5, 1.2, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
@@ -5588,27 +5474,41 @@ class MagicOrb {
 }
 
 class GunFireball {
-    constructor(x, y, angle, speed, damage) {
+    constructor(x, y, angle, speed, damage, isRifle = false) {
         this.x = x;
         this.y = y;
         this.angle = angle;
         this.speed = speed;
         this.damage = damage;
-        this.radius = 7.5;
+        this.isRifle = isRifle;
+        this.radius = isRifle ? 13 : 7.5;
         this.alive = true;
+        this.hitTargets = new Set();
+        this.airTimer = 0;
+        this.falling = false;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
     }
 
     update() {
-        this.x += Math.cos(this.angle) * this.speed;
-        this.y += Math.sin(this.angle) * this.speed;
+        this.airTimer++;
+        // אם הירייה נשארת יותר מ-2 שניות (120 פריימים ב-60fps), היא נופלת לרצפה
+        if (this.airTimer >= 120) {
+            this.falling = true;
+            this.vy += 0.45; // כבידה שמושכת לרצפה
+            this.vx *= 0.95; // האטה אופקית
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
 
         // שובל חלקיקי אש בוערים
-        if (Math.random() < 0.7) {
+        if (Math.random() < (this.isRifle ? 0.9 : 0.7)) {
             particles.push(new Particle(
-                this.x + (Math.random() - 0.5) * 4,
-                this.y + (Math.random() - 0.5) * 4,
-                Math.random() < 0.6 ? '#f97316' : '#fbbf24',
-                3, 0.8, 14
+                this.x + (Math.random() - 0.5) * (this.isRifle ? 8 : 4),
+                this.y + (Math.random() - 0.5) * (this.isRifle ? 8 : 4),
+                Math.random() < 0.6 ? (this.isRifle ? '#ef4444' : '#f97316') : '#fbbf24',
+                this.isRifle ? 4.5 : 3, 0.8, 14
             ));
         }
 
@@ -5616,42 +5516,68 @@ class GunFireball {
         for (let j = 0; j < monsters.length; j++) {
             const m = monsters[j];
             if (!m.alive) continue;
+            if (this.hitTargets.has(m)) continue; // כבר נפגע מהכדור הזה
+
             const d = Math.hypot(m.x - this.x, m.y - this.y);
             if (d < m.radius + this.radius) {
-                this.alive = false;
+                this.hitTargets.add(m);
                 m.takeDamage(this.damage);
                 m.ignite(300); // בעירה למשך 5 שניות (300 פריימים ב-60fps)
                 sfx.playFlame();
-                addFloatingText(m.x, m.y - 18, `${this.damage} 🔫🔥`, "#f97316");
+                addFloatingText(m.x, m.y - 18, `${this.damage} ${this.isRifle ? '🎯🔥' : '🔫🔥'}`, "#f97316");
 
-                for (let p = 0; p < 12; p++) {
+                const pCount = this.isRifle ? 16 : 12;
+                for (let p = 0; p < pCount; p++) {
                     particles.push(new Particle(this.x, this.y, '#f97316', 4, 3, 20));
                     particles.push(new Particle(this.x, this.y, '#facc15', 3, 2, 16));
                 }
-                break;
+
+                if (!this.isRifle) {
+                    // אקדח: פוגע במפלצת ונעלם
+                    this.alive = false;
+                    break;
+                }
+                // רובה: כדור חודר אינסוף מפלצות!
             }
         }
 
-        if (this.x < -30 || this.x > canvas.width + 30 || this.y < -30 || this.y > canvas.height + 30) {
+        // אם הכדור נופל ופוגע ברצפה
+        if (this.falling && this.y >= canvas.height - 10) {
+            this.alive = false;
+            for (let p = 0; p < 8; p++) {
+                particles.push(new Particle(this.x, canvas.height - 6, '#78350f', 2.5, 1.5, 12));
+                particles.push(new Particle(this.x, canvas.height - 6, '#ea580c', 2, 1, 10));
+            }
+        }
+
+        if (this.x < -40 || this.x > canvas.width + 40 || this.y < -40 || this.y > canvas.height + 40) {
             this.alive = false;
         }
     }
 
     draw() {
         ctx.save();
-        ctx.shadowColor = '#ea580c';
-        ctx.shadowBlur = 14;
+        ctx.shadowColor = this.isRifle ? '#dc2626' : '#ea580c';
+        ctx.shadowBlur = this.isRifle ? 20 : 14;
 
         // הילת להבה חיצונית
-        ctx.fillStyle = '#f97316';
+        ctx.fillStyle = this.isRifle ? '#ef4444' : '#f97316';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
 
+        // שכבת ביניים כתומה לרובה
+        if (this.isRifle) {
+            ctx.fillStyle = '#f97316';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 0.72, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
         // ליבה בוהקת חמה
         ctx.fillStyle = '#fef08a';
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 0.5, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius * 0.45, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
